@@ -4,10 +4,16 @@ import { ok, noContent, notFound, forbidden } from '@/lib/respond'
 
 export default withAdminAuth(async (req, res, session) => {
   const id   = req.query.id as string
-  const user = await db.user.findUnique({ where: { id }, select: { id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true, stripeCustomerId: true, _count: { select: { transactions: true, goals: true, bills: true } } } })
+  const user = await db.user.findUnique({ where: { id }, select: { id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true, updatedAt: true, whatsappPhone: true, stripeCustomerId: true, stripeSubscriptionId: true, _count: { select: { transactions: true, goals: true, bills: true, budgets: true, people: true } } } })
   if (!user) return notFound(res)
 
-  if (req.method === 'GET') return ok(res, user)
+  if (req.method === 'GET') {
+    const recentTransactions = await db.transaction.findMany({
+      where: { userId: id }, orderBy: { date: 'desc' }, take: 10,
+      include: { category: { select: { name: true, icon: true, color: true } } },
+    })
+    return ok(res, { user, recentTransactions })
+  }
 
   if (req.method === 'PATCH') {
     const { plan, isAdmin } = req.body

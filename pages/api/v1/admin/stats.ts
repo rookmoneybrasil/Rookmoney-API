@@ -5,20 +5,28 @@ import { ok } from '@/lib/respond'
 
 export default withAdminAuth(async (_req, res) => {
   const now        = new Date()
+  const today      = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const weekAgo    = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  const [total, pro, newThisMonth, totalTransactions] = await Promise.all([
+  const [total, pro, newToday, newThisWeek, newThisMonth, totalTransactions, transactionsThisMonth, totalGoals, recentUsers] = await Promise.all([
     db.user.count(),
     db.user.count({ where: { plan: 'PRO' } }),
+    db.user.count({ where: { createdAt: { gte: today } } }),
+    db.user.count({ where: { createdAt: { gte: weekAgo } } }),
     db.user.count({ where: { createdAt: { gte: monthStart } } }),
     db.transaction.count(),
+    db.transaction.count({ where: { createdAt: { gte: monthStart } } }),
+    db.goal.count({ where: { isCompleted: false } }),
+    db.user.findMany({ orderBy: { createdAt: 'desc' }, take: 8, select: { id: true, name: true, email: true, plan: true, createdAt: true } }),
   ])
 
   return ok(res, {
     totalUsers: total, proUsers: pro, freeUsers: total - pro,
     proRate: total > 0 ? Math.round((pro / total) * 100) : 0,
-    newThisMonth, totalTransactions,
-    mrr: pro * 14.9,
-    arr: pro * 14.9 * 12,
+    newToday, newThisWeek, newThisMonth,
+    totalTransactions, transactionsThisMonth, totalGoals,
+    mrr: pro * 14.9, arr: pro * 14.9 * 12,
+    recentUsers,
   })
 })
