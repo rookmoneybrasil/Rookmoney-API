@@ -1,0 +1,40 @@
+import { withAuth } from '@/lib/middleware'
+import { db } from '@/lib/db'
+import { ok, noContent, created, notFound } from '@/lib/respond'
+import { parseISO } from 'date-fns'
+
+export default withAuth(async (req, res, session) => {
+  const id = req.query.id as string
+
+  if (req.method === 'GET') {
+    const person = await db.person.findFirst({
+      where:   { id, userId: session.userId },
+      include: { entries: { include: { category: { select: { id: true, name: true, icon: true, color: true } } }, orderBy: { date: 'desc' } } },
+    })
+    if (!person) return notFound(res)
+    return ok(res, person)
+  }
+
+  if (req.method === 'POST' && req.query.action === 'entry') {
+    const { type, description, amount, date, notes, categoryId } = req.body
+    const entry = await db.personEntry.create({
+      data: { type, description, amount: parseFloat(amount), date: parseISO(date), notes: notes ?? null, categoryId: categoryId ?? null, personId: id, userId: session.userId },
+      include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+    })
+    return created(res, entry)
+  }
+
+  if (req.method === 'PATCH') {
+    const person = await db.person.findFirst({ where: { id, userId: session.userId } })
+    if (!person) return notFound(res)
+    const updated = await db.person.update({ where: { id }, data: req.body })
+    return ok(res, updated)
+  }
+
+  if (req.method === 'DELETE') {
+    await db.person.deleteMany({ where: { id, userId: session.userId } })
+    return noContent(res)
+  }
+
+  return res.status(405).end()
+})
