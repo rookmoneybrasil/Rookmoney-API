@@ -30,7 +30,7 @@ export default withAuth(async (req, res, session) => {
   for (const g of goals) {
     if (!g.deadline) continue
     const diff = Math.ceil((new Date(g.deadline).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-    const pct  = g.targetAmount > 0 ? Math.round((Number(g.currentAmount) / Number(g.targetAmount)) * 100) : 0
+    const pct  = Number(g.targetAmount) > 0 ? Math.round((Number(g.currentAmount) / Number(g.targetAmount)) * 100) : 0
     notifications.push({ id: `goal-${g.id}`, type: 'goal', title: g.name, message: `${pct}% concluída · prazo em ${diff} dias`, href: '/goals', urgency: pct < 50 ? 'high' : 'medium' })
   }
 

@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import { serialize } from 'cookie'
 import { db } from '@/lib/db'
 import { createToken } from '@/lib/auth'
-import { withPublic, badRequest, unauthorized, serverError } from '@/lib/respond'
+import { badRequest, unauthorized, serverError } from '@/lib/respond'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()

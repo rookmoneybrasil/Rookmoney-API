@@ -69,8 +69,8 @@ export default withAuth(async (req, res, session) => {
     const isPast = !isThisMonth(d) && !isFuture(mS)
     const isCurrent = isThisMonth(d)
 
-    let incomeItems: { id: string; label: string; amount: number; day: number; type: string; href: string; actual?: boolean }[] = []
-    let expenseItems: { id: string; label: string; amount: number; day: number; type: string; href: string; actual?: boolean }[] = []
+    let incomeItems: { id: string; label: string; amount: number; day: number; type: string; href: string; actual?: boolean; overdue?: boolean }[] = []
+    let expenseItems: { id: string; label: string; amount: number; day: number; type: string; href: string; actual?: boolean; overdue?: boolean }[] = []
 
     if (isPast || isCurrent) {
       // Use actual transactions for current and past months
