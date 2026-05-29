@@ -11,8 +11,38 @@ export default withAuth(async (req, res, session) => {
     const bill = await db.bill.findFirst({ where: { id, userId: session.userId } })
     if (!bill) return notFound(res)
     const { paid = true } = req.body
-    const updated = await db.bill.update({ where: { id }, data: { isPaid: paid, paidAt: paid ? new Date() : null } })
-    return ok(res, updated)
+
+    if (paid && !bill.isPaid) {
+      // Create EXPENSE transaction when marking as paid
+      const categoryId = bill.categoryId ?? (
+        await db.category.findFirst({ where: { OR: [{ isDefault: true }, { userId: session.userId }] }, orderBy: { isDefault: 'desc' } })
+      )?.id ?? null
+
+      const tx = await db.transaction.create({
+        data: {
+          amount:      bill.amount,
+          type:        'EXPENSE',
+          description: bill.name,
+          date:        new Date(),
+          userId:      session.userId,
+          categoryId:  categoryId!,
+        },
+      })
+      const updated = await db.bill.update({ where: { id }, data: { isPaid: true, paidAt: new Date(), paidTransactionId: tx.id } })
+      return ok(res, updated)
+    }
+
+    if (!paid && bill.isPaid) {
+      // Undo payment — remove the transaction if it exists
+      if (bill.paidTransactionId) {
+        await db.transaction.deleteMany({ where: { id: bill.paidTransactionId, userId: session.userId } })
+      }
+      const updated = await db.bill.update({ where: { id }, data: { isPaid: false, paidAt: null, paidTransactionId: null } })
+      return ok(res, updated)
+    }
+
+    // No change needed (already in desired state)
+    return ok(res, bill)
   }
 
   const bill = await db.bill.findFirst({ where: { id, userId: session.userId } })

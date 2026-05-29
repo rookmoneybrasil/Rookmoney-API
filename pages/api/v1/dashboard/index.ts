@@ -58,6 +58,7 @@ export default withAuth(async (req, res, session) => {
     incomeReceivable,
     financialHealth,
     projections,
+    pendingBillsAgg,
   ] = await Promise.all([
     db.user.findUnique({ where: { id: uid }, select: { name: true } }),
     db.transaction.aggregate({ where: { userId: uid, type: 'INCOME',  date: { gte: mS, lte: mE } }, _sum: { amount: true } }),
@@ -75,6 +76,7 @@ export default withAuth(async (req, res, session) => {
     }),
     db.bill.count({ where: { userId: uid, isPaid: false } }),
     db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { lt: now } } }),
+    db.bill.aggregate({ where: { userId: uid, isPaid: false }, _sum: { amount: true } }),
     // People receivable (entries where they owe me and not settled)
     db.personEntry.aggregate({ where: { userId: uid, type: 'THEY_OWE_ME', isSettled: false }, _sum: { amount: true } }),
     // Income sources receivable (eventual, not received this month)
@@ -166,6 +168,7 @@ export default withAuth(async (req, res, session) => {
     goals,
     upcomingBills,
     pendingBillsCount,
+    pendingBillsAmount: Number(pendingBillsAgg._sum.amount ?? 0),
     overdueCount,
     healthScore,
     projections:           projected,
