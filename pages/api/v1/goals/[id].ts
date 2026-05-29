@@ -50,6 +50,10 @@ export default withAuth(async (req, res, session) => {
       db.transaction.create({
         data: { amount: amountNum, type: 'INCOME', description: `Retirada — ${goal.name}`, date: new Date(), userId: session.userId, categoryId: resolvedCatId! },
       }),
+      // Create negative contribution so the goals page shows withdrawals too
+      db.goalContribution.create({
+        data: { goalId: id, amount: -amountNum, note: 'Retirada' },
+      }),
     ])
 
     return ok(res, { withdrawn: amountNum, newAmount })
