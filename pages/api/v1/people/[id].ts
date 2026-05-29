@@ -16,12 +16,45 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'POST' && req.query.action === 'entry') {
-    const { type, description, amount, date, notes, categoryId } = req.body
-    const entry = await db.personEntry.create({
-      data: { type, description, amount: parseFloat(amount), date: parseISO(date), notes: notes ?? null, categoryId: categoryId ?? null, personId: id, userId: session.userId },
-      include: { category: { select: { id: true, name: true, icon: true, color: true } } },
-    })
-    return created(res, entry)
+    const { type, description, amount, date, notes, categoryId, installments = 1 } = req.body
+    const numInstallments = parseInt(installments, 10) || 1
+    const baseDate        = parseISO(date)
+    const amountNum       = parseFloat(amount)
+
+    if (numInstallments <= 1) {
+      // Single entry
+      const entry = await db.personEntry.create({
+        data: { type, description, amount: amountNum, date: baseDate, notes: notes ?? null, categoryId: categoryId ?? null, personId: id, userId: session.userId },
+        include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+      })
+      return created(res, entry)
+    }
+
+    // Multiple installments — create grouped entries
+    const { randomUUID } = await import('crypto')
+    const groupId         = randomUUID()
+    const perInstallment  = Math.round((amountNum / numInstallments) * 100) / 100
+
+    const entries = await Promise.all(
+      Array.from({ length: numInstallments }, (_, i) => {
+        const d = new Date(baseDate.getFullYear(), baseDate.getMonth() + i, baseDate.getDate())
+        return db.personEntry.create({
+          data: {
+            type, description,
+            amount: perInstallment,
+            date:   d,
+            notes:  notes ?? null,
+            categoryId: categoryId ?? null,
+            personId: id, userId: session.userId,
+            installmentTotal:   numInstallments,
+            installmentCurrent: i + 1,
+            installmentGroupId: groupId,
+          },
+          include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+        })
+      })
+    )
+    return created(res, entries[0])
   }
 
   if (req.method === 'PATCH') {
