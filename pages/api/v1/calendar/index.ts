@@ -17,9 +17,10 @@ export type CalendarEvent = {
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'GET') return res.status(405).end()
 
-  const now       = new Date()
-  const monthStr  = (req.query.month as string) ?? format(now, 'yyyy-MM')
-  const monthDate = new Date(monthStr + '-01')
+  const now      = new Date()
+  const monthStr = (req.query.month as string) ?? format(now, 'yyyy-MM')
+  const [y, m]   = monthStr.split('-').map(Number)
+  const monthDate = new Date(y, m - 1, 1)   // local time — avoids UTC timezone shift
   const start     = startOfMonth(monthDate)
   const end       = endOfMonth(monthDate)
   const uid       = session.userId

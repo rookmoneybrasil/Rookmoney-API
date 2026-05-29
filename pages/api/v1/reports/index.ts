@@ -7,11 +7,14 @@ import { ptBR } from 'date-fns/locale'
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'GET') return res.status(405).end()
 
-  const months = Math.min(Math.max(Number(req.query.months ?? 6), 1), 24)
-  const uid    = session.userId
-  const now    = new Date()
-  const rangeStart = startOfMonth(subMonths(now, months - 1))
-  const rangeEnd   = endOfMonth(now)
+  const months   = Math.min(Math.max(Number(req.query.months ?? 6), 1), 24)
+  const uid      = session.userId
+  const monthStr = req.query.month as string | undefined
+  const endDate  = monthStr
+    ? (() => { const [y, m] = monthStr.split('-').map(Number); return new Date(y, m - 1, 1) })()
+    : new Date()
+  const rangeStart = startOfMonth(subMonths(endDate, months - 1))
+  const rangeEnd   = endOfMonth(endDate)
 
   const [allTxs, incomeSrcList] = await Promise.all([
     db.transaction.findMany({
@@ -25,7 +28,7 @@ export default withAuth(async (req, res, session) => {
   // Monthly breakdown
   const monthly = await Promise.all(
     Array.from({ length: months }, (_, i) => {
-      const d     = subMonths(now, months - 1 - i)
+      const d     = subMonths(endDate, months - 1 - i)
       const start = startOfMonth(d)
       const end   = endOfMonth(d)
       const mTxs  = allTxs.filter(tx => new Date(tx.date) >= start && new Date(tx.date) <= end)
@@ -48,8 +51,8 @@ export default withAuth(async (req, res, session) => {
 
   // Category trend
   const catMap = new Map<string, { name: string; icon: string; color: string; total: number; prevTotal: number }>()
-  const prevStart = startOfMonth(subMonths(now, 1))
-  const prevEnd   = endOfMonth(subMonths(now, 1))
+  const prevStart = startOfMonth(subMonths(endDate, 1))
+  const prevEnd   = endOfMonth(subMonths(endDate, 1))
   allTxs.filter(t => t.type === 'EXPENSE').forEach(tx => {
     const entry = catMap.get(tx.categoryId) ?? { name: tx.category.name, icon: tx.category.icon, color: tx.category.color, total: 0, prevTotal: 0 }
     entry.total += Number(tx.amount)

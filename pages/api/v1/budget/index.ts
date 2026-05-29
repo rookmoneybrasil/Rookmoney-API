@@ -12,8 +12,10 @@ export default withAuth(async (req, res, session) => {
       include: { category: { select: { id: true, name: true, icon: true, color: true } } },
     })
     // Attach spent amounts
+    const [y, m] = month.split('-').map(Number)
+    const start = new Date(y, m - 1, 1)
+    const end   = new Date(y, m, 0, 23, 59, 59, 999)
     const result = await Promise.all(budgets.map(async (b) => {
-      const [start, end] = [new Date(month + '-01'), new Date(new Date(month + '-01').getFullYear(), new Date(month + '-01').getMonth() + 1, 0)]
       const spent = await db.transaction.aggregate({ where: { userId: session.userId, categoryId: b.categoryId, type: 'EXPENSE', date: { gte: start, lte: end } }, _sum: { amount: true } })
       return { ...b, spent: Number(spent._sum.amount ?? 0) }
     }))

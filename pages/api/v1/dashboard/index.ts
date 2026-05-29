@@ -1,7 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok } from '@/lib/respond'
-import { startOfMonth, endOfMonth, subMonths, addDays } from 'date-fns'
+import { startOfMonth, endOfMonth, subMonths, addDays, format } from 'date-fns'
 
 async function processAutoIncome(uid: string) {
   const now       = new Date()
@@ -59,6 +59,8 @@ export default withAuth(async (req, res, session) => {
     financialHealth,
     projections,
     pendingBillsAgg,
+    personPayables,
+    upcomingPersonPayables,
   ] = await Promise.all([
     db.user.findUnique({ where: { id: uid }, select: { name: true } }),
     db.transaction.aggregate({ where: { userId: uid, type: 'INCOME',  date: { gte: mS, lte: mE } }, _sum: { amount: true } }),
@@ -74,18 +76,27 @@ export default withAuth(async (req, res, session) => {
       where: { userId: uid, isPaid: false, dueDate: { lte: addDays(now, 14) } },
       orderBy: { dueDate: 'asc' }, take: 5,
     }),
-    db.bill.count({ where: { userId: uid, isPaid: false } }),
+    db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { gte: mS, lte: mE } } }),
     db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { lt: now } } }),
     // People receivable (entries where they owe me and not settled)
     db.personEntry.aggregate({ where: { userId: uid, type: 'THEY_OWE_ME', isSettled: false }, _sum: { amount: true } }),
-    // Income sources receivable (eventual, not received this month)
-    db.incomeSource.aggregate({ where: { userId: uid, isRecurring: false }, _sum: { amount: true } }),
+    // Income sources receivable: not yet received/processed this month (null OR different month)
+    db.incomeSource.aggregate({ where: { userId: uid, OR: [{ lastAutoPayMonth: null }, { lastAutoPayMonth: { not: format(now, 'yyyy-MM') } }] }, _sum: { amount: true } }),
     // Financial health score (simplified)
     db.transaction.findMany({ where: { userId: uid, date: { gte: startOfMonth(subMonths(now, 2)), lte: mE } }, select: { type: true, amount: true } }),
     // Projections (last 2 months average)
     db.transaction.findMany({ where: { userId: uid, date: { gte: startOfMonth(subMonths(now, 2)), lte: mE } }, select: { type: true, amount: true, date: true } }),
-    // Pending bills total amount — MUST be last to match destructuring
-    db.bill.aggregate({ where: { userId: uid, isPaid: false }, _sum: { amount: true } }),
+    // Pending bills total amount — current month only
+    db.bill.aggregate({ where: { userId: uid, isPaid: false, dueDate: { gte: mS, lte: mE } }, _sum: { amount: true } }),
+    // Person entries where I owe them (payables) — current month only
+    db.personEntry.aggregate({ where: { userId: uid, type: 'I_OWE_THEM', isSettled: false, date: { gte: mS, lte: mE } }, _sum: { amount: true } }),
+    // Upcoming person payables list (next ~45 days)
+    db.personEntry.findMany({
+      where:   { userId: uid, type: 'I_OWE_THEM', isSettled: false, date: { lte: addDays(now, 45) } },
+      orderBy: { date: 'asc' },
+      take:    4,
+      include: { person: { select: { name: true } } },
+    }),
   ])
 
   const totalIncome  = Number(income._sum.amount  ?? 0)
@@ -171,11 +182,23 @@ export default withAuth(async (req, res, session) => {
     recentTransactions:    recentTx,
     goals,
     upcomingBills,
+    upcomingPersonPayables,
     pendingBillsCount,
-    pendingBillsAmount: Number(pendingBillsAgg._sum.amount ?? 0),
+    pendingBillsAmount:    Number(pendingBillsAgg._sum.amount ?? 0),
+    personPayablesAmount:  Number(personPayables._sum.amount ?? 0),
     overdueCount,
     healthScore,
     projections:           projected,
     mood: overdueCount > 0 ? 'angry' : totalIncome === 0 && totalExpense === 0 ? 'idle' : totalIncome - totalExpense >= 0 ? 'happy' : 'sad',
+    // Budget alerts: count of categories at 80%+ of limit this month
+    overBudgetCount: await (async () => {
+      const budgets = await db.budget.findMany({ where: { userId: uid, month: format(now, 'yyyy-MM') }, select: { categoryId: true, amount: true } })
+      if (!budgets.length) return 0
+      const txs = await db.transaction.findMany({ where: { userId: uid, type: 'EXPENSE', date: { gte: mS, lte: mE } }, select: { categoryId: true, amount: true } })
+      return budgets.filter(b => {
+        const spent = txs.filter(t => t.categoryId === b.categoryId).reduce((s, t) => s + Number(t.amount), 0)
+        return spent >= Number(b.amount) * 0.8
+      }).length
+    })(),
   })
 })

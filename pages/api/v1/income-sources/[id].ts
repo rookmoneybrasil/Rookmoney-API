@@ -1,6 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, notFound } from '@/lib/respond'
+import { startOfMonth, endOfMonth } from 'date-fns'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -9,20 +10,66 @@ export default withAuth(async (req, res, session) => {
 
   if (req.method === 'GET') return ok(res, src)
 
+  // POST ?action=revert — undo receipt: delete matching transaction + clear lastAutoPayMonth
+  if (req.method === 'POST' && req.query.action === 'revert') {
+    const now = new Date()
+    const mS  = startOfMonth(now)
+    const mE  = endOfMonth(now)
+
+    // Delete the INCOME transaction created for this source this month
+    await db.transaction.deleteMany({
+      where: {
+        userId:      session.userId,
+        type:        'INCOME',
+        description: src.name,
+        date:        { gte: mS, lte: mE },
+      },
+    })
+
+    const updated = await db.incomeSource.update({
+      where: { id },
+      data:  { lastAutoPayMonth: null },
+    })
+    return ok(res, updated)
+  }
+
   if (req.method === 'PUT' || req.method === 'PATCH') {
-    const { name, type, amount, isRecurring, dayOfMonth, notes, categoryId } = req.body
+    const { name, type, amount, isRecurring, dayOfMonth, notes, categoryId, lastAutoPayMonth } = req.body
     const updated = await db.incomeSource.update({
       where: { id },
       data: {
-        ...(name        !== undefined && { name }),
-        ...(type        !== undefined && { type }),
-        ...(amount      !== undefined && { amount: parseFloat(amount) }),
-        ...(isRecurring !== undefined && { isRecurring }),
-        ...(dayOfMonth  !== undefined && { dayOfMonth: dayOfMonth ? parseInt(dayOfMonth) : null }),
-        ...(notes       !== undefined && { notes }),
-        ...(categoryId  !== undefined && { categoryId }),
+        ...(name             !== undefined && { name }),
+        ...(type             !== undefined && { type }),
+        ...(amount           !== undefined && { amount: parseFloat(amount) }),
+        ...(isRecurring      !== undefined && { isRecurring }),
+        ...(dayOfMonth       !== undefined && { dayOfMonth: dayOfMonth ? parseInt(dayOfMonth) : null }),
+        ...(notes            !== undefined && { notes }),
+        ...(categoryId       !== undefined && { categoryId }),
+        ...(lastAutoPayMonth !== undefined && { lastAutoPayMonth: lastAutoPayMonth || null }),
       },
     })
+
+    // If amount or name changed and it already auto-generated a transaction this month, update it
+    const now = new Date()
+    const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    if (src.lastAutoPayMonth === yearMonth && src.isRecurring && (amount !== undefined || name !== undefined)) {
+      const mS = startOfMonth(now)
+      const mE = endOfMonth(now)
+      await db.transaction.updateMany({
+        where: {
+          userId:      session.userId,
+          type:        'INCOME',
+          description: src.name,
+          date:        { gte: mS, lte: mE },
+        },
+        data: {
+          ...(amount !== undefined && { amount: parseFloat(amount) }),
+          ...(name   !== undefined && { description: name }),
+          ...(categoryId !== undefined && categoryId && { categoryId }),
+        },
+      })
+    }
+
     return ok(res, updated)
   }
 

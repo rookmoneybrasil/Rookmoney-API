@@ -1,7 +1,6 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, created, notFound } from '@/lib/respond'
-import { parseISO } from 'date-fns'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -18,7 +17,8 @@ export default withAuth(async (req, res, session) => {
   if (req.method === 'POST' && req.query.action === 'entry') {
     const { type, description, amount, date, notes, categoryId, installments = 1 } = req.body
     const numInstallments = parseInt(installments, 10) || 1
-    const baseDate        = parseISO(date)
+    const [_y, _m, _d]   = (date as string).split('-').map(Number)
+    const baseDate        = new Date(_y, _m - 1, _d)
     const amountNum       = parseFloat(amount)
 
     if (numInstallments <= 1) {

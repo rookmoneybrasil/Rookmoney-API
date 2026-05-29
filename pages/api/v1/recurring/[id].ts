@@ -1,6 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, notFound } from '@/lib/respond'
+import { startOfMonth, endOfMonth } from 'date-fns'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -31,6 +32,25 @@ export default withAuth(async (req, res, session) => {
       },
       include: { category: { select: { id: true, name: true, icon: true, color: true } } },
     })
+    // If amount or name changed and already auto-generated a transaction this month, update it
+    const now = new Date()
+    const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    if (item.lastAutoMonth === yearMonth && (amount !== undefined || name !== undefined)) {
+      await db.transaction.updateMany({
+        where: {
+          userId:      session.userId,
+          description: item.name,
+          type:        item.type,
+          date:        { gte: startOfMonth(now), lte: endOfMonth(now) },
+        },
+        data: {
+          ...(amount !== undefined && { amount: parseFloat(amount) }),
+          ...(name   !== undefined && { description: name }),
+          ...(categoryId !== undefined && categoryId && { categoryId }),
+        },
+      })
+    }
+
     return ok(res, updated)
   }
 
