@@ -7,7 +7,7 @@ async function processAutoIncome(userId: string) {
   const today     = now.getDate()
   const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 
-  const sources = await db.incomeSource.findMany({ where: { userId, isRecurring: true, dayOfMonth: { not: null }, categoryId: { not: null } } })
+  const sources = await db.incomeSource.findMany({ where: { userId, isRecurring: true, dayOfMonth: { not: null }, NOT: [{ categoryId: null }] } })
 
   for (const src of sources) {
     if (src.lastAutoPayMonth === yearMonth) continue
@@ -24,7 +24,7 @@ async function processAutoRecurring(userId: string) {
   const today     = now.getDate()
   const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 
-  const items = await db.recurringTransaction.findMany({ where: { userId, isActive: true, frequency: 'MONTHLY', categoryId: { not: null } } })
+  const items = await db.recurringTransaction.findMany({ where: { userId, isActive: true, frequency: 'MONTHLY', NOT: [{ categoryId: null }] } })
 
   for (const item of items) {
     if (item.lastAutoMonth === yearMonth) continue
@@ -61,3 +61,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   return res.status(200).json({ ok: true, processed, errors })
 }
+
