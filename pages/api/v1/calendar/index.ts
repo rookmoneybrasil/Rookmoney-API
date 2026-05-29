@@ -32,15 +32,15 @@ export default withAuth(async (req, res, session) => {
       orderBy: { dueDate: 'asc' },
     }),
 
-    // Recurring income sources with dayOfMonth
+    // All recurring income sources (dayOfMonth optional — defaults to 1)
     db.incomeSource.findMany({
-      where:  { userId: uid, isRecurring: true, dayOfMonth: { not: null } },
+      where:  { userId: uid, isRecurring: true },
       select: { id: true, name: true, amount: true, dayOfMonth: true },
     }),
 
-    // Recurring transactions active in this month
+    // All recurring transactions active in this month (dayOfMonth optional — defaults to 1)
     db.recurringTransaction.findMany({
-      where:  { userId: uid, isActive: true, frequency: 'MONTHLY', dayOfMonth: { not: null } },
+      where:  { userId: uid, isActive: true, frequency: 'MONTHLY' },
       select: { id: true, name: true, amount: true, type: true, dayOfMonth: true },
     }),
   ])
@@ -63,11 +63,11 @@ export default withAuth(async (req, res, session) => {
     })
   }
 
-  // Income sources (recurring)
+  const maxDay = endOfMonth(monthDate).getDate()
+
+  // Income sources (recurring) — dayOfMonth null → dia 1
   for (const s of incomeSources) {
-    if (!s.dayOfMonth) continue
-    const day = s.dayOfMonth
-    if (day < 1 || day > endOfMonth(monthDate).getDate()) continue
+    const day = Math.min(s.dayOfMonth ?? 1, maxDay)
     events.push({
       id:     `income-${s.id}`,
       day,
@@ -80,11 +80,10 @@ export default withAuth(async (req, res, session) => {
     })
   }
 
-  // Recurring transactions
+  // Recurring transactions — dayOfMonth null → dia 1
   for (const r of recurring) {
-    if (!r.dayOfMonth) continue
-    const day = r.dayOfMonth
-    if (day < 1 || day > endOfMonth(monthDate).getDate()) continue
+    const day = Math.min(r.dayOfMonth ?? 1, maxDay)
+    if (day < 1 || day > maxDay) continue
     events.push({
       id:     `rec-${r.id}`,
       day,
