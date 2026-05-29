@@ -1,6 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, notFound, badRequest } from '@/lib/respond'
+import { parseISO } from 'date-fns'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -26,9 +27,10 @@ export default withAuth(async (req, res, session) => {
       data: {
         ...(name        !== undefined && { name }),
         ...(amount      !== undefined && { amount: parseFloat(amount) }),
+        ...(dueDate     !== undefined && { dueDate: parseISO(dueDate) }),
         ...(isRecurring !== undefined && { isRecurring }),
-        ...(categoryId  !== undefined && { categoryId }),
-        ...(notes       !== undefined && { notes }),
+        ...(categoryId  !== undefined && { categoryId: categoryId || null }),
+        ...(notes       !== undefined && { notes: notes || null }),
       },
     })
     return ok(res, updated)
