@@ -20,7 +20,7 @@ type PublicHandler = (
 
 export function withAuth(handler: AuthHandler, methods?: Methods[]) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    setCORSHeaders(res)
+    setCORSHeaders(res, req)
     if (req.method === 'OPTIONS') return res.status(204).end()
 
     if (methods && !methods.includes(req.method as Methods)) {
@@ -41,7 +41,7 @@ export function withAuth(handler: AuthHandler, methods?: Methods[]) {
 
 export function withAdminAuth(handler: AuthHandler, methods?: Methods[]) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    setCORSHeaders(res)
+    setCORSHeaders(res, req)
     if (req.method === 'OPTIONS') return res.status(204).end()
 
     if (methods && !methods.includes(req.method as Methods)) {
@@ -82,7 +82,7 @@ export function withAdminAuth(handler: AuthHandler, methods?: Methods[]) {
 
 export function withBackofficeAuth(handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void, methods?: Methods[]) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    setCORSHeaders(res)
+    setCORSHeaders(res, req)
     if (req.method === 'OPTIONS') return res.status(204).end()
 
     if (methods && !methods.includes(req.method as Methods)) {
@@ -112,7 +112,7 @@ export function withBackofficeAuth(handler: (req: NextApiRequest, res: NextApiRe
 
 export function withPublic(handler: PublicHandler, methods?: Methods[]) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    setCORSHeaders(res)
+    setCORSHeaders(res, req)
     if (req.method === 'OPTIONS') return res.status(204).end()
 
     if (methods && !methods.includes(req.method as Methods)) {
@@ -129,10 +129,16 @@ export function withPublic(handler: PublicHandler, methods?: Methods[]) {
 
 // ─── CORS headers ─────────────────────────────────────────────────────────────
 
-function setCORSHeaders(res: NextApiResponse) {
-  const origins = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:3000,http://localhost:3001,http://localhost:3002').split(',')
-  res.setHeader('Access-Control-Allow-Origin', origins.join(','))
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+function setCORSHeaders(res: NextApiResponse, req?: NextApiRequest) {
+  const allowed = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:3010,http://localhost:3020').split(',').map(o => o.trim())
+  const origin  = req?.headers?.origin as string | undefined
+
+  // Set origin to the matched allowed origin, or first allowed if no match (dev fallback)
+  const allowOrigin = (origin && allowed.includes(origin)) ? origin : allowed[0]
+
+  res.setHeader('Access-Control-Allow-Origin',      allowOrigin)
+  res.setHeader('Access-Control-Allow-Methods',     'GET,POST,PUT,PATCH,DELETE,OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers',     'Content-Type,Authorization')
   res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.setHeader('Vary', 'Origin')
 }

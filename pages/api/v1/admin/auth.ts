@@ -4,7 +4,20 @@ import { serialize } from 'cookie'
 
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET ?? 'rook-dev-secret')
 
+function setCORS(req: NextApiRequest, res: NextApiResponse) {
+  const allowed = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:3010,http://localhost:3020').split(',').map(o => o.trim())
+  const origin  = req.headers.origin as string | undefined
+  const allow   = (origin && allowed.includes(origin)) ? origin : allowed[0]
+  res.setHeader('Access-Control-Allow-Origin',      allow)
+  res.setHeader('Access-Control-Allow-Methods',     'POST,OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers',     'Content-Type')
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.setHeader('Vary', 'Origin')
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  setCORS(req, res)
+  if (req.method === 'OPTIONS') return res.status(204).end()
   if (req.method !== 'POST') return res.status(405).end()
 
   const { secret } = req.body as { secret?: string }
