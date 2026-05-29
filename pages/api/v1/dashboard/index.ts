@@ -70,8 +70,8 @@ export default withAuth(async (req, res, session) => {
     }),
     db.goal.findMany({ where: { userId: uid, isCompleted: false }, take: 3, orderBy: { createdAt: 'desc' } }),
     db.bill.findMany({
-      where: { userId: uid, isPaid: false, dueDate: { lte: addDays(now, 7) } },
-      orderBy: { dueDate: 'asc' }, take: 3,
+      where: { userId: uid, isPaid: false, dueDate: { lte: addDays(now, 14) } },
+      orderBy: { dueDate: 'asc' }, take: 5,
     }),
     db.bill.count({ where: { userId: uid, isPaid: false } }),
     db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { lt: now } } }),
