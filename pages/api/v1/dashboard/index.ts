@@ -97,16 +97,29 @@ export default withAuth(async (req, res, session) => {
   const savingsRate = totalIncome > 0 ? (totalIncome - totalExpense) / totalIncome : 0
   const healthScore = Math.min(100, Math.max(0, Math.round(savingsRate * 100 + 50)))
 
-  // 5-month projections based on last 2 months average
-  const avgIncome  = (totalIncome + prevTotalIncome) / 2
-  const avgExpense = (totalExpense + prevTotalExpense) / 2
+  // 5-month projections based on recurring income sources + recurring transactions
+  // This is more accurate than averaging — uses what the user CONFIGURED as recurring
+  const [recurringIncomeSources, recurringTransactions] = await Promise.all([
+    db.incomeSource.findMany({ where: { userId: uid, isRecurring: true }, select: { amount: true } }),
+    db.recurringTransaction.findMany({ where: { userId: uid, isActive: true, frequency: 'MONTHLY' }, select: { amount: true, type: true } }),
+  ])
+
+  const recurringIncome  = recurringIncomeSources.reduce((s, r) => s + Number(r.amount), 0)
+    + recurringTransactions.filter(r => r.type === 'INCOME').reduce((s, r) => s + Number(r.amount), 0)
+  const recurringExpense = recurringTransactions.filter(r => r.type === 'EXPENSE').reduce((s, r) => s + Number(r.amount), 0)
+
+  // Use recurring as base; fallback to current month if no recurring configured
+  const projIncome  = recurringIncome  > 0 ? recurringIncome  : totalIncome
+  const projExpense = recurringExpense > 0 ? recurringExpense : totalExpense
+  const currentBalance = totalIncome - totalExpense
+
   const projected  = Array.from({ length: 5 }, (_, i) => {
     const d = addDays(mE, (i + 1) * 30)
     return {
-      month:          d.toISOString(),
-      projectedIncome:  avgIncome,
-      projectedExpense: avgExpense,
-      projectedBalance: (i + 1) * (avgIncome - avgExpense) + (totalIncome - totalExpense),
+      month:            d.toISOString(),
+      projectedIncome:  projIncome,
+      projectedExpense: projExpense,
+      projectedBalance: currentBalance + (i + 1) * (projIncome - projExpense),
     }
   })
 
