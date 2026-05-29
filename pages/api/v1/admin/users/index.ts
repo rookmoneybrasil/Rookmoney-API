@@ -1,8 +1,8 @@
-import { withAdminAuth } from '@/lib/middleware'
+import { withBackofficeAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok } from '@/lib/respond'
 
-export default withAdminAuth(async (req, res) => {
+export default withBackofficeAuth(async (req, res) => {
   if (req.method !== 'GET') return res.status(405).end()
 
   const { search = '', plan = '', page = '1', pageSize = '20' } = req.query as Record<string, string>

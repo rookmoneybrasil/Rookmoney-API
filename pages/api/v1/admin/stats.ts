@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { withAdminAuth } from '@/lib/middleware'
+import { withBackofficeAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok } from '@/lib/respond'
 
-export default withAdminAuth(async (_req, res) => {
+export default withBackofficeAuth(async (_req, res) => {
   const now        = new Date()
   const today      = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const weekAgo    = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)

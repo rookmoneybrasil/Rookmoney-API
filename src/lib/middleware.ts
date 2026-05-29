@@ -78,6 +78,36 @@ export function withAdminAuth(handler: AuthHandler, methods?: Methods[]) {
   }
 }
 
+// ─── withBackofficeAuth — backoffice token only (no user session needed) ─────
+
+export function withBackofficeAuth(handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void, methods?: Methods[]) {
+  return async (req: NextApiRequest, res: NextApiResponse) => {
+    setCORSHeaders(res)
+    if (req.method === 'OPTIONS') return res.status(204).end()
+
+    if (methods && !methods.includes(req.method as Methods)) {
+      return methodNotAllowed(res)
+    }
+
+    try {
+      const token = req.cookies['rook_backoffice']
+        ?? req.headers.authorization?.replace('Bearer ', '')
+
+      if (!token) return unauthorized(res, 'Acesso de backoffice necessário')
+
+      const { verifyToken } = await import('./auth')
+      const payload = await verifyToken(token) as Record<string, unknown> | null
+      if (!payload || payload['admin'] !== true || payload['role'] !== 'backoffice') {
+        return unauthorized(res, 'Token de backoffice inválido')
+      }
+
+      await handler(req, res)
+    } catch (err) {
+      serverError(res, err)
+    }
+  }
+}
+
 // ─── withPublic — public route with CORS ─────────────────────────────────────
 
 export function withPublic(handler: PublicHandler, methods?: Methods[]) {
