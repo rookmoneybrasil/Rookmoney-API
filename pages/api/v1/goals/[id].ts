@@ -11,10 +11,33 @@ export default withAuth(async (req, res, session) => {
     if (!amount) return badRequest(res, 'Valor obrigatório.')
     const goal = await db.goal.findFirst({ where: { id, userId: session.userId } })
     if (!goal) return notFound(res)
-    const newAmount = Number(goal.currentAmount) + parseFloat(amount)
+    const amountNum  = parseFloat(amount)
+    const newAmount  = Number(goal.currentAmount) + amountNum
     const isCompleted = newAmount >= Number(goal.targetAmount)
-    await db.goal.update({ where: { id }, data: { currentAmount: newAmount, isCompleted, completedAt: isCompleted ? new Date() : null } })
-    const contrib = await db.goalContribution.create({ data: { goalId: id, amount: parseFloat(amount), note: note ?? null } })
+
+    // Find or get default category for savings
+    const savingsCategory = await db.category.findFirst({
+      where: { OR: [{ isDefault: true }, { userId: session.userId }] },
+      orderBy: { isDefault: 'desc' },
+    })
+
+    await db.$transaction([
+      // Update goal progress
+      db.goal.update({ where: { id }, data: { currentAmount: newAmount, isCompleted, completedAt: isCompleted ? new Date() : null } }),
+      // Create EXPENSE transaction so the contribution reduces the month's balance
+      db.transaction.create({
+        data: {
+          amount:      amountNum,
+          type:        'EXPENSE',
+          description: `Aporte — ${goal.name}`,
+          date:        new Date(),
+          userId:      session.userId,
+          categoryId:  savingsCategory?.id ?? '',
+        },
+      }),
+    ])
+
+    const contrib = await db.goalContribution.create({ data: { goalId: id, amount: amountNum, note: note ?? null } })
     return created(res, contrib)
   }
 
