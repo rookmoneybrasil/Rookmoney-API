@@ -97,31 +97,58 @@ export default withAuth(async (req, res, session) => {
   const savingsRate = totalIncome > 0 ? (totalIncome - totalExpense) / totalIncome : 0
   const healthScore = Math.min(100, Math.max(0, Math.round(savingsRate * 100 + 50)))
 
-  // 5-month projections based on recurring income sources + recurring transactions
-  // This is more accurate than averaging — uses what the user CONFIGURED as recurring
-  const [recurringIncomeSources, recurringTransactions] = await Promise.all([
+  // 5-month projections: recurring income + recurring expenses + pending person entry installments
+  const [recurringIncomeSources, recurringTransactions, pendingPersonEntries] = await Promise.all([
     db.incomeSource.findMany({ where: { userId: uid, isRecurring: true }, select: { amount: true } }),
     db.recurringTransaction.findMany({ where: { userId: uid, isActive: true, frequency: 'MONTHLY' }, select: { amount: true, type: true } }),
+    // Person entries I owe (I_OWE_THEM) that are pending — represents monthly obligations
+    db.personEntry.findMany({
+      where: { userId: uid, type: 'I_OWE_THEM', isSettled: false, installmentGroupId: { not: null } },
+      select: { amount: true, date: true, installmentGroupId: true, installmentCurrent: true, installmentTotal: true },
+    }),
   ])
 
   const recurringIncome  = recurringIncomeSources.reduce((s, r) => s + Number(r.amount), 0)
     + recurringTransactions.filter(r => r.type === 'INCOME').reduce((s, r) => s + Number(r.amount), 0)
   const recurringExpense = recurringTransactions.filter(r => r.type === 'EXPENSE').reduce((s, r) => s + Number(r.amount), 0)
 
-  // Projections use ONLY configured recurring values
-  // Income: recurring sources (fallback to current month if nothing configured — income is predictable)
-  // Expense: recurring only — one-time expenses NEVER carry forward
-  const projIncome  = recurringIncome  > 0 ? recurringIncome  : totalIncome
-  const projExpense = recurringExpense  // 0 if no recurring expenses configured
+  // Calculate monthly person entry obligations (grouped by installmentGroupId, one entry = one month)
+  const personGroupMap = new Map<string, number>()
+  for (const e of pendingPersonEntries) {
+    if (e.installmentGroupId && !personGroupMap.has(e.installmentGroupId)) {
+      personGroupMap.set(e.installmentGroupId, Number(e.amount))
+    }
+  }
+  const monthlyPersonObligation = Array.from(personGroupMap.values()).reduce((s, v) => s + v, 0)
+
+  const projIncome     = recurringIncome > 0 ? recurringIncome : totalIncome
   const currentBalance = totalIncome - totalExpense
 
-  const projected  = Array.from({ length: 5 }, (_, i) => {
-    const d = addDays(mE, (i + 1) * 30)
+  const projected = Array.from({ length: 5 }, (_, i) => {
+    const d           = addDays(mE, (i + 1) * 30)
+    const mStart      = new Date(d.getFullYear(), d.getMonth(), 1)
+    const mEnd        = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59)
+
+    // Person entries due in this specific month
+    const personExpInMonth = pendingPersonEntries
+      .filter(e => { const ed = new Date(e.date); return ed >= mStart && ed <= mEnd })
+      .reduce((s, e) => s + Number(e.amount), 0)
+
+    // Use month-specific person amounts if available, else monthly average
+    const monthPersonExp = personExpInMonth > 0 ? personExpInMonth : monthlyPersonObligation
+    const monthExpense   = recurringExpense + monthPersonExp
+
+    // Cumulative balance: start + all income - all expenses up to this month
+    const cumulativeIncome  = projIncome * (i + 1)
+    const cumulativeExpense = recurringExpense * (i + 1) + pendingPersonEntries
+      .filter(e => new Date(e.date) <= mEnd && new Date(e.date) > mS)
+      .reduce((s, e) => s + Number(e.amount), 0)
+
     return {
       month:            d.toISOString(),
       projectedIncome:  projIncome,
-      projectedExpense: projExpense,
-      projectedBalance: currentBalance + (i + 1) * (projIncome - projExpense),
+      projectedExpense: monthExpense,
+      projectedBalance: currentBalance + cumulativeIncome - cumulativeExpense,
     }
   })
 
