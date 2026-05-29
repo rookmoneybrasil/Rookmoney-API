@@ -7,38 +7,52 @@ export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
 
   if (req.method === 'POST' && req.query.action === 'contribute') {
-    const { amount, note } = req.body
+    const { amount, note, categoryId } = req.body
     if (!amount) return badRequest(res, 'Valor obrigatório.')
     const goal = await db.goal.findFirst({ where: { id, userId: session.userId } })
     if (!goal) return notFound(res)
-    const amountNum  = parseFloat(amount)
-    const newAmount  = Number(goal.currentAmount) + amountNum
+    const amountNum   = parseFloat(amount)
+    const newAmount   = Number(goal.currentAmount) + amountNum
     const isCompleted = newAmount >= Number(goal.targetAmount)
 
-    // Find or get default category for savings
-    const savingsCategory = await db.category.findFirst({
-      where: { OR: [{ isDefault: true }, { userId: session.userId }] },
-      orderBy: { isDefault: 'desc' },
+    // Use provided categoryId, otherwise look for a savings category
+    const cat = categoryId ? { id: categoryId } : await db.category.findFirst({
+      where: { name: { contains: 'Poupan', mode: 'insensitive' }, OR: [{ isDefault: true }, { userId: session.userId }] },
+    }) ?? await db.category.findFirst({
+      where: { OR: [{ isDefault: true }, { userId: session.userId }] }, orderBy: { isDefault: 'desc' },
     })
 
-    await db.$transaction([
-      // Update goal progress
-      db.goal.update({ where: { id }, data: { currentAmount: newAmount, isCompleted, completedAt: isCompleted ? new Date() : null } }),
-      // Create EXPENSE transaction so the contribution reduces the month's balance
-      db.transaction.create({
-        data: {
-          amount:      amountNum,
-          type:        'EXPENSE',
-          description: `Aporte — ${goal.name}`,
-          date:        new Date(),
-          userId:      session.userId,
-          categoryId:  savingsCategory?.id ?? '',
-        },
-      }),
-    ])
+    await db.goal.update({ where: { id }, data: { currentAmount: newAmount, isCompleted, completedAt: isCompleted ? new Date() : null } })
+    await db.transaction.create({
+      data: { amount: amountNum, type: 'EXPENSE', description: `Aporte — ${goal.name}`, date: new Date(), userId: session.userId, categoryId: cat?.id! },
+    })
 
     const contrib = await db.goalContribution.create({ data: { goalId: id, amount: amountNum, note: note ?? null } })
     return created(res, contrib)
+  }
+
+  // ── Withdraw / cancel contribution ────────────────────────────────────────
+  if (req.method === 'POST' && req.query.action === 'withdraw') {
+    const { amount, categoryId } = req.body
+    if (!amount) return badRequest(res, 'Valor obrigatório.')
+    const goal = await db.goal.findFirst({ where: { id, userId: session.userId } })
+    if (!goal) return notFound(res)
+    const amountNum = parseFloat(amount)
+    const newAmount = Math.max(0, Number(goal.currentAmount) - amountNum)
+
+    const resolvedCatId = categoryId || (await db.category.findFirst({
+      where: { OR: [{ isDefault: true }, { userId: session.userId }] },
+      orderBy: { isDefault: 'desc' },
+    }))?.id
+
+    await db.$transaction([
+      db.goal.update({ where: { id }, data: { currentAmount: newAmount, isCompleted: false, completedAt: null } }),
+      db.transaction.create({
+        data: { amount: amountNum, type: 'INCOME', description: `Retirada — ${goal.name}`, date: new Date(), userId: session.userId, categoryId: resolvedCatId! },
+      }),
+    ])
+
+    return ok(res, { withdrawn: amountNum, newAmount })
   }
 
   const goal = await db.goal.findFirst({ where: { id, userId: session.userId } })
