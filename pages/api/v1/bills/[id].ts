@@ -30,20 +30,27 @@ export default withAuth(async (req, res, session) => {
       })
       const updated = await db.bill.update({ where: { id }, data: { isPaid: true, paidAt: new Date(), paidTransactionId: tx.id } })
 
-      // If recurring bill, auto-create next month's instance
+      // If recurring bill, auto-create next month's instance (only if one doesn't already exist)
       if (bill.isRecurring) {
-        const nextDueDate = addMonths(new Date(bill.dueDate), 1)
-        await db.bill.create({
-          data: {
-            name:        bill.name,
-            amount:      bill.amount,
-            dueDate:     nextDueDate,
-            isRecurring: true,
-            notes:       bill.notes ?? null,
-            categoryId:  bill.categoryId ?? null,
-            userId:      session.userId,
-          },
+        const nextDueDate  = addMonths(new Date(bill.dueDate), 1)
+        const monthStart   = new Date(nextDueDate.getFullYear(), nextDueDate.getMonth(), 1)
+        const monthEnd     = new Date(nextDueDate.getFullYear(), nextDueDate.getMonth() + 1, 0, 23, 59, 59)
+        const alreadyExists = await db.bill.findFirst({
+          where: { userId: session.userId, name: bill.name, isPaid: false, dueDate: { gte: monthStart, lte: monthEnd } },
         })
+        if (!alreadyExists) {
+          await db.bill.create({
+            data: {
+              name:        bill.name,
+              amount:      bill.amount,
+              dueDate:     nextDueDate,
+              isRecurring: true,
+              notes:       bill.notes ?? null,
+              categoryId:  bill.categoryId ?? null,
+              userId:      session.userId,
+            },
+          })
+        }
       }
 
       return ok(res, updated)
