@@ -1,7 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, notFound, badRequest } from '@/lib/respond'
-import { parseISO } from 'date-fns'
+import { parseISO, addMonths } from 'date-fns'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -29,6 +29,23 @@ export default withAuth(async (req, res, session) => {
         },
       })
       const updated = await db.bill.update({ where: { id }, data: { isPaid: true, paidAt: new Date(), paidTransactionId: tx.id } })
+
+      // If recurring bill, auto-create next month's instance
+      if (bill.isRecurring) {
+        const nextDueDate = addMonths(new Date(bill.dueDate), 1)
+        await db.bill.create({
+          data: {
+            name:        bill.name,
+            amount:      bill.amount,
+            dueDate:     nextDueDate,
+            isRecurring: true,
+            notes:       bill.notes ?? null,
+            categoryId:  bill.categoryId ?? null,
+            userId:      session.userId,
+          },
+        })
+      }
+
       return ok(res, updated)
     }
 
