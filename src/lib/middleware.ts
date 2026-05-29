@@ -9,12 +9,12 @@ type AuthHandler = (
   req:     NextApiRequest,
   res:     NextApiResponse,
   session: Session,
-) => Promise<void> | void
+) => Promise<unknown> | void
 
 type PublicHandler = (
   req: NextApiRequest,
   res: NextApiResponse,
-) => Promise<void> | void
+) => Promise<unknown> | void
 
 // ─── withAuth — wraps route, validates session ────────────────────────────────
 
@@ -80,7 +80,7 @@ export function withAdminAuth(handler: AuthHandler, methods?: Methods[]) {
 
 // ─── withBackofficeAuth — backoffice token only (no user session needed) ─────
 
-export function withBackofficeAuth(handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void, methods?: Methods[]) {
+export function withBackofficeAuth(handler: (req: NextApiRequest, res: NextApiResponse) => Promise<unknown> | void, methods?: Methods[]) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     setCORSHeaders(res, req)
     if (req.method === 'OPTIONS') return res.status(204).end()
