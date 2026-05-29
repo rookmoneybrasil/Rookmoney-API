@@ -76,7 +76,6 @@ export default withAuth(async (req, res, session) => {
     }),
     db.bill.count({ where: { userId: uid, isPaid: false } }),
     db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { lt: now } } }),
-    db.bill.aggregate({ where: { userId: uid, isPaid: false }, _sum: { amount: true } }),
     // People receivable (entries where they owe me and not settled)
     db.personEntry.aggregate({ where: { userId: uid, type: 'THEY_OWE_ME', isSettled: false }, _sum: { amount: true } }),
     // Income sources receivable (eventual, not received this month)
@@ -85,6 +84,8 @@ export default withAuth(async (req, res, session) => {
     db.transaction.findMany({ where: { userId: uid, date: { gte: startOfMonth(subMonths(now, 2)), lte: mE } }, select: { type: true, amount: true } }),
     // Projections (last 2 months average)
     db.transaction.findMany({ where: { userId: uid, date: { gte: startOfMonth(subMonths(now, 2)), lte: mE } }, select: { type: true, amount: true, date: true } }),
+    // Pending bills total amount — MUST be last to match destructuring
+    db.bill.aggregate({ where: { userId: uid, isPaid: false }, _sum: { amount: true } }),
   ])
 
   const totalIncome  = Number(income._sum.amount  ?? 0)
