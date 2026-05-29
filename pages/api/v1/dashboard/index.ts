@@ -100,8 +100,8 @@ export default withAuth(async (req, res, session) => {
   const savingsRate = totalIncome > 0 ? (totalIncome - totalExpense) / totalIncome : 0
   const healthScore = Math.min(100, Math.max(0, Math.round(savingsRate * 100 + 50)))
 
-  // 5-month projections: recurring income + recurring expenses + pending person entry installments
-  const [recurringIncomeSources, recurringTransactions, pendingPersonEntries] = await Promise.all([
+  // 5-month projections: recurring income + recurring expenses + recurring bills + pending person installments
+  const [recurringIncomeSources, recurringTransactions, pendingPersonEntries, recurringBills] = await Promise.all([
     db.incomeSource.findMany({ where: { userId: uid, isRecurring: true }, select: { amount: true } }),
     db.recurringTransaction.findMany({ where: { userId: uid, isActive: true, frequency: 'MONTHLY' }, select: { amount: true, type: true } }),
     // Person entries I owe (I_OWE_THEM) that are pending — represents monthly obligations
@@ -109,11 +109,14 @@ export default withAuth(async (req, res, session) => {
       where: { userId: uid, type: 'I_OWE_THEM', isSettled: false, installmentGroupId: { not: null } },
       select: { amount: true, date: true, installmentGroupId: true, installmentCurrent: true, installmentTotal: true },
     }),
+    // Recurring bills (isRecurring = true, not paid) — monthly fixed expenses
+    db.bill.findMany({ where: { userId: uid, isRecurring: true, isPaid: false }, select: { amount: true } }),
   ])
 
   const recurringIncome  = recurringIncomeSources.reduce((s, r) => s + Number(r.amount), 0)
     + recurringTransactions.filter(r => r.type === 'INCOME').reduce((s, r) => s + Number(r.amount), 0)
   const recurringExpense = recurringTransactions.filter(r => r.type === 'EXPENSE').reduce((s, r) => s + Number(r.amount), 0)
+    + recurringBills.reduce((s, b) => s + Number(b.amount), 0)  // recurring bills count as fixed monthly expenses
 
   // Calculate monthly person entry obligations (grouped by installmentGroupId, one entry = one month)
   const personGroupMap = new Map<string, number>()
