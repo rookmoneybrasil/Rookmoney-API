@@ -3,11 +3,46 @@ import { db } from '@/lib/db'
 import { ok } from '@/lib/respond'
 import { startOfMonth, endOfMonth, subMonths, addDays } from 'date-fns'
 
+async function processAutoIncome(uid: string) {
+  const now       = new Date()
+  const today     = now.getDate()
+  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const sources   = await db.incomeSource.findMany({ where: { userId: uid, isRecurring: true, categoryId: { not: null } } })
+  for (const src of sources) {
+    if (src.lastAutoPayMonth === yearMonth) continue
+    const day = src.dayOfMonth ?? 1
+    if (today < day) continue
+    await db.$transaction([
+      db.transaction.create({ data: { amount: src.amount, type: 'INCOME', description: src.name, date: new Date(now.getFullYear(), now.getMonth(), day), userId: uid, categoryId: src.categoryId! } }),
+      db.incomeSource.update({ where: { id: src.id }, data: { lastAutoPayMonth: yearMonth } }),
+    ])
+  }
+}
+
+async function processAutoRecurring(uid: string) {
+  const now       = new Date()
+  const today     = now.getDate()
+  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const items     = await db.recurringTransaction.findMany({ where: { userId: uid, isActive: true, frequency: 'MONTHLY', categoryId: { not: null } } })
+  for (const item of items) {
+    if (item.lastAutoMonth === yearMonth) continue
+    const day = item.dayOfMonth ?? 1
+    if (today < day) continue
+    await db.$transaction([
+      db.transaction.create({ data: { amount: item.amount, type: item.type, description: item.name, date: new Date(now.getFullYear(), now.getMonth(), day), userId: uid, categoryId: item.categoryId! } }),
+      db.recurringTransaction.update({ where: { id: item.id }, data: { lastAutoMonth: yearMonth } }),
+    ])
+  }
+}
+
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'GET') return res.status(405).end()
 
   const uid  = session.userId
   const now  = new Date()
+
+  // Auto-process recurring income and transactions (same behavior as monolith)
+  await Promise.allSettled([processAutoIncome(uid), processAutoRecurring(uid)])
   const mS   = startOfMonth(now)
   const mE   = endOfMonth(now)
   const pmS  = startOfMonth(subMonths(now, 1))
