@@ -108,9 +108,11 @@ export default withAuth(async (req, res, session) => {
     + recurringTransactions.filter(r => r.type === 'INCOME').reduce((s, r) => s + Number(r.amount), 0)
   const recurringExpense = recurringTransactions.filter(r => r.type === 'EXPENSE').reduce((s, r) => s + Number(r.amount), 0)
 
-  // Use recurring as base; fallback to current month if no recurring configured
+  // Projections use ONLY configured recurring values
+  // Income: recurring sources (fallback to current month if nothing configured — income is predictable)
+  // Expense: recurring only — one-time expenses NEVER carry forward
   const projIncome  = recurringIncome  > 0 ? recurringIncome  : totalIncome
-  const projExpense = recurringExpense > 0 ? recurringExpense : totalExpense
+  const projExpense = recurringExpense  // 0 if no recurring expenses configured
   const currentBalance = totalIncome - totalExpense
 
   const projected  = Array.from({ length: 5 }, (_, i) => {
