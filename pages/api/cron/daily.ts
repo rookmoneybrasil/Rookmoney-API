@@ -19,6 +19,37 @@ async function processAutoIncome(userId: string) {
   }
 }
 
+async function processPersonEntryRecurring(userId: string) {
+  const now       = new Date()
+  const today     = now.getDate()
+  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+
+  const items = await db.personEntryRecurring.findMany({ where: { userId, isActive: true } })
+
+  for (const item of items) {
+    if (item.lastMonth === yearMonth) continue
+    if (today < item.dayOfMonth) continue
+
+    const entryDate = new Date(now.getFullYear(), now.getMonth(), item.dayOfMonth)
+
+    await db.$transaction([
+      db.personEntry.create({
+        data: {
+          personId:   item.personId,
+          userId,
+          type:       item.type,
+          description: item.description,
+          amount:     item.amount,
+          date:       entryDate,
+          notes:      item.notes,
+          categoryId: item.categoryId,
+        },
+      }),
+      db.personEntryRecurring.update({ where: { id: item.id }, data: { lastMonth: yearMonth } }),
+    ])
+  }
+}
+
 async function processAutoRecurring(userId: string) {
   const now       = new Date()
   const today     = now.getDate()
@@ -54,6 +85,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       await processAutoIncome(user.id)
       await processAutoRecurring(user.id)
+      await processPersonEntryRecurring(user.id)
       processed++
     } catch (err) {
       errors.push(`${user.id}: ${String(err)}`)
