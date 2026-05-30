@@ -15,13 +15,11 @@ export default withAuth(async (req, res, session) => {
 
   const [
     user,
-    unpaidBills,
+    activeBills,       // reused for both badges and usage
     openPeople,
     budgets,
     monthExpenses,
-    // Usage counts
     monthTransactions,
-    activeBills,
     goalsCount,
     peopleCount,
     customCategoriesCount,
@@ -35,9 +33,7 @@ export default withAuth(async (req, res, session) => {
     db.person.count({ where: { userId: uid, entries: { some: { isSettled: false } } } }),
     db.budget.findMany({ where: { userId: uid, month }, select: { categoryId: true, amount: true } }),
     db.transaction.findMany({ where: { userId: uid, type: 'EXPENSE', date: { gte: monthStart, lte: monthEnd } }, select: { categoryId: true, amount: true } }),
-    // Usage
     db.transaction.count({ where: { userId: uid, date: { gte: monthStart, lte: monthEnd } } }),
-    db.bill.count({ where: { userId: uid, isPaid: false } }),
     db.goal.count({ where: { userId: uid, isCompleted: false } }),
     db.person.count({ where: { userId: uid } }),
     db.category.count({ where: { userId: uid, isDefault: false } }),
@@ -55,7 +51,7 @@ export default withAuth(async (req, res, session) => {
 
   return ok(res, {
     ...user,
-    badges: { '/bills': unpaidBills, '/people': openPeople, '/budget': overBudgetCount },
+    badges: { '/bills': activeBills, '/people': openPeople, '/budget': overBudgetCount },
     usage: {
       transactionsThisMonth: monthTransactions,
       bills:                 activeBills,
