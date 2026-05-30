@@ -1,7 +1,8 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
-import { ok, created, badRequest } from '@/lib/respond'
+import { ok, created, badRequest, planLimit } from '@/lib/respond'
 import { parseISO } from 'date-fns'
+import { getLimits } from '@/lib/plans'
 
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
@@ -15,6 +16,14 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'POST') {
+    const limits = getLimits(session.plan ?? 'FREE')
+    if (limits.goals !== null) {
+      const count = await db.goal.count({ where: { userId: session.userId, isCompleted: false } })
+      if (count >= limits.goals) {
+        return planLimit(res, `Limite de ${limits.goals} metas ativas atingido. Faça upgrade para o plano PRO.`)
+      }
+    }
+
     const { name, targetAmount, currentAmount = 0, deadline, description, icon, color } = req.body
     if (!name || !targetAmount) return badRequest(res, 'Nome e valor alvo são obrigatórios.')
 

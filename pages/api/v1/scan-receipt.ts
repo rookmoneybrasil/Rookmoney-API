@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import Anthropic from '@anthropic-ai/sdk'
 import { getSessionFromRequest } from '@/lib/auth'
 import { format } from 'date-fns'
+import { db } from '@/lib/db'
+import { getLimits } from '@/lib/plans'
 
 const client = new Anthropic()
 
@@ -12,6 +14,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const session = await getSessionFromRequest(req)
   if (!session) return res.status(401).json({ error: 'Não autenticado' })
+
+  const user = await db.user.findUnique({ where: { id: session.userId }, select: { plan: true } })
+  const limits = getLimits(user?.plan ?? 'FREE')
+  if (limits.scanner === null) return res.status(403).json({ ok: false, error: 'Scanner de recibo é exclusivo do plano PRO.', code: 'PRO_REQUIRED' })
 
   const { imageBase64, mediaType } = req.body as {
     imageBase64: string

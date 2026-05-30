@@ -1,8 +1,9 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
-import { ok, created, badRequest } from '@/lib/respond'
+import { ok, created, badRequest, planLimit } from '@/lib/respond'
 import { parseISO, addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
+import { getLimits } from '@/lib/plans'
 
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
@@ -16,6 +17,14 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'POST') {
+    const limits = getLimits(session.plan ?? 'FREE')
+    if (limits.bills !== null) {
+      const count = await db.bill.count({ where: { userId: session.userId, isPaid: false } })
+      if (count >= limits.bills) {
+        return planLimit(res, `Limite de ${limits.bills} contas ativas atingido. Faça upgrade para o plano PRO.`)
+      }
+    }
+
     const { name, amount, dueDate, isRecurring = false, categoryId, installments = 1, notes } = req.body
     if (!name || !amount || !dueDate) return badRequest(res, 'Nome, valor e vencimento são obrigatórios.')
 

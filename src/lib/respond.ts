@@ -24,6 +24,14 @@ export function forbidden(res: NextApiResponse, message = 'Acesso negado') {
   return res.status(403).json({ ok: false, error: message })
 }
 
+export function planLimit(res: NextApiResponse, message: string) {
+  return res.status(403).json({ ok: false, error: message, code: 'PLAN_LIMIT' })
+}
+
+export function planRequired(res: NextApiResponse, feature: string) {
+  return res.status(403).json({ ok: false, error: `"${feature}" é exclusivo do plano PRO.`, code: 'PRO_REQUIRED' })
+}
+
 export function notFound(res: NextApiResponse, message = 'Não encontrado') {
   return res.status(404).json({ ok: false, error: message })
 }

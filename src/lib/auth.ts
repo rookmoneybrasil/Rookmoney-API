@@ -7,6 +7,7 @@ export interface Session {
   userId: string
   name:   string
   email:  string
+  plan?:  string
 }
 
 export async function createToken(session: Session, rememberMe = true): Promise<string> {

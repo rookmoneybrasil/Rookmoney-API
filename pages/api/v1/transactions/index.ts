@@ -1,7 +1,8 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
-import { ok, created, badRequest } from '@/lib/respond'
+import { ok, created, badRequest, planLimit } from '@/lib/respond'
 import { parseISO } from 'date-fns'
+import { getLimits } from '@/lib/plans'
 
 export default withAuth(async (req, res, session) => {
   // ── GET /api/v1/transactions ──────────────────────────────────────────────
@@ -34,6 +35,17 @@ export default withAuth(async (req, res, session) => {
 
   // ── POST /api/v1/transactions ─────────────────────────────────────────────
   if (req.method === 'POST') {
+    const limits = getLimits(session.plan ?? 'FREE')
+    if (limits.transactionsPerMonth !== null) {
+      const now   = new Date()
+      const start = new Date(now.getFullYear(), now.getMonth(), 1)
+      const end   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
+      const count = await db.transaction.count({ where: { userId: session.userId, date: { gte: start, lte: end } } })
+      if (count >= limits.transactionsPerMonth) {
+        return planLimit(res, `Limite de ${limits.transactionsPerMonth} transações por mês atingido. Faça upgrade para o plano PRO.`)
+      }
+    }
+
     const { amount, type, description, date, categoryId } = req.body
 
     if (!amount || !type || !date || !categoryId) return badRequest(res, 'Campos obrigatórios faltando.')

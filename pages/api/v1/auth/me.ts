@@ -2,35 +2,79 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, notFound } from '@/lib/respond'
+import { getLimits } from '@/lib/plans'
 
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'GET') return res.status(405).end()
 
-  const now       = new Date()
-  const month     = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const now        = new Date()
+  const month      = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
   const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
+  const uid        = session.userId
 
-  const [user, unpaidBills, openPeople, budgets, monthExpenses] = await Promise.all([
+  const [
+    user,
+    unpaidBills,
+    openPeople,
+    budgets,
+    monthExpenses,
+    // Usage counts
+    monthTransactions,
+    activeBills,
+    goalsCount,
+    peopleCount,
+    customCategoriesCount,
+    recurringCount,
+  ] = await Promise.all([
     db.user.findUnique({
-      where:  { id: session.userId },
+      where:  { id: uid },
       select: { id: true, name: true, email: true, plan: true, hasOnboarded: true, whatsappPhone: true, createdAt: true },
     }),
-    db.bill.count({ where: { userId: session.userId, isPaid: false } }),
-    db.person.count({ where: { userId: session.userId, entries: { some: { isSettled: false } } } }),
-    db.budget.findMany({ where: { userId: session.userId, month }, select: { categoryId: true, amount: true } }),
-    db.transaction.findMany({ where: { userId: session.userId, type: 'EXPENSE', date: { gte: monthStart, lte: monthEnd } }, select: { categoryId: true, amount: true } }),
+    db.bill.count({ where: { userId: uid, isPaid: false } }),
+    db.person.count({ where: { userId: uid, entries: { some: { isSettled: false } } } }),
+    db.budget.findMany({ where: { userId: uid, month }, select: { categoryId: true, amount: true } }),
+    db.transaction.findMany({ where: { userId: uid, type: 'EXPENSE', date: { gte: monthStart, lte: monthEnd } }, select: { categoryId: true, amount: true } }),
+    // Usage
+    db.transaction.count({ where: { userId: uid, date: { gte: monthStart, lte: monthEnd } } }),
+    db.bill.count({ where: { userId: uid, isPaid: false } }),
+    db.goal.count({ where: { userId: uid, isCompleted: false } }),
+    db.person.count({ where: { userId: uid } }),
+    db.category.count({ where: { userId: uid, isDefault: false } }),
+    db.recurringTransaction.count({ where: { userId: uid, isActive: true } }),
   ])
 
-  // Count budgets that are >= 80% used (warning or over)
   const overBudgetCount = budgets.filter(b => {
     const spent = monthExpenses.filter(t => t.categoryId === b.categoryId).reduce((s, t) => s + Number(t.amount), 0)
     return spent >= Number(b.amount) * 0.8
   }).length
 
   if (!user) return notFound(res)
+
+  const limits = getLimits(user.plan)
+
   return ok(res, {
     ...user,
     badges: { '/bills': unpaidBills, '/people': openPeople, '/budget': overBudgetCount },
+    usage: {
+      transactionsThisMonth: monthTransactions,
+      bills:                 activeBills,
+      goals:                 goalsCount,
+      people:                peopleCount,
+      customCategories:      customCategoriesCount,
+      recurring:             recurringCount,
+    },
+    limits: {
+      transactionsPerMonth: limits.transactionsPerMonth,
+      bills:                limits.bills,
+      goals:                limits.goals,
+      people:               limits.people,
+      customCategories:     limits.customCategories,
+      recurring:            limits.recurring,
+      budget:               limits.budget,
+      reports:              limits.reports,
+      projection:           limits.projection,
+      import:               limits.import,
+    },
   })
 })

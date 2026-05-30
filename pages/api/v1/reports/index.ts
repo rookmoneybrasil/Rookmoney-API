@@ -1,11 +1,14 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
-import { ok } from '@/lib/respond'
+import { ok, planRequired } from '@/lib/respond'
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { getLimits } from '@/lib/plans'
 
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'GET') return res.status(405).end()
+  const limits = getLimits(session.plan ?? 'FREE')
+  if (!limits.reports) return planRequired(res, 'Relatórios')
 
   const months   = Math.min(Math.max(Number(req.query.months ?? 6), 1), 24)
   const uid      = session.userId

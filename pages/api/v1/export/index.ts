@@ -1,9 +1,12 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
-import { ok } from '@/lib/respond'
+import { ok, planRequired } from '@/lib/respond'
+import { getLimits } from '@/lib/plans'
 
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'GET') return res.status(405).end()
+  const limits = getLimits(session.plan ?? 'FREE')
+  if (!limits.import) return planRequired(res, 'Exportar dados')
 
   const uid = session.userId
 

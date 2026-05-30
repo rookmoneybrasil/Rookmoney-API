@@ -1,9 +1,13 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
-import { ok, created, badRequest } from '@/lib/respond'
+import { ok, created, badRequest, planRequired } from '@/lib/respond'
 import { format } from 'date-fns'
+import { getLimits } from '@/lib/plans'
 
 export default withAuth(async (req, res, session) => {
+  const limits = getLimits(session.plan ?? 'FREE')
+  if (!limits.budget) return planRequired(res, 'Orçamento')
+
   const month = (req.query.month as string) ?? format(new Date(), 'yyyy-MM')
 
   if (req.method === 'GET') {

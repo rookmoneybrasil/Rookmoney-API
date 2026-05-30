@@ -4,6 +4,7 @@ import { getSessionFromRequest } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { parseISO, format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { getLimits } from '@/lib/plans'
 
 const client = new Anthropic()
 
