@@ -27,12 +27,17 @@ export default withAuth(async (req, res, session) => {
     ])
 
     const result = people.map(p => {
+      // Count only ONE installment per group (monthly value, not total debt)
+      const groupSeen = new Set<string>()
       const entryBalance = p.entries.reduce((sum, e) => {
         const isOldRecurring = (e.installmentTotal ?? 0) >= 24
         if (isOldRecurring && new Date(e.date) > cutoff) return sum
+        if (e.installmentGroupId) {
+          if (groupSeen.has(e.installmentGroupId)) return sum
+          groupSeen.add(e.installmentGroupId)
+        }
         return sum + (e.type === 'THEY_OWE_ME' ? Number(e.amount) : -Number(e.amount))
       }, 0)
-      // Include active recurring templates (monthly expected amounts)
       const recurBalance = recurringAll
         .filter(r => r.personId === p.id)
         .reduce((sum, r) => sum + (r.type === 'THEY_OWE_ME' ? Number(r.amount) : -Number(r.amount)), 0)
