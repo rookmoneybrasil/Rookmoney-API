@@ -63,6 +63,7 @@ export default withAuth(async (req, res, session) => {
     pendingBillsAgg,
     personPayables,
     upcomingPersonPayables,
+    upcomingPeopleReceivable,
     historyTx,
     categoryTx,
   ] = await Promise.all([
@@ -94,11 +95,18 @@ export default withAuth(async (req, res, session) => {
     db.bill.aggregate({ where: { userId: uid, isPaid: false, dueDate: { gte: mS, lte: mE } }, _sum: { amount: true } }),
     // Person entries where I owe them (payables) — current month only
     db.personEntry.aggregate({ where: { userId: uid, type: 'I_OWE_THEM', isSettled: false, date: { gte: mS, lte: mE } }, _sum: { amount: true } }),
-    // Upcoming person payables list (next ~45 days)
+    // Upcoming person payables list — I owe them (next ~45 days)
     db.personEntry.findMany({
       where:   { userId: uid, type: 'I_OWE_THEM', isSettled: false, date: { lte: addDays(now, 45) } },
       orderBy: { date: 'asc' },
       take:    4,
+      include: { person: { select: { name: true } } },
+    }),
+    // Upcoming people receivable list — they owe me (next ~45 days)
+    db.personEntry.findMany({
+      where:   { userId: uid, type: 'THEY_OWE_ME', isSettled: false, date: { lte: addDays(now, 45) } },
+      orderBy: { date: 'asc' },
+      take:    5,
       include: { person: { select: { name: true } } },
     }),
     // Monthly history for sparklines (last 6 months)
@@ -249,6 +257,7 @@ export default withAuth(async (req, res, session) => {
     goals,
     upcomingBills,
     upcomingPersonPayables,
+    upcomingPeopleReceivable,
     pendingBillsCount,
     pendingBillsAmount:    Number(pendingBillsAgg._sum.amount ?? 0),
     personPayablesAmount:  Number(personPayables._sum.amount ?? 0),
