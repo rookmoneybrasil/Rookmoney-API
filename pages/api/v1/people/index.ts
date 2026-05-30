@@ -27,22 +27,35 @@ export default withAuth(async (req, res, session) => {
     ])
 
     const result = people.map(p => {
-      // Count only ONE installment per group (monthly value, not total debt)
       const groupSeen = new Set<string>()
-      const entryBalance = p.entries.reduce((sum, e) => {
+      let theyOweMe = 0
+      let iOweThem  = 0
+
+      for (const e of p.entries) {
         const isOldRecurring = (e.installmentTotal ?? 0) >= 24
-        if (isOldRecurring && new Date(e.date) > cutoff) return sum
+        if (isOldRecurring && new Date(e.date) > cutoff) continue
         if (e.installmentGroupId) {
-          if (groupSeen.has(e.installmentGroupId)) return sum
+          if (groupSeen.has(e.installmentGroupId)) continue
           groupSeen.add(e.installmentGroupId)
         }
-        return sum + (e.type === 'THEY_OWE_ME' ? Number(e.amount) : -Number(e.amount))
-      }, 0)
-      const recurBalance = recurringAll
-        .filter(r => r.personId === p.id)
-        .reduce((sum, r) => sum + (r.type === 'THEY_OWE_ME' ? Number(r.amount) : -Number(r.amount)), 0)
+        if (e.type === 'THEY_OWE_ME') theyOweMe += Number(e.amount)
+        else                           iOweThem  += Number(e.amount)
+      }
+
+      // Include recurring templates
+      for (const r of recurringAll.filter(r => r.personId === p.id)) {
+        if (r.type === 'THEY_OWE_ME') theyOweMe += Number(r.amount)
+        else                           iOweThem  += Number(r.amount)
+      }
+
       const { entries, _count, ...rest } = p
-      return { ...rest, balance: entryBalance + recurBalance, openEntriesCount: _count.entries }
+      return {
+        ...rest,
+        balance:     theyOweMe - iOweThem,
+        theyOweMe,
+        iOweThem,
+        openEntriesCount: _count.entries,
+      }
     })
 
     return ok(res, result)
