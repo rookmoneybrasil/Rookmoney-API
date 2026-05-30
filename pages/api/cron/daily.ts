@@ -1,5 +1,44 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '@/lib/db'
+import { format } from 'date-fns'
+
+async function migrateOldRecurring(userId: string) {
+  const now = new Date()
+  const entries = await db.personEntry.findMany({
+    where: { userId, isSettled: false, installmentGroupId: { not: null }, installmentTotal: { gte: 24 } },
+    orderBy: { installmentCurrent: 'asc' },
+  })
+  const groupMap = new Map<string, typeof entries>()
+  for (const e of entries) {
+    const arr = groupMap.get(e.installmentGroupId!) ?? []
+    arr.push(e)
+    groupMap.set(e.installmentGroupId!, arr)
+  }
+  for (const [groupId, group] of groupMap.entries()) {
+    const hasSettled = await db.personEntry.count({ where: { installmentGroupId: groupId, isSettled: true } })
+    if (hasSettled > 0) continue
+    const first = group[0]
+    const existing = await db.personEntryRecurring.findFirst({
+      where: { userId, personId: first.personId, description: first.description, isActive: true },
+    })
+    if (!existing) {
+      await db.personEntryRecurring.create({
+        data: {
+          userId, personId: first.personId, type: first.type,
+          description: first.description, amount: first.amount,
+          dayOfMonth: Math.min(new Date(first.date).getDate(), 28),
+          notes: first.notes, categoryId: first.categoryId,
+          lastMonth: format(now, 'yyyy-MM'),
+        },
+      })
+    }
+    const upcoming = group.filter(e => new Date(e.date) >= now).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    const toKeep = upcoming[0] ?? group[group.length - 1]
+    await db.personEntry.update({ where: { id: toKeep.id }, data: { installmentGroupId: null, installmentTotal: null, installmentCurrent: null } })
+    const toDeleteIds = group.filter(e => e.id !== toKeep.id).map(e => e.id)
+    if (toDeleteIds.length > 0) await db.personEntry.deleteMany({ where: { id: { in: toDeleteIds } } })
+  }
+}
 
 async function processAutoIncome(userId: string) {
   const now       = new Date()
@@ -83,6 +122,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   for (const user of users) {
     try {
+      await migrateOldRecurring(user.id)
       await processAutoIncome(user.id)
       await processAutoRecurring(user.id)
       await processPersonEntryRecurring(user.id)

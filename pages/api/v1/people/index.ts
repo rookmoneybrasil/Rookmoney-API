@@ -5,18 +5,26 @@ import { getLimits } from '@/lib/plans'
 
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
+    // Only count entries due within 45 days for balance (prevents 120-installment recursions inflating totals)
+    const cutoff = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000)
+
     const people = await db.person.findMany({
       where:   { userId: session.userId },
       orderBy: { name: 'asc' },
-      include: { entries: { where: { isSettled: false }, select: { type: true, amount: true } } },
+      include: {
+        entries: {
+          where: { isSettled: false, date: { lte: cutoff } },
+          select: { type: true, amount: true },
+        },
+        _count: { select: { entries: { where: { isSettled: false } } } },
+      },
     })
 
-    // Compute balance per person
     const result = people.map(p => {
       const balance = p.entries.reduce((sum, e) =>
         sum + (e.type === 'THEY_OWE_ME' ? Number(e.amount) : -Number(e.amount)), 0)
-      const { entries, ...rest } = p
-      return { ...rest, balance, openEntriesCount: entries.length }
+      const { entries, _count, ...rest } = p
+      return { ...rest, balance, openEntriesCount: _count.entries }
     })
 
     return ok(res, result)
