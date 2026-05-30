@@ -58,6 +58,7 @@ export default withAuth(async (req, res, session) => {
     overdueCount,
     peopleReceivable,
     incomeReceivable,
+    pendingIncomeSources,
     financialHealth,
     projections,
     pendingBillsAgg,
@@ -87,6 +88,8 @@ export default withAuth(async (req, res, session) => {
     db.personEntry.aggregate({ where: { userId: uid, type: 'THEY_OWE_ME', isSettled: false, date: { lte: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000) } }, _sum: { amount: true } }),
     // Income sources receivable: not yet received/processed this month (null OR different month)
     db.incomeSource.aggregate({ where: { userId: uid, OR: [{ lastAutoPayMonth: null }, { lastAutoPayMonth: { not: format(now, 'yyyy-MM') } }] }, _sum: { amount: true } }),
+    // Individual pending income sources (for modal detail)
+    db.incomeSource.findMany({ where: { userId: uid, OR: [{ lastAutoPayMonth: null }, { lastAutoPayMonth: { not: format(now, 'yyyy-MM') } }] }, select: { id: true, name: true, amount: true, isRecurring: true, dayOfMonth: true }, orderBy: { amount: 'desc' } }),
     // Financial health score (simplified)
     db.transaction.findMany({ where: { userId: uid, date: { gte: startOfMonth(subMonths(now, 2)), lte: mE } }, select: { type: true, amount: true } }),
     // Projections (last 2 months average)
@@ -253,6 +256,7 @@ export default withAuth(async (req, res, session) => {
     totalReceivable:       Number(peopleReceivable._sum.amount ?? 0) + Number(incomeReceivable._sum.amount ?? 0),
     totalPeopleReceivable: Number(peopleReceivable._sum.amount ?? 0),
     totalIncomeReceivable: Number(incomeReceivable._sum.amount ?? 0),
+    pendingIncomeSources,
     recentTransactions:    recentTx,
     goals,
     upcomingBills,
