@@ -19,7 +19,8 @@ export default withAuth(async (req, res, session) => {
     const numInstallments = parseInt(installments, 10) || 1
     const numAlreadyPaid  = Math.max(0, Math.min(parseInt(alreadyPaid, 10) || 0, numInstallments - 1))
     const [_y, _m, _d]   = (date as string).split('-').map(Number)
-    const baseDate        = new Date(_y, _m - 1, _d)
+    // Use UTC noon to avoid timezone shifts across days (server in UTC, users in Brazil)
+    const baseDate        = new Date(Date.UTC(_y, _m - 1, _d, 12, 0, 0))
     const amountNum       = parseFloat(amount) // amount is PER INSTALLMENT
 
     if (numInstallments <= 1) {
@@ -38,8 +39,8 @@ export default withAuth(async (req, res, session) => {
     const entries = await Promise.all(
       Array.from({ length: remaining }, (_, i) => {
         const current = numAlreadyPaid + i + 1
-        // baseDate IS the date of the next upcoming installment — no offset needed
-        const d = new Date(baseDate.getFullYear(), baseDate.getMonth() + i, baseDate.getDate())
+        // UTC noon to avoid timezone day-shift (Railway UTC vs Brazil UTC-3)
+        const d = new Date(Date.UTC(_y, _m - 1 + i, _d, 12, 0, 0))
         return db.personEntry.create({
           data: {
             type, description,

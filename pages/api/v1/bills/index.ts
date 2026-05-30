@@ -28,7 +28,9 @@ export default withAuth(async (req, res, session) => {
     const { name, amount, dueDate, isRecurring = false, categoryId, installments = 1, notes } = req.body
     if (!name || !amount || !dueDate) return badRequest(res, 'Nome, valor e vencimento são obrigatórios.')
 
-    const baseDate = parseISO(dueDate)
+    // Use UTC noon to avoid day-shift for Brazil (UTC-3) users
+    const [_by, _bm, _bd] = (dueDate as string).split('-').map(Number)
+    const baseDate = new Date(Date.UTC(_by, _bm - 1, _bd, 12, 0, 0))
     const numInstallments = parseInt(installments)
 
     if (numInstallments > 1) {
