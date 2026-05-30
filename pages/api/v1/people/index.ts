@@ -15,7 +15,7 @@ export default withAuth(async (req, res, session) => {
         include: {
           entries: {
             where: { isSettled: false },
-            select: { type: true, amount: true, date: true, installmentTotal: true },
+            select: { type: true, amount: true, date: true, installmentTotal: true, installmentGroupId: true },
           },
           _count: { select: { entries: { where: { isSettled: false } } } },
         },
