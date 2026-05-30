@@ -57,21 +57,20 @@ export default withAuth(async (req, res, session) => {
       })
     }
 
-    // Find the closest upcoming entry (keep it, delete the rest)
-    const upcoming = group.filter(e => new Date(e.date) >= now).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    const toKeep   = upcoming[0] ?? group[group.length - 1]
+    // Delete ALL entries in the group — cron will create next one from template
+    await db.personEntry.deleteMany({ where: { installmentGroupId: groupId, userId: uid } })
 
-    // Update kept entry — remove installment metadata (make it a simple entry)
-    await db.personEntry.update({
-      where: { id: toKeep.id },
-      data:  { installmentGroupId: null, installmentTotal: null, installmentCurrent: null },
+    // Also clean up any loose duplicate entries (without groupId) that cron may have already created
+    // for this recurring item (same person + description + isSettled: false)
+    await db.personEntry.deleteMany({
+      where: {
+        userId:            uid,
+        personId:          first.personId,
+        description:       first.description,
+        isSettled:         false,
+        installmentGroupId: null,
+      },
     })
-
-    // Delete all other entries in the group
-    const toDeleteIds = group.filter(e => e.id !== toKeep.id).map(e => e.id)
-    if (toDeleteIds.length > 0) {
-      await db.personEntry.deleteMany({ where: { id: { in: toDeleteIds } } })
-    }
 
     converted++
   }

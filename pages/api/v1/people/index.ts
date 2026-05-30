@@ -5,7 +5,7 @@ import { getLimits } from '@/lib/plans'
 
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
-    // Only count entries due within 45 days for balance (prevents 120-installment recursions inflating totals)
+    // Cutoff only for old-style recurring (installmentTotal >= 24) that haven't been migrated yet
     const cutoff = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000)
 
     const people = await db.person.findMany({
@@ -13,16 +13,20 @@ export default withAuth(async (req, res, session) => {
       orderBy: { name: 'asc' },
       include: {
         entries: {
-          where: { isSettled: false, date: { lte: cutoff } },
-          select: { type: true, amount: true },
+          where: { isSettled: false },
+          select: { type: true, amount: true, date: true, installmentTotal: true },
         },
         _count: { select: { entries: { where: { isSettled: false } } } },
       },
     })
 
     const result = people.map(p => {
-      const balance = p.entries.reduce((sum, e) =>
-        sum + (e.type === 'THEY_OWE_ME' ? Number(e.amount) : -Number(e.amount)), 0)
+      // Real installments (< 24x) → count all. Old recurring (>= 24x) → only within 45 days
+      const balance = p.entries.reduce((sum, e) => {
+        const isOldRecurring = (e.installmentTotal ?? 0) >= 24
+        if (isOldRecurring && new Date(e.date) > cutoff) return sum
+        return sum + (e.type === 'THEY_OWE_ME' ? Number(e.amount) : -Number(e.amount))
+      }, 0)
       const { entries, _count, ...rest } = p
       return { ...rest, balance, openEntriesCount: _count.entries }
     })

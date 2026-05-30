@@ -33,10 +33,8 @@ async function migrateOldRecurring(userId: string) {
       })
     }
     const upcoming = group.filter(e => new Date(e.date) >= now).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    const toKeep = upcoming[0] ?? group[group.length - 1]
-    await db.personEntry.update({ where: { id: toKeep.id }, data: { installmentGroupId: null, installmentTotal: null, installmentCurrent: null } })
-    const toDeleteIds = group.filter(e => e.id !== toKeep.id).map(e => e.id)
-    if (toDeleteIds.length > 0) await db.personEntry.deleteMany({ where: { id: { in: toDeleteIds } } })
+    // Delete ALL entries in the group — cron will create next one from template
+    await db.personEntry.deleteMany({ where: { installmentGroupId: groupId, userId } })
   }
 }
 
