@@ -15,14 +15,14 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'POST' && req.query.action === 'entry') {
-    const { type, description, amount, date, notes, categoryId, installments = 1 } = req.body
+    const { type, description, amount, date, notes, categoryId, installments = 1, alreadyPaid = 0 } = req.body
     const numInstallments = parseInt(installments, 10) || 1
+    const numAlreadyPaid  = Math.max(0, Math.min(parseInt(alreadyPaid, 10) || 0, numInstallments - 1))
     const [_y, _m, _d]   = (date as string).split('-').map(Number)
     const baseDate        = new Date(_y, _m - 1, _d)
-    const amountNum       = parseFloat(amount)
+    const amountNum       = parseFloat(amount) // amount is PER INSTALLMENT
 
     if (numInstallments <= 1) {
-      // Single entry
       const entry = await db.personEntry.create({
         data: { type, description, amount: amountNum, date: baseDate, notes: notes ?? null, categoryId: categoryId ?? null, personId: id, userId: session.userId },
         include: { category: { select: { id: true, name: true, icon: true, color: true } } },
@@ -30,24 +30,26 @@ export default withAuth(async (req, res, session) => {
       return created(res, entry)
     }
 
-    // Multiple installments — create grouped entries
+    // Create only the REMAINING installments (skip already-paid ones)
     const { randomUUID } = await import('crypto')
     const groupId         = randomUUID()
-    const perInstallment  = Math.round((amountNum / numInstallments) * 100) / 100
+    const remaining       = numInstallments - numAlreadyPaid
 
     const entries = await Promise.all(
-      Array.from({ length: numInstallments }, (_, i) => {
-        const d = new Date(baseDate.getFullYear(), baseDate.getMonth() + i, baseDate.getDate())
+      Array.from({ length: remaining }, (_, i) => {
+        const current = numAlreadyPaid + i + 1
+        // Offset date by already-paid months
+        const d = new Date(baseDate.getFullYear(), baseDate.getMonth() + numAlreadyPaid + i, baseDate.getDate())
         return db.personEntry.create({
           data: {
             type, description,
-            amount: perInstallment,
+            amount: amountNum,  // per installment value
             date:   d,
             notes:  notes ?? null,
             categoryId: categoryId ?? null,
             personId: id, userId: session.userId,
             installmentTotal:   numInstallments,
-            installmentCurrent: i + 1,
+            installmentCurrent: current,
             installmentGroupId: groupId,
           },
           include: { category: { select: { id: true, name: true, icon: true, color: true } } },
