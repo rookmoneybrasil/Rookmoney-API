@@ -80,16 +80,27 @@ export default withAuth(async (req, res, session) => {
     if (notes       !== undefined) data.notes       = notes || null
 
     if (applyToGroup && entry.installmentGroupId) {
+      // Update description/type/category/amount for ALL pending installments
       const groupData: Record<string, unknown> = {}
       if (type        !== undefined) groupData.type        = type
       if (description !== undefined) groupData.description = description
       if (categoryId  !== undefined) groupData.categoryId  = categoryId || null
       if (amount      !== undefined) groupData.amount      = parseFloat(amount)
-      // For groups: don't apply date globally — each installment keeps its own date
       await db.personEntry.updateMany({
-        where: { installmentGroupId: entry.installmentGroupId, userId: session.userId },
+        where: { installmentGroupId: entry.installmentGroupId, userId: session.userId, isSettled: false },
         data:  groupData,
       })
+
+      // Update date only for the NEXT upcoming (closest) installment
+      if (data.date) {
+        const next = await db.personEntry.findFirst({
+          where:   { installmentGroupId: entry.installmentGroupId, userId: session.userId, isSettled: false },
+          orderBy: { date: 'asc' },
+        })
+        if (next) {
+          await db.personEntry.update({ where: { id: next.id }, data: { date: data.date as Date } })
+        }
+      }
       const updated = await db.personEntry.findFirst({ where: { id, userId: session.userId } })
       return ok(res, updated)
     }
