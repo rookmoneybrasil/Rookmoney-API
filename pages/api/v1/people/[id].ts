@@ -38,8 +38,8 @@ export default withAuth(async (req, res, session) => {
     const entries = await Promise.all(
       Array.from({ length: remaining }, (_, i) => {
         const current = numAlreadyPaid + i + 1
-        // Offset date by already-paid months
-        const d = new Date(baseDate.getFullYear(), baseDate.getMonth() + numAlreadyPaid + i, baseDate.getDate())
+        // baseDate IS the date of the next upcoming installment — no offset needed
+        const d = new Date(baseDate.getFullYear(), baseDate.getMonth() + i, baseDate.getDate())
         return db.personEntry.create({
           data: {
             type, description,
