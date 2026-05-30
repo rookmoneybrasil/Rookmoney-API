@@ -81,7 +81,10 @@ export default withAuth(async (req, res, session) => {
       data: {
         ...(name        !== undefined && { name }),
         ...(amount      !== undefined && { amount: parseFloat(amount) }),
-        ...(dueDate     !== undefined && { dueDate: parseISO(dueDate) }),
+        ...(dueDate !== undefined && dueDate && (() => {
+          const [y, m, d] = (dueDate as string).split('-').map(Number)
+          return { dueDate: new Date(Date.UTC(y, m - 1, d, 12, 0, 0)) }
+        })()),
         ...(isRecurring !== undefined && { isRecurring }),
         ...(categoryId  !== undefined && { categoryId: categoryId || null }),
         ...(notes       !== undefined && { notes: notes || null }),

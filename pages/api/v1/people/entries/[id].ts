@@ -72,8 +72,9 @@ export default withAuth(async (req, res, session) => {
     if (description !== undefined) data.description = description
     if (amount      !== undefined) data.amount      = parseFloat(amount)
     if (date !== undefined && date) {
+      // UTC noon to avoid timezone day-shift for Brazil users
       const [y, m, d] = (date as string).split('-').map(Number)
-      data.date = new Date(y, m - 1, d)
+      data.date = new Date(Date.UTC(y, m - 1, d, 12, 0, 0))
     }
     if (categoryId  !== undefined) data.categoryId  = categoryId || null
     if (notes       !== undefined) data.notes       = notes || null
@@ -84,6 +85,7 @@ export default withAuth(async (req, res, session) => {
       if (description !== undefined) groupData.description = description
       if (categoryId  !== undefined) groupData.categoryId  = categoryId || null
       if (amount      !== undefined) groupData.amount      = parseFloat(amount)
+      // For groups: don't apply date globally — each installment keeps its own date
       await db.personEntry.updateMany({
         where: { installmentGroupId: entry.installmentGroupId, userId: session.userId },
         data:  groupData,
