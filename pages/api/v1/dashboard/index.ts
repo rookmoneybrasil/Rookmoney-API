@@ -58,6 +58,7 @@ export default withAuth(async (req, res, session) => {
     overdueCount,
     peopleReceivable,
     incomeReceivable,
+    recurringPeopleReceivable,
     pendingIncomeSources,
     financialHealth,
     projections,
@@ -84,8 +85,10 @@ export default withAuth(async (req, res, session) => {
     }),
     db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { gte: mS, lte: mE } } }),
     db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { lt: now } } }),
-    // People receivable — only entries due within 45 days (avoids inflating with future installments)
+    // People receivable — pending entries (45 days) + active recurring templates
     db.personEntry.aggregate({ where: { userId: uid, type: 'THEY_OWE_ME', isSettled: false, date: { lte: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000) } }, _sum: { amount: true } }),
+    // Recurring people receivable (monthly templates not yet generating entries)
+    db.personEntryRecurring.aggregate({ where: { userId: uid, isActive: true, type: 'THEY_OWE_ME' }, _sum: { amount: true } }),
     // Income sources receivable: not yet received/processed this month (null OR different month)
     db.incomeSource.aggregate({ where: { userId: uid, OR: [{ lastAutoPayMonth: null }, { lastAutoPayMonth: { not: format(now, 'yyyy-MM') } }] }, _sum: { amount: true } }),
     // Individual pending income sources (for modal detail)
@@ -253,8 +256,8 @@ export default withAuth(async (req, res, session) => {
     monthExpense:          totalExpense,
     incomeChange,
     expenseChange,
-    totalReceivable:       Number(peopleReceivable._sum.amount ?? 0) + Number(incomeReceivable._sum.amount ?? 0),
-    totalPeopleReceivable: Number(peopleReceivable._sum.amount ?? 0),
+    totalPeopleReceivable: Number(peopleReceivable._sum.amount ?? 0) + Number(recurringPeopleReceivable._sum.amount ?? 0),
+    totalReceivable:       Number(peopleReceivable._sum.amount ?? 0) + Number(recurringPeopleReceivable._sum.amount ?? 0) + Number(incomeReceivable._sum.amount ?? 0),
     totalIncomeReceivable: Number(incomeReceivable._sum.amount ?? 0),
     pendingIncomeSources,
     recentTransactions:    recentTx,
