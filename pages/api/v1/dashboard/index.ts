@@ -109,8 +109,7 @@ export default withAuth(async (req, res, session) => {
     // Top spending categories this month for donut chart
     db.transaction.findMany({
       where:   { userId: uid, type: 'EXPENSE', date: { gte: mS, lte: mE } },
-      select:  { amount: true, categoryId: true },
-      include: { category: { select: { name: true, icon: true, color: true } } } as never,
+      include: { category: { select: { name: true, icon: true, color: true } } },
     }),
   ])
 
@@ -200,8 +199,9 @@ export default withAuth(async (req, res, session) => {
 
   // ── Top categories this month for donut ──────────────────────────────────
   const catMap = new Map<string, { name: string; icon: string; color: string; amount: number }>()
-  for (const t of categoryTx as Array<{ amount: number; category: { name: string; icon: string; color: string } }>) {
-    const cat = t.category
+  for (const t of categoryTx) {
+    const cat = (t as unknown as { category: { name: string; icon: string; color: string } }).category
+    if (!cat) continue
     const key = cat.name
     const cur = catMap.get(key)
     catMap.set(key, { name: cat.name, icon: cat.icon, color: cat.color, amount: (cur?.amount ?? 0) + Number(t.amount) })
