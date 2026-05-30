@@ -55,12 +55,13 @@ model Category {
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  transactions          Transaction[]
-  bills                 Bill[]
-  budgets               Budget[]
-  incomeSources         IncomeSource[]
-  recurringTransactions RecurringTransaction[]
-  personEntries         PersonEntry[]
+  transactions             Transaction[]
+  bills                    Bill[]
+  budgets                  Budget[]
+  incomeSources            IncomeSource[]
+  recurringTransactions    RecurringTransaction[]
+  personEntries            PersonEntry[]
+  personEntryRecurring     PersonEntryRecurring[]
 
   @@index([userId])
 }
