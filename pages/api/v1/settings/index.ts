@@ -7,12 +7,15 @@ export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
     const user = await db.user.findUnique({
       where:  { id: session.userId },
-      select: { id: true, name: true, email: true, plan: true, hasOnboarded: true, whatsappPhone: true, createdAt: true },
+      select: {
+        id: true, name: true, email: true, plan: true,
+        hasOnboarded: true, whatsappPhone: true, createdAt: true,
+        profileImage: true, bio: true, city: true, occupation: true, birthdate: true,
+      },
     })
     return ok(res, user)
   }
 
-  // PATCH /settings — update profile or password
   if (req.method === 'PATCH') {
     const { action } = req.query
 
@@ -32,15 +35,24 @@ export default withAuth(async (req, res, session) => {
       return ok(res, { message: 'Senha alterada com sucesso.' })
     }
 
-    // Update profile
-    const { name, whatsappPhone } = req.body
+    // Update profile (name, whatsapp + new fields)
+    const { name, whatsappPhone, profileImage, bio, city, occupation, birthdate } = req.body
     const updated = await db.user.update({
       where: { id: session.userId },
       data: {
-        ...(name          !== undefined && { name }),
+        ...(name         !== undefined && { name }),
         ...(whatsappPhone !== undefined && { whatsappPhone: whatsappPhone || null }),
+        ...(profileImage !== undefined && { profileImage: profileImage || null }),
+        ...(bio          !== undefined && { bio: bio || null }),
+        ...(city         !== undefined && { city: city || null }),
+        ...(occupation   !== undefined && { occupation: occupation || null }),
+        ...(birthdate    !== undefined && { birthdate: birthdate ? new Date(birthdate) : null }),
       },
-      select: { id: true, name: true, email: true, plan: true, hasOnboarded: true, whatsappPhone: true },
+      select: {
+        id: true, name: true, email: true, plan: true,
+        hasOnboarded: true, whatsappPhone: true,
+        profileImage: true, bio: true, city: true, occupation: true, birthdate: true,
+      },
     })
     return ok(res, updated)
   }

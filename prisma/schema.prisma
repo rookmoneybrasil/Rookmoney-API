@@ -23,6 +23,11 @@ model User {
   passwordResetToken  String?
   passwordResetExpiry DateTime?
   whatsappPhone       String?   @unique  // E.164 format: +5511999999999
+  profileImage        String?   // URL da foto de perfil
+  bio                 String?   // Descrição pessoal
+  city                String?   // Cidade
+  occupation          String?   // Profissão
+  birthdate           DateTime? // Data de nascimento
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 

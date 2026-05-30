@@ -27,7 +27,7 @@ export default withAuth(async (req, res, session) => {
   ] = await Promise.all([
     db.user.findUnique({
       where:  { id: uid },
-      select: { id: true, name: true, email: true, plan: true, hasOnboarded: true, whatsappPhone: true, createdAt: true },
+      select: { id: true, name: true, email: true, plan: true, hasOnboarded: true, whatsappPhone: true, createdAt: true, profileImage: true },
     }),
     db.bill.count({ where: { userId: uid, isPaid: false } }),
     db.person.count({ where: { userId: uid, entries: { some: { isSettled: false } } } }),

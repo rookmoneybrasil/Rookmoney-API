@@ -1,0 +1,6 @@
+-- Add profile fields to User
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "profileImage" TEXT;
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "bio"          TEXT;
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "city"         TEXT;
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "occupation"   TEXT;
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "birthdate"    TIMESTAMP(3);
