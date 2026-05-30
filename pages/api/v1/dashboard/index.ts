@@ -1,7 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok } from '@/lib/respond'
-import { startOfMonth, endOfMonth, subMonths, addDays, format } from 'date-fns'
+import { startOfMonth, endOfMonth, subMonths, addDays, format, addMonths } from 'date-fns'
 
 async function processAutoIncome(uid: string) {
   const now       = new Date()
@@ -63,6 +63,8 @@ export default withAuth(async (req, res, session) => {
     pendingBillsAgg,
     personPayables,
     upcomingPersonPayables,
+    historyTx,
+    categoryTx,
   ] = await Promise.all([
     db.user.findUnique({ where: { id: uid }, select: { name: true } }),
     db.transaction.aggregate({ where: { userId: uid, type: 'INCOME',  date: { gte: mS, lte: mE } }, _sum: { amount: true } }),
@@ -98,6 +100,17 @@ export default withAuth(async (req, res, session) => {
       orderBy: { date: 'asc' },
       take:    4,
       include: { person: { select: { name: true } } },
+    }),
+    // Monthly history for sparklines (last 6 months)
+    db.transaction.findMany({
+      where:  { userId: uid, date: { gte: startOfMonth(subMonths(now, 5)), lte: mE } },
+      select: { type: true, amount: true, date: true },
+    }),
+    // Top spending categories this month for donut chart
+    db.transaction.findMany({
+      where:   { userId: uid, type: 'EXPENSE', date: { gte: mS, lte: mE } },
+      select:  { amount: true, categoryId: true },
+      include: { category: { select: { name: true, icon: true, color: true } } } as never,
     }),
   ])
 
@@ -171,6 +184,57 @@ export default withAuth(async (req, res, session) => {
     }
   })
 
+  // ── Monthly history (last 6 months) for sparklines ──────────────────────
+  const monthlyHistory = Array.from({ length: 6 }, (_, i) => {
+    const d     = subMonths(now, 5 - i)
+    const month = format(d, 'yyyy-MM')
+    const mStart = startOfMonth(d)
+    const mEnd   = endOfMonth(d)
+    const txs    = historyTx.filter(t => { const td = new Date(t.date); return td >= mStart && td <= mEnd })
+    return {
+      month,
+      income:  txs.filter(t => t.type === 'INCOME').reduce((s, t) => s + Number(t.amount), 0),
+      expense: txs.filter(t => t.type === 'EXPENSE').reduce((s, t) => s + Number(t.amount), 0),
+    }
+  })
+
+  // ── Top categories this month for donut ──────────────────────────────────
+  const catMap = new Map<string, { name: string; icon: string; color: string; amount: number }>()
+  for (const t of categoryTx as Array<{ amount: number; category: { name: string; icon: string; color: string } }>) {
+    const cat = t.category
+    const key = cat.name
+    const cur = catMap.get(key)
+    catMap.set(key, { name: cat.name, icon: cat.icon, color: cat.color, amount: (cur?.amount ?? 0) + Number(t.amount) })
+  }
+  const totalCatExpense = Array.from(catMap.values()).reduce((s, c) => s + c.amount, 0)
+  const topCategories = Array.from(catMap.values())
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 5)
+    .map(c => ({ ...c, pct: totalCatExpense > 0 ? Math.round((c.amount / totalCatExpense) * 100) : 0 }))
+
+  // ── Rookinho insight ──────────────────────────────────────────────────────
+  const daysInMonth  = endOfMonth(now).getDate()
+  const dayOfMonth   = now.getDate()
+  const pacePct      = totalIncome > 0 ? Math.round((totalExpense / totalIncome) * 100) : 0
+  const topCat       = topCategories[0]
+
+  let insight = ''
+  if (overdueCount > 0) {
+    insight = `Você tem ${overdueCount} conta${overdueCount > 1 ? 's' : ''} em atraso. Regularize para evitar juros.`
+  } else if (totalIncome === 0 && totalExpense === 0) {
+    insight = 'Nenhuma movimentação ainda este mês. Registre sua primeira transação!'
+  } else if (dayOfMonth <= 10 && pacePct > 60) {
+    insight = `Cuidado! Você já gastou ${pacePct}% do que recebeu e o mês ainda está no início.`
+  } else if (pacePct > 90) {
+    insight = `Você está gastando quase tudo que recebe (${pacePct}%). Que tal revisar o orçamento?`
+  } else if (topCat && topCat.pct > 40) {
+    insight = `${topCat.icon} ${topCat.name} representa ${topCat.pct}% dos seus gastos este mês.`
+  } else if (totalIncome - totalExpense > 0 && dayOfMonth > 20) {
+    insight = `Ótimo mês! Você já economizou R$${(totalIncome - totalExpense).toFixed(2).replace('.', ',')} até agora.`
+  } else {
+    insight = `Você está no dia ${dayOfMonth} de ${daysInMonth}. Continue monitorando seus gastos!`
+  }
+
   return ok(res, {
     userName:              user?.name ?? '',
     monthBalance:          totalIncome - totalExpense,
@@ -191,6 +255,9 @@ export default withAuth(async (req, res, session) => {
     overdueCount,
     healthScore,
     projections:           projected,
+    monthlyHistory,
+    topCategories,
+    insight,
     mood: overdueCount > 0 ? 'angry' : totalIncome === 0 && totalExpense === 0 ? 'idle' : totalIncome - totalExpense >= 0 ? 'happy' : 'sad',
     // Budget alerts: count of categories at 80%+ of limit this month
     overBudgetCount: await (async () => {
