@@ -8,27 +8,36 @@ export default withAuth(async (req, res, session) => {
     // Cutoff only for old-style recurring (installmentTotal >= 24) that haven't been migrated yet
     const cutoff = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000)
 
-    const people = await db.person.findMany({
-      where:   { userId: session.userId },
-      orderBy: { name: 'asc' },
-      include: {
-        entries: {
-          where: { isSettled: false },
-          select: { type: true, amount: true, date: true, installmentTotal: true },
+    const [people, recurringAll] = await Promise.all([
+      db.person.findMany({
+        where:   { userId: session.userId },
+        orderBy: { name: 'asc' },
+        include: {
+          entries: {
+            where: { isSettled: false },
+            select: { type: true, amount: true, date: true, installmentTotal: true },
+          },
+          _count: { select: { entries: { where: { isSettled: false } } } },
         },
-        _count: { select: { entries: { where: { isSettled: false } } } },
-      },
-    })
+      }),
+      db.personEntryRecurring.findMany({
+        where:  { userId: session.userId, isActive: true },
+        select: { personId: true, type: true, amount: true },
+      }),
+    ])
 
     const result = people.map(p => {
-      // Real installments (< 24x) → count all. Old recurring (>= 24x) → only within 45 days
-      const balance = p.entries.reduce((sum, e) => {
+      const entryBalance = p.entries.reduce((sum, e) => {
         const isOldRecurring = (e.installmentTotal ?? 0) >= 24
         if (isOldRecurring && new Date(e.date) > cutoff) return sum
         return sum + (e.type === 'THEY_OWE_ME' ? Number(e.amount) : -Number(e.amount))
       }, 0)
+      // Include active recurring templates (monthly expected amounts)
+      const recurBalance = recurringAll
+        .filter(r => r.personId === p.id)
+        .reduce((sum, r) => sum + (r.type === 'THEY_OWE_ME' ? Number(r.amount) : -Number(r.amount)), 0)
       const { entries, _count, ...rest } = p
-      return { ...rest, balance, openEntriesCount: _count.entries }
+      return { ...rest, balance: entryBalance + recurBalance, openEntriesCount: _count.entries }
     })
 
     return ok(res, result)
