@@ -65,12 +65,13 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'PATCH' || req.method === 'PUT') {
-    const { description, amount, date, categoryId, notes, applyToGroup } = req.body
+    const { type, description, amount, date, categoryId, notes, applyToGroup } = req.body
 
     const data: Record<string, unknown> = {}
+    if (type        !== undefined) data.type        = type
     if (description !== undefined) data.description = description
     if (amount      !== undefined) data.amount      = parseFloat(amount)
-    if (date !== undefined) {
+    if (date !== undefined && date) {
       const [y, m, d] = (date as string).split('-').map(Number)
       data.date = new Date(y, m - 1, d)
     }
@@ -78,8 +79,8 @@ export default withAuth(async (req, res, session) => {
     if (notes       !== undefined) data.notes       = notes || null
 
     if (applyToGroup && entry.installmentGroupId) {
-      // Update all entries in the group (description, category, amount)
       const groupData: Record<string, unknown> = {}
+      if (type        !== undefined) groupData.type        = type
       if (description !== undefined) groupData.description = description
       if (categoryId  !== undefined) groupData.categoryId  = categoryId || null
       if (amount      !== undefined) groupData.amount      = parseFloat(amount)
