@@ -4,9 +4,16 @@ import { serialize } from 'cookie'
 import { db } from '@/lib/db'
 import { createToken } from '@/lib/auth'
 import { badRequest, unauthorized, serverError } from '@/lib/respond'
+import { rateLimit, resetLimit, getIp, tooManyRequests } from '@/lib/rate-limit'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
+
+  // Rate limit: 10 tentativas por IP a cada 15 min
+  const ip  = getIp(req)
+  const key = `login:${ip}`
+  const rl  = rateLimit(key, 10, 15 * 60 * 1000)
+  if (!rl.allowed) return tooManyRequests(res, rl.resetAt)
 
   const { email, password, rememberMe = true } = req.body as {
     email:      string
@@ -23,9 +30,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const valid = await bcrypt.compare(password, user.password)
   if (!valid) return unauthorized(res, 'E-mail ou senha incorretos.')
 
+  // Reset rate limit on successful login
+  resetLimit(key)
+
   const token = await createToken({ userId: user.id, name: user.name, email: user.email }, rememberMe)
 
-  // Set httpOnly cookie
   const maxAge = rememberMe ? 60 * 60 * 24 * 30 : undefined
   res.setHeader('Set-Cookie', serialize('rook_session', token, {
     httpOnly: true,

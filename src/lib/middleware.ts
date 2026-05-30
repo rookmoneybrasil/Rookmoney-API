@@ -135,8 +135,12 @@ function setCORSHeaders(res: NextApiResponse, req?: NextApiRequest) {
   const allowed = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:3010,http://localhost:3020').split(',').map(o => o.trim())
   const origin  = req?.headers?.origin as string | undefined
 
-  // Set origin to the matched allowed origin, or first allowed if no match (dev fallback)
-  const allowOrigin = (origin && allowed.includes(origin)) ? origin : allowed[0]
+  // Only allow explicitly whitelisted origins — reject unknown origins
+  const allowOrigin = (origin && allowed.includes(origin)) ? origin : null
+  if (!allowOrigin) {
+    // No CORS headers for unrecognized origins — browser will block
+    return
+  }
 
   res.setHeader('Access-Control-Allow-Origin',      allowOrigin)
   res.setHeader('Access-Control-Allow-Methods',     'GET,POST,PUT,PATCH,DELETE,OPTIONS')

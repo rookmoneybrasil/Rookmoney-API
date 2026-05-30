@@ -87,7 +87,7 @@ export default withAuth(async (req, res, session) => {
         where: { installmentGroupId: entry.installmentGroupId, userId: session.userId },
         data:  groupData,
       })
-      const updated = await db.personEntry.findFirst({ where: { id } })
+      const updated = await db.personEntry.findFirst({ where: { id, userId: session.userId } })
       return ok(res, updated)
     }
 
