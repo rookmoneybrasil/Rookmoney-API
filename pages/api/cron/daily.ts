@@ -117,7 +117,7 @@ async function processRecurringBills(userId: string) {
 
   for (const t of templates) {
     if (t.lastAutoMonth === yearMonth) continue
-    if (today < t.dayOfMonth) continue
+    // No day-of-month gate — bills are generated at month start so users see them immediately.
 
     const day     = Math.min(t.dayOfMonth, new Date(y, m + 1, 0).getDate())
     const dueDate = new Date(Date.UTC(y, m, day, 12, 0, 0))
