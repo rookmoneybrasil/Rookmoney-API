@@ -56,10 +56,10 @@ export default withAuth(async (req, res, session) => {
     prevIncome, prevExpense,
     recentTx, goals, upcomingBills, pendingBillsCount,
     overdueCount,
-    peopleReceivable,
-    incomeReceivable,
+    peopleEntriesReceivable,
     recurringPeopleReceivable,
-    pendingIncomeSources,
+    rawPendingIncomeSources,
+    incomeThisMonth,
     financialHealth,
     projections,
     pendingBillsAgg,
@@ -89,10 +89,10 @@ export default withAuth(async (req, res, session) => {
     db.personEntry.aggregate({ where: { userId: uid, type: 'THEY_OWE_ME', isSettled: false, date: { lte: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000) } }, _sum: { amount: true } }),
     // Recurring people receivable (monthly templates not yet generating entries)
     db.personEntryRecurring.aggregate({ where: { userId: uid, isActive: true, type: 'THEY_OWE_ME' }, _sum: { amount: true } }),
-    // Income sources receivable: not yet received/processed this month (null OR different month)
-    db.incomeSource.aggregate({ where: { userId: uid, OR: [{ lastAutoPayMonth: null }, { lastAutoPayMonth: { not: format(now, 'yyyy-MM') } }] }, _sum: { amount: true } }),
-    // Individual pending income sources (for modal detail)
+    // Income sources not yet received this month via lastAutoPayMonth flag
     db.incomeSource.findMany({ where: { userId: uid, OR: [{ lastAutoPayMonth: null }, { lastAutoPayMonth: { not: format(now, 'yyyy-MM') } }] }, select: { id: true, name: true, amount: true, isRecurring: true, dayOfMonth: true }, orderBy: { amount: 'desc' } }),
+    // Income transactions this month — to cross-check against "pending" sources
+    db.transaction.findMany({ where: { userId: uid, type: 'INCOME', date: { gte: mS, lte: mE } }, select: { description: true } }),
     // Financial health score (simplified)
     db.transaction.findMany({ where: { userId: uid, date: { gte: startOfMonth(subMonths(now, 2)), lte: mE } }, select: { type: true, amount: true } }),
     // Projections (last 2 months average)
@@ -126,6 +126,17 @@ export default withAuth(async (req, res, session) => {
       include: { category: { select: { name: true, icon: true, color: true } } },
     }),
   ])
+
+  // Cross-check pending income sources with actual transactions this month.
+  // Sources that already have a matching INCOME transaction (same name) are considered received,
+  // even if lastAutoPayMonth wasn't updated (e.g. manual transaction without going through registerReceipt).
+  const receivedSourceNames = new Set(
+    (incomeThisMonth as { description: string | null }[]).map((t) => t.description).filter((d): d is string => Boolean(d))
+  )
+  const pendingIncomeSources = (rawPendingIncomeSources as { id: string; name: string; amount: unknown; isRecurring: boolean; dayOfMonth: number | null }[])
+    .filter((s) => !receivedSourceNames.has(s.name))
+  const totalPeopleReceivable  = Number(peopleEntriesReceivable._sum.amount ?? 0) + Number(recurringPeopleReceivable._sum.amount ?? 0)
+  const totalIncomeReceivable  = pendingIncomeSources.reduce((sum: number, src) => sum + Number(src.amount), 0)
 
   const totalIncome  = Number(income._sum.amount  ?? 0)
   const totalExpense = Number(expense._sum.amount ?? 0)
@@ -256,9 +267,9 @@ export default withAuth(async (req, res, session) => {
     monthExpense:          totalExpense,
     incomeChange,
     expenseChange,
-    totalPeopleReceivable: Number(peopleReceivable._sum.amount ?? 0) + Number(recurringPeopleReceivable._sum.amount ?? 0),
-    totalReceivable:       Number(peopleReceivable._sum.amount ?? 0) + Number(recurringPeopleReceivable._sum.amount ?? 0) + Number(incomeReceivable._sum.amount ?? 0),
-    totalIncomeReceivable: Number(incomeReceivable._sum.amount ?? 0),
+    totalPeopleReceivable,
+    totalReceivable:       totalPeopleReceivable + totalIncomeReceivable,
+    totalIncomeReceivable,
     pendingIncomeSources,
     recentTransactions:    recentTx,
     goals,
