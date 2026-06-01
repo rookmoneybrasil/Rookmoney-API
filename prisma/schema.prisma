@@ -49,6 +49,7 @@ model User {
   personEntries         PersonEntry[]
   personEntryRecurring  PersonEntryRecurring[]
   feedbacks             Feedback[]
+  recurringBills        RecurringBill[]
 }
 
 // ─── Category ───────────────────────────────────────────────────────
@@ -70,6 +71,7 @@ model Category {
   recurringTransactions    RecurringTransaction[]
   personEntries            PersonEntry[]
   personEntryRecurring     PersonEntryRecurring[]
+  recurringBills           RecurringBill[]
 
   @@index([userId])
 }
@@ -225,18 +227,43 @@ model Bill {
   installmentTotal      Int?
   installmentCurrent    Int?
   installmentGroupId    String?
-  paidTransactionId     String?   // Transaction criada ao marcar como paga
+  paidTransactionId     String?
+  recurringBillId       String?   // FK to RecurringBill template that generated this
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId      String?
+  category        Category?      @relation(fields: [categoryId], references: [id])
+  recurringBill   RecurringBill? @relation(fields: [recurringBillId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, dueDate])
+  @@index([installmentGroupId])
+  @@index([recurringBillId])
+}
+
+// ─── RecurringBill ───────────────────────────────────────────────────
+
+model RecurringBill {
+  id            String   @id @default(cuid())
+  name          String
+  amount        Decimal  @db.Decimal(12, 2)
+  dayOfMonth    Int      // 1-28: day to generate bill each month
+  isActive      Boolean  @default(true)
+  lastAutoMonth String?  // "YYYY-MM": last month a Bill was generated
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   userId     String
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   categoryId String?
   category   Category? @relation(fields: [categoryId], references: [id])
+  bills      Bill[]
 
   @@index([userId])
-  @@index([userId, dueDate])
-  @@index([installmentGroupId])
 }
 
 // ─── Person ─────────────────────────────────────────────────────────

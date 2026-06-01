@@ -105,6 +105,42 @@ async function processAutoRecurring(userId: string) {
   }
 }
 
+async function processRecurringBills(userId: string) {
+  const now       = new Date()
+  const today     = now.getDate()
+  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const y = now.getFullYear()
+  const m = now.getMonth() // 0-based
+
+  const templates = await db.recurringBill.findMany({ where: { userId, isActive: true } })
+
+  for (const t of templates) {
+    if (t.lastAutoMonth === yearMonth) continue
+    if (today < t.dayOfMonth) continue
+
+    const day     = Math.min(t.dayOfMonth, new Date(y, m + 1, 0).getDate())
+    const dueDate = new Date(Date.UTC(y, m, day, 12, 0, 0))
+
+    const monthStart = new Date(Date.UTC(y, m, 1))
+    const monthEnd   = new Date(Date.UTC(y, m + 1, 0, 23, 59, 59))
+
+    const exists = await db.bill.findFirst({
+      where: { userId, recurringBillId: t.id, dueDate: { gte: monthStart, lte: monthEnd } },
+    })
+    if (exists) {
+      await db.recurringBill.update({ where: { id: t.id }, data: { lastAutoMonth: yearMonth } })
+      continue
+    }
+
+    await db.$transaction([
+      db.bill.create({
+        data: { name: t.name, amount: t.amount, dueDate, isRecurring: false, userId, categoryId: t.categoryId ?? null, notes: t.notes ?? null, recurringBillId: t.id },
+      }),
+      db.recurringBill.update({ where: { id: t.id }, data: { lastAutoMonth: yearMonth } }),
+    ])
+  }
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).end()
 
@@ -124,6 +160,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await processAutoIncome(user.id)
       await processAutoRecurring(user.id)
       await processPersonEntryRecurring(user.id)
+      await processRecurringBills(user.id)
       processed++
     } catch (err) {
       errors.push(`${user.id}: ${String(err)}`)

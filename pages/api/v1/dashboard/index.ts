@@ -37,14 +37,32 @@ async function processAutoRecurring(uid: string) {
   }
 }
 
+async function processRecurringBills(uid: string) {
+  const now       = new Date()
+  const today     = now.getDate()
+  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const y = now.getFullYear(), m = now.getMonth()
+  const templates = await db.recurringBill.findMany({ where: { userId: uid, isActive: true } })
+  for (const t of templates) {
+    if (t.lastAutoMonth === yearMonth || today < t.dayOfMonth) continue
+    const day = Math.min(t.dayOfMonth, new Date(y, m + 1, 0).getDate())
+    const dueDate = new Date(Date.UTC(y, m, day, 12, 0, 0))
+    const exists = await db.bill.findFirst({ where: { userId: uid, recurringBillId: t.id, dueDate: { gte: new Date(Date.UTC(y, m, 1)), lte: new Date(Date.UTC(y, m + 1, 0, 23, 59, 59)) } } })
+    if (!exists) {
+      await db.bill.create({ data: { name: t.name, amount: t.amount, dueDate, isRecurring: false, userId: uid, categoryId: t.categoryId ?? null, notes: t.notes ?? null, recurringBillId: t.id } })
+    }
+    await db.recurringBill.update({ where: { id: t.id }, data: { lastAutoMonth: yearMonth } })
+  }
+}
+
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'GET') return res.status(405).end()
 
   const uid  = session.userId
   const now  = new Date()
 
-  // Auto-process recurring income and transactions (same behavior as monolith)
-  await Promise.allSettled([processAutoIncome(uid), processAutoRecurring(uid)])
+  // Auto-process recurring income, transactions, and bills
+  await Promise.allSettled([processAutoIncome(uid), processAutoRecurring(uid), processRecurringBills(uid)])
   const mS   = startOfMonth(now)
   const mE   = endOfMonth(now)
   const pmS  = startOfMonth(subMonths(now, 1))
