@@ -7,7 +7,7 @@ export default withAuth(async (req, res, session) => {
 
   const { type, title, body } = req.body as { type?: string; title?: string; body?: string }
 
-  if (!type || !['bug', 'suggestion'].includes(type)) return badRequest(res, 'Tipo inválido.')
+  if (!type || !['bug', 'suggestion', 'ticket'].includes(type)) return badRequest(res, 'Tipo inválido.')
   if (!title?.trim()) return badRequest(res, 'Título obrigatório.')
   if (!body?.trim())  return badRequest(res, 'Descrição obrigatória.')
   if (title.length > 120) return badRequest(res, 'Título muito longo.')
