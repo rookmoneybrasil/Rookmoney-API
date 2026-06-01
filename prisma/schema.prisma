@@ -41,6 +41,7 @@ model User {
   people                Person[]
   personEntries         PersonEntry[]
   personEntryRecurring  PersonEntryRecurring[]
+  feedbacks             Feedback[]
 }
 
 // ─── Category ───────────────────────────────────────────────────────
@@ -305,4 +306,21 @@ model PersonEntry {
   @@index([personId])
   @@index([userId])
   @@index([installmentGroupId])
+}
+
+// ─── Feedback ────────────────────────────────────────────────────────
+
+model Feedback {
+  id        String   @id @default(cuid())
+  type      String   // "bug" | "suggestion"
+  title     String
+  body      String
+  status    String   @default("open") // open | reviewing | done
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
 }
