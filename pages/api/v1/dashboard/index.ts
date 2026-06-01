@@ -89,8 +89,10 @@ export default withAuth(async (req, res, session) => {
     db.personEntry.aggregate({ where: { userId: uid, type: 'THEY_OWE_ME', isSettled: false, date: { lte: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000) } }, _sum: { amount: true } }),
     // Recurring people receivable (monthly templates not yet generating entries)
     db.personEntryRecurring.aggregate({ where: { userId: uid, isActive: true, type: 'THEY_OWE_ME' }, _sum: { amount: true } }),
-    // Income sources not yet received this month via lastAutoPayMonth flag
-    db.incomeSource.findMany({ where: { userId: uid, OR: [{ lastAutoPayMonth: null }, { lastAutoPayMonth: { not: format(now, 'yyyy-MM') } }] }, select: { id: true, name: true, amount: true, isRecurring: true, dayOfMonth: true }, orderBy: { amount: 'desc' } }),
+    // Only RECURRING income sources not yet received this month.
+    // Eventual (non-recurring) sources are irregular — receiving in a prior month
+    // doesn't imply an expectation this month, so they're excluded from pending.
+    db.incomeSource.findMany({ where: { userId: uid, isRecurring: true, OR: [{ lastAutoPayMonth: null }, { lastAutoPayMonth: { not: format(now, 'yyyy-MM') } }] }, select: { id: true, name: true, amount: true, isRecurring: true, dayOfMonth: true }, orderBy: { amount: 'desc' } }),
     // Income transactions this month — to cross-check against "pending" sources
     db.transaction.findMany({ where: { userId: uid, type: 'INCOME', date: { gte: mS, lte: mE } }, select: { description: true } }),
     // Financial health score (simplified)
