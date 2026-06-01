@@ -322,6 +322,7 @@ model Feedback {
   type      String   // "bug" | "suggestion"
   title     String
   body      String
+  imageData String?  // base64 screenshot (bugs only)
   status    String   @default("open") // open | reviewing | done
   createdAt DateTime @default(now())
 
