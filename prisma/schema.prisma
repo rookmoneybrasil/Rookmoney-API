@@ -28,6 +28,13 @@ model User {
   city                String?   // Cidade
   occupation          String?   // Profissão
   birthdate           DateTime? // Data de nascimento
+  // Notification preferences
+  notifBillReminder   Boolean   @default(true)
+  notifCategoryLimit  Boolean   @default(true)
+  notifMonthlyEmail   Boolean   @default(false)
+  // Appearance preferences
+  currency            String    @default("BRL")
+  dateFormat          String    @default("dd/MM/yyyy")
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
