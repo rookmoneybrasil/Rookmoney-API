@@ -89,11 +89,21 @@ export default withAuth(async (req, res, session) => {
     db.personEntry.aggregate({ where: { userId: uid, type: 'THEY_OWE_ME', isSettled: false, date: { lte: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000) } }, _sum: { amount: true } }),
     // Recurring people receivable (monthly templates not yet generating entries)
     db.personEntryRecurring.aggregate({ where: { userId: uid, isActive: true, type: 'THEY_OWE_ME' }, _sum: { amount: true } }),
-    // Only RECURRING income sources not yet received this month.
-    // Eventual (non-recurring) sources are irregular — receiving in a prior month
-    // doesn't imply an expectation this month, so they're excluded from pending.
-    db.incomeSource.findMany({ where: { userId: uid, isRecurring: true, OR: [{ lastAutoPayMonth: null }, { lastAutoPayMonth: { not: format(now, 'yyyy-MM') } }] }, select: { id: true, name: true, amount: true, isRecurring: true, dayOfMonth: true }, orderBy: { amount: 'desc' } }),
-    // Income transactions this month — to cross-check against "pending" sources
+    // Pending income sources:
+    // - Recurring: not yet received this month (lastAutoPayMonth resets every month)
+    // - Eventual: never received at all (lastAutoPayMonth IS NULL — once received, no longer pending)
+    db.incomeSource.findMany({
+      where: {
+        userId: uid,
+        OR: [
+          { isRecurring: true,  OR: [{ lastAutoPayMonth: null }, { lastAutoPayMonth: { not: format(now, 'yyyy-MM') } }] },
+          { isRecurring: false, lastAutoPayMonth: null },
+        ],
+      },
+      select: { id: true, name: true, amount: true, isRecurring: true, dayOfMonth: true },
+      orderBy: { amount: 'desc' },
+    }),
+    // Income transactions this month — cross-check for recurring sources registered manually
     db.transaction.findMany({ where: { userId: uid, type: 'INCOME', date: { gte: mS, lte: mE } }, select: { description: true } }),
     // Financial health score (simplified)
     db.transaction.findMany({ where: { userId: uid, date: { gte: startOfMonth(subMonths(now, 2)), lte: mE } }, select: { type: true, amount: true } }),
