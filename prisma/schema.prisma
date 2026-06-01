@@ -359,3 +359,12 @@ model Feedback {
   @@index([userId])
   @@index([status])
 }
+
+// ─── DataMigration ───────────────────────────────────────────────────
+// Tracks which one-time data migrations have been applied.
+// Add entries to api/src/lib/data-migrations.ts — never re-use an id.
+
+model DataMigration {
+  id    String   @id   // e.g. "2026-06-02-migrate-recurring-bills"
+  ranAt DateTime @default(now())
+}

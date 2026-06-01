@@ -37,48 +37,9 @@ async function processAutoRecurring(uid: string) {
   }
 }
 
-// One-time migration: turn isRecurring=true bills into RecurringBill templates
-async function migrateRecurringBills(uid: string) {
-  // Skip if no unmigrated isRecurring bills exist
-  const count = await db.bill.count({ where: { userId: uid, isRecurring: true, recurringBillId: null } })
-  if (count === 0) return
-
-  // Group by name — each unique name becomes one template
-  const bills = await db.bill.findMany({
-    where:   { userId: uid, isRecurring: true, recurringBillId: null },
-    orderBy: { dueDate: 'desc' }, // most recent first
-  })
-
-  const byName = new Map<string, typeof bills[number][]>()
-  for (const b of bills) {
-    const arr = byName.get(b.name) ?? []
-    arr.push(b)
-    byName.set(b.name, arr)
-  }
-
-  for (const [, group] of byName.entries()) {
-    const latest     = group[0] // most recent (ordered desc)
-    const dayOfMonth = new Date(latest.dueDate).getUTCDate()
-
-    // Create template
-    const template = await db.recurringBill.create({
-      data: {
-        name:       latest.name,
-        amount:     latest.amount,
-        dayOfMonth: Math.min(dayOfMonth, 28),
-        userId:     uid,
-        categoryId: latest.categoryId ?? null,
-        notes:      latest.notes ?? null,
-      },
-    })
-
-    // Link all existing bills in this group to the template
-    await db.bill.updateMany({
-      where: { id: { in: group.map(b => b.id) } },
-      data:  { recurringBillId: template.id, isRecurring: false },
-    })
-  }
-}
+// Data migrations are now centralized in api/src/lib/data-migrations.ts
+// and run automatically via db.ts on server startup. No per-user migration
+// functions needed here.
 
 async function processRecurringBills(uid: string) {
   const now       = new Date()
@@ -104,9 +65,8 @@ export default withAuth(async (req, res, session) => {
   const uid  = session.userId
   const now  = new Date()
 
-  // Migrate old isRecurring bills + auto-process all recurring
+  // Auto-process recurring income, transactions, and bills
   await Promise.allSettled([
-    migrateRecurringBills(uid),
     processAutoIncome(uid),
     processAutoRecurring(uid),
     processRecurringBills(uid),

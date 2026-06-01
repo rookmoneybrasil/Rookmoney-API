@@ -5,25 +5,8 @@ import { parseISO, addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { getLimits } from '@/lib/plans'
 
-async function migrateOldIsRecurring(userId: string) {
-  const count = await db.bill.count({ where: { userId, isRecurring: true, recurringBillId: null } })
-  if (count === 0) return
-  const bills = await db.bill.findMany({ where: { userId, isRecurring: true, recurringBillId: null }, orderBy: { dueDate: 'desc' } })
-  const byName = new Map<string, typeof bills[number][]>()
-  for (const b of bills) { const arr = byName.get(b.name) ?? []; arr.push(b); byName.set(b.name, arr) }
-  for (const [, group] of byName.entries()) {
-    const latest = group[0]
-    const template = await db.recurringBill.create({
-      data: { name: latest.name, amount: latest.amount, dayOfMonth: Math.min(new Date(latest.dueDate).getUTCDate(), 28), userId, categoryId: latest.categoryId ?? null, notes: latest.notes ?? null },
-    })
-    await db.bill.updateMany({ where: { id: { in: group.map(b => b.id) } }, data: { recurringBillId: template.id, isRecurring: false } })
-  }
-}
-
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
-    // Migrate old isRecurring bills to RecurringBill templates (one-time, idempotent)
-    await migrateOldIsRecurring(session.userId).catch(() => {})
 
     const onlyPending = req.query.pending === 'true'
     const bills = await db.bill.findMany({
