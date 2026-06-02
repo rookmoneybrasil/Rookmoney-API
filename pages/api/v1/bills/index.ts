@@ -1,12 +1,30 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, created, badRequest, planLimit } from '@/lib/respond'
-import { parseISO, addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { getLimits } from '@/lib/plans'
 
+async function generateRecurringBillsThisMonth(userId: string) {
+  const now       = new Date()
+  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const y = now.getFullYear(), m = now.getMonth()
+  const templates = await db.recurringBill.findMany({ where: { userId, isActive: true } })
+  for (const t of templates) {
+    if (t.lastAutoMonth === yearMonth) continue
+    const day     = Math.min(t.dayOfMonth, new Date(y, m + 1, 0).getDate())
+    const dueDate = new Date(Date.UTC(y, m, day, 12, 0, 0))
+    const exists  = await db.bill.findFirst({ where: { userId, recurringBillId: t.id, dueDate: { gte: new Date(Date.UTC(y, m, 1)), lte: new Date(Date.UTC(y, m + 1, 0, 23, 59, 59)) } } })
+    if (!exists) {
+      await db.bill.create({ data: { name: t.name, amount: t.amount, dueDate, isRecurring: false, userId, categoryId: t.categoryId ?? null, notes: t.notes ?? null, recurringBillId: t.id } })
+    }
+    await db.recurringBill.update({ where: { id: t.id }, data: { lastAutoMonth: yearMonth } })
+  }
+}
+
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
+    // Generate this month's bills from active templates before returning the list
+    await generateRecurringBillsThisMonth(session.userId).catch(() => {})
 
     const onlyPending = req.query.pending === 'true'
     const bills = await db.bill.findMany({
