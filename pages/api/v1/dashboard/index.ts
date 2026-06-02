@@ -182,15 +182,16 @@ export default withAuth(async (req, res, session) => {
       include: { person: { select: { name: true } } },
     }),
 
-    // Fix 1+5: projection data in main Promise.all
-    db.incomeSource.findMany({ where: { userId: uid, isRecurring: true }, select: { amount: true } }),
-    db.recurringTransaction.findMany({ where: { userId: uid, isActive: true, frequency: 'MONTHLY' }, select: { amount: true, type: true } }),
+    // Fix 1+5: projection data in main Promise.all — include names for breakdown
+    db.incomeSource.findMany({ where: { userId: uid, isRecurring: true }, select: { id: true, name: true, amount: true } }),
+    db.recurringTransaction.findMany({ where: { userId: uid, isActive: true, frequency: 'MONTHLY' }, select: { id: true, name: true, amount: true, type: true } }),
     db.personEntry.findMany({
       where:   { userId: uid, type: 'I_OWE_THEM', isSettled: false, installmentGroupId: { not: null } },
-      select:  { amount: true, date: true, installmentGroupId: true, installmentCurrent: true, installmentTotal: true },
+      select:  { id: true, amount: true, date: true, description: true, installmentGroupId: true, installmentCurrent: true, installmentTotal: true },
+      include: { person: { select: { name: true } } },
     }),
     // Fix 1: use RecurringBill templates as monthly fixed expenses (not old isRecurring bills)
-    db.recurringBill.findMany({ where: { userId: uid, isActive: true }, select: { amount: true } }),
+    db.recurringBill.findMany({ where: { userId: uid, isActive: true }, select: { id: true, name: true, amount: true } }),
 
     // Fix 3: budgets for overBudgetCount — merged into main Promise.all
     db.budget.findMany({ where: { userId: uid, month: yearMonth }, select: { categoryId: true, amount: true } }),
@@ -255,48 +256,80 @@ export default withAuth(async (req, res, session) => {
   })
 
   // ── Projections (5 months ahead) ─────────────────────────────────────────────
-  // Fix 1: use RecurringBill templates for fixed monthly expenses
-  const recurringIncome  = (recurringIncomeSources as { amount: unknown }[]).reduce((s, r) => s + Number(r.amount), 0)
-    + (recurringTransactionItems as { amount: unknown; type: string }[])
-        .filter(r => r.type === 'INCOME').reduce((s, r) => s + Number(r.amount), 0)
 
-  const recurringExpense = (recurringTransactionItems as { amount: unknown; type: string }[])
-    .filter(r => r.type === 'EXPENSE').reduce((s, r) => s + Number(r.amount), 0)
-    + (recurringBillTemplates as { amount: unknown }[]).reduce((s, b) => s + Number(b.amount), 0)
+  type SrcItem  = { id: string; name: string; amount: unknown }
+  type TxItem   = { id: string; name: string; amount: unknown; type: string }
+  type PeItem   = { id: string; amount: unknown; date: unknown; description: string; installmentGroupId: string | null; person?: { name: string } }
+  type BillItem = { id: string; name: string; amount: unknown }
 
-  const personGroupMap = new Map<string, number>()
-  for (const e of pendingPersonEntries as { installmentGroupId: string | null; amount: unknown }[]) {
+  const incomeSources = recurringIncomeSources  as SrcItem[]
+  const recurringTxs  = recurringTransactionItems as TxItem[]
+  const billTpls      = recurringBillTemplates   as BillItem[]
+  const personEntries = pendingPersonEntries as PeItem[]
+
+  const recurringIncome  = incomeSources.reduce((s, r) => s + Number(r.amount), 0)
+    + recurringTxs.filter(r => r.type === 'INCOME').reduce((s, r) => s + Number(r.amount), 0)
+
+  const recurringExpense = recurringTxs.filter(r => r.type === 'EXPENSE').reduce((s, r) => s + Number(r.amount), 0)
+    + billTpls.reduce((s, b) => s + Number(b.amount), 0)
+
+  // Person installment groups — one entry = one monthly obligation
+  const personGroupMap = new Map<string, PeItem>()
+  for (const e of personEntries) {
     if (e.installmentGroupId && !personGroupMap.has(e.installmentGroupId)) {
-      personGroupMap.set(e.installmentGroupId, Number(e.amount))
+      personGroupMap.set(e.installmentGroupId, e)
     }
   }
-  const monthlyPersonObligation = Array.from(personGroupMap.values()).reduce((s, v) => s + v, 0)
+  const monthlyPersonObligation = Array.from(personGroupMap.values()).reduce((s, e) => s + Number(e.amount), 0)
 
   const projIncome     = recurringIncome > 0 ? recurringIncome : totalIncome
   const currentBalance = totalIncome - totalExpense
 
+  // Bug 2 fix: use addMonths for correct month arithmetic (avoids skipping Feb)
+  // Bug 3 fix: use startOfMonth so month key is always the 1st of the month
   const projected = Array.from({ length: 5 }, (_, i) => {
-    const d      = addDays(mE, (i + 1) * 30)
-    const mStart = new Date(d.getFullYear(), d.getMonth(), 1)
-    const mEnd   = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59)
+    const projMonth = addMonths(startOfMonth(now), i + 1)
+    const mStart    = startOfMonth(projMonth)
+    const mEnd      = endOfMonth(projMonth)
 
-    const personExpInMonth = (pendingPersonEntries as { date: unknown; amount: unknown }[])
-      .filter(e => { const ed = new Date(e.date as string); return ed >= mStart && ed <= mEnd })
-      .reduce((s, e) => s + Number(e.amount), 0)
-
-    const monthPersonExp = personExpInMonth > 0 ? personExpInMonth : monthlyPersonObligation
-    const monthExpense   = recurringExpense + monthPersonExp
+    // Person entries due in this specific projected month
+    const personInMonth = personEntries.filter(e => {
+      const ed = new Date(e.date as string)
+      return ed >= mStart && ed <= mEnd
+    })
+    const personExpInMonth = personInMonth.reduce((s, e) => s + Number(e.amount), 0)
+    const monthPersonExp   = personExpInMonth > 0 ? personExpInMonth : monthlyPersonObligation
+    const monthExpense     = recurringExpense + monthPersonExp
 
     const cumulativeIncome  = projIncome * (i + 1)
-    const cumulativeExpense = recurringExpense * (i + 1) + (pendingPersonEntries as { date: unknown; amount: unknown }[])
-      .filter(e => new Date(e.date as string) <= mEnd && new Date(e.date as string) > mS)
+    const cumulativeExpense = recurringExpense * (i + 1) + personEntries
+      .filter(e => { const ed = new Date(e.date as string); return ed <= mEnd && ed > mS })
       .reduce((s, e) => s + Number(e.amount), 0)
 
+    // Bug 1 fix: populate incomeItems and expenseItems breakdown
+    const incomeItems = {
+      sources:   incomeSources.map(r => ({ id: r.id, label: r.name, amount: Number(r.amount), icon: '💰' })),
+      recurring: recurringTxs.filter(r => r.type === 'INCOME').map(r => ({ id: r.id, label: r.name, amount: Number(r.amount), icon: '↻' })),
+      people:    [] as { id: string; label: string; amount: number; icon: string }[],  // person receivables not in scope
+    }
+    const expenseItems = {
+      bills:     billTpls.map(b => ({ id: b.id, label: b.name, amount: Number(b.amount), icon: '📄' })),
+      recurring: recurringTxs.filter(r => r.type === 'EXPENSE').map(r => ({ id: r.id, label: r.name, amount: Number(r.amount), icon: '↻' })),
+      people:    personInMonth.map(e => ({
+        id:     e.id,
+        label:  e.person?.name ? `${e.person.name} · ${e.description}` : e.description,
+        amount: Number(e.amount),
+        icon:   '👤',
+      })),
+    }
+
     return {
-      month:            d.toISOString(),
+      month:            mStart.toISOString(),   // always 1st of the month
       projectedIncome:  projIncome,
       projectedExpense: monthExpense,
       projectedBalance: currentBalance + cumulativeIncome - cumulativeExpense,
+      incomeItems,
+      expenseItems,
     }
   })
 
