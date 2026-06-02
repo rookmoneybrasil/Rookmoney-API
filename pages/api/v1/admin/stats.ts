@@ -9,9 +9,23 @@ export default withBackofficeAuth(async (_req, res) => {
   const weekAgo    = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  const [total, pro, newToday, newThisWeek, newThisMonth, totalTransactions, transactionsThisMonth, totalGoals, recentUsers, openFeedback] = await Promise.all([
+  const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const prevMonthEnd   = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
+
+  const [
+    total, pro,
+    prevMonthNewUsers,
+    newToday, newThisWeek, newThisMonth,
+    totalTransactions, transactionsThisMonth, totalGoals,
+    recentUsers, openFeedback,
+    recentFeedback,
+    newProThisMonth,
+    churnThisMonth,
+    recentLogs,
+  ] = await Promise.all([
     db.user.count(),
     db.user.count({ where: { plan: 'PRO' } }),
+    db.user.count({ where: { createdAt: { gte: prevMonthStart, lte: prevMonthEnd } } }),
     db.user.count({ where: { createdAt: { gte: today } } }),
     db.user.count({ where: { createdAt: { gte: weekAgo } } }),
     db.user.count({ where: { createdAt: { gte: monthStart } } }),
@@ -20,6 +34,15 @@ export default withBackofficeAuth(async (_req, res) => {
     db.goal.count({ where: { isCompleted: false } }),
     db.user.findMany({ orderBy: { createdAt: 'desc' }, take: 8, select: { id: true, name: true, email: true, plan: true, createdAt: true } }),
     db.feedback.count({ where: { status: 'open' } }),
+    db.feedback.findMany({
+      where: { status: 'open' },
+      orderBy: { createdAt: 'desc' },
+      take: 3,
+      select: { id: true, type: true, title: true, createdAt: true, user: { select: { name: true } } },
+    }),
+    db.adminLog.count({ where: { action: 'plan_change', details: { contains: 'para PRO' }, createdAt: { gte: monthStart } } }),
+    db.adminLog.count({ where: { action: 'plan_change', details: { contains: 'para FREE' }, createdAt: { gte: monthStart } } }),
+    db.adminLog.findMany({ orderBy: { createdAt: 'desc' }, take: 5 }),
   ])
 
   return ok(res, {
@@ -29,6 +52,13 @@ export default withBackofficeAuth(async (_req, res) => {
     totalTransactions, transactionsThisMonth, totalGoals,
     mrr: pro * 19.90, arr: pro * 19.90 * 12,
     openFeedbackCount: openFeedback,
+    newProThisMonth,
+    churnThisMonth,
+    growthVsLastMonth: prevMonthNewUsers > 0
+      ? Math.round(((newThisMonth - prevMonthNewUsers) / prevMonthNewUsers) * 100)
+      : null,
+    recentFeedback,
+    recentLogs,
     recentUsers,
   })
 })
