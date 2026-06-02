@@ -63,7 +63,15 @@ export default withAuth(async (req, res, session) => {
   if (req.method === 'PATCH') {
     const person = await db.person.findFirst({ where: { id, userId: session.userId } })
     if (!person) return notFound(res)
-    const updated = await db.person.update({ where: { id }, data: req.body })
+    const { name, notes, color } = req.body as { name?: string; notes?: string; color?: string }
+    const updated = await db.person.update({
+      where: { id },
+      data: {
+        ...(name  !== undefined && { name  }),
+        ...(notes !== undefined && { notes: notes || null }),
+        ...(color !== undefined && { color: color || null }),
+      },
+    })
     return ok(res, updated)
   }
 
