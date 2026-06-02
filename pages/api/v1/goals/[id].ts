@@ -22,12 +22,15 @@ export default withAuth(async (req, res, session) => {
       where: { OR: [{ isDefault: true }, { userId: session.userId }] }, orderBy: { isDefault: 'desc' },
     })
 
-    await db.goal.update({ where: { id }, data: { currentAmount: newAmount, isCompleted, completedAt: isCompleted ? new Date() : null } })
-    await db.transaction.create({
-      data: { amount: amountNum, type: 'EXPENSE', description: `Aporte — ${goal.name}`, date: new Date(), userId: session.userId, categoryId: cat?.id! },
-    })
+    if (!cat?.id) return badRequest(res, 'Categoria não encontrada. Configure uma categoria padrão.')
 
-    const contrib = await db.goalContribution.create({ data: { goalId: id, amount: amountNum, note: note ?? null } })
+    const [, , contrib] = await db.$transaction([
+      db.goal.update({ where: { id }, data: { currentAmount: newAmount, isCompleted, completedAt: isCompleted ? new Date() : null } }),
+      db.transaction.create({
+        data: { amount: amountNum, type: 'EXPENSE', description: `Aporte — ${goal.name}`, date: new Date(), userId: session.userId, categoryId: cat.id },
+      }),
+      db.goalContribution.create({ data: { goalId: id, amount: amountNum, note: note ?? null } }),
+    ])
     return created(res, contrib)
   }
 

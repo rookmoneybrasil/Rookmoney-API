@@ -52,22 +52,30 @@ export default withAuth(async (req, res, session) => {
   const periodExpense = monthly.reduce((s, m) => s + m.totalExpense, 0)
   const bestMonth     = monthly.reduce((best, m) => m.balance > (best?.balance ?? -Infinity) ? m : best, monthly[0])
 
-  // Category trend
-  const catMap = new Map<string, { name: string; icon: string; color: string; total: number; prevTotal: number }>()
+  // Category trend — compare most recent month vs previous month, not period vs 1 month
+  const currStart = startOfMonth(endDate)
+  const currEnd   = endOfMonth(endDate)
   const prevStart = startOfMonth(subMonths(endDate, 1))
   const prevEnd   = endOfMonth(subMonths(endDate, 1))
+
+  const catMap = new Map<string, { name: string; icon: string; color: string; total: number; currTotal: number; prevTotal: number }>()
   allTxs.filter(t => t.type === 'EXPENSE').forEach(tx => {
-    const entry = catMap.get(tx.categoryId) ?? { name: tx.category.name, icon: tx.category.icon, color: tx.category.color, total: 0, prevTotal: 0 }
+    const entry  = catMap.get(tx.categoryId) ?? { name: tx.category.name, icon: tx.category.icon, color: tx.category.color, total: 0, currTotal: 0, prevTotal: 0 }
+    const txDate = new Date(tx.date)
     entry.total += Number(tx.amount)
-    if (new Date(tx.date) >= prevStart && new Date(tx.date) <= prevEnd) entry.prevTotal += Number(tx.amount)
+    if (txDate >= currStart && txDate <= currEnd) entry.currTotal += Number(tx.amount)
+    if (txDate >= prevStart && txDate <= prevEnd) entry.prevTotal += Number(tx.amount)
     catMap.set(tx.categoryId, entry)
   })
   const totalExpForPct = Array.from(catMap.values()).reduce((s, v) => s + v.total, 0)
   const categoryTrend = Array.from(catMap.entries())
     .map(([id, v]) => ({
-      categoryId: id, ...v,
-      change: v.prevTotal > 0 ? Math.round(((v.total - v.prevTotal) / v.prevTotal) * 100) : 0,
-      delta:  v.total - v.prevTotal,
+      categoryId: id,
+      name: v.name, icon: v.icon, color: v.color,
+      total:     v.total,
+      prevTotal: v.prevTotal,
+      change: v.prevTotal > 0 ? Math.round(((v.currTotal - v.prevTotal) / v.prevTotal) * 100) : 0,
+      delta:  v.currTotal - v.prevTotal,
       pct:    totalExpForPct > 0 ? Math.round((v.total / totalExpForPct) * 100) : 0,
     }))
     .sort((a, b) => b.total - a.total).slice(0, 10)

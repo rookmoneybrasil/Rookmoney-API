@@ -16,7 +16,7 @@ export default withAuth(async (req, res, session) => {
 
   const [
     incomeSources,
-    recurringBills,
+    recurringBillTemplates,  // Bug 1 fix: RecurringBill templates, not old isRecurring bills
     recurringTxs,
     personPayables,
     upcomingBills,
@@ -27,9 +27,10 @@ export default withAuth(async (req, res, session) => {
       where:  { userId: uid, isRecurring: true },
       select: { id: true, name: true, amount: true, dayOfMonth: true, type: true },
     }),
-    db.bill.findMany({
-      where:  { userId: uid, isPaid: false, isRecurring: true },
-      select: { id: true, name: true, amount: true, dueDate: true },
+    // Bug 1 fix: use RecurringBill templates (isRecurring flag retired after migration)
+    db.recurringBill.findMany({
+      where:  { userId: uid, isActive: true },
+      select: { id: true, name: true, amount: true, dayOfMonth: true },
     }),
     db.recurringTransaction.findMany({
       where:  { userId: uid, isActive: true, frequency: 'MONTHLY', type: 'EXPENSE' },
@@ -39,19 +40,18 @@ export default withAuth(async (req, res, session) => {
       where:   { userId: uid, type: 'I_OWE_THEM', isSettled: false },
       include: { person: { select: { name: true } } },
     }),
+    // Bug 2 fix: all unpaid bills — isRecurring is now always false after migration
     db.bill.findMany({
       where: {
-        userId: uid, isPaid: false, isRecurring: false,
+        userId: uid, isPaid: false,
         dueDate: { gte: startOfMonth(now), lte: endOfMonth(addMonths(now, months - 1)) },
       },
-      select: { id: true, name: true, amount: true, dueDate: true },
+      select: { id: true, name: true, amount: true, dueDate: true, recurringBillId: true },
     }),
-    // Overdue bills (dueDate before today, still unpaid)
     db.bill.findMany({
-      where: { userId: uid, isPaid: false, dueDate: { lt: now } },
-      select: { id: true, name: true, amount: true, dueDate: true, isRecurring: true },
+      where:  { userId: uid, isPaid: false, dueDate: { lt: now } },
+      select: { id: true, name: true, amount: true, dueDate: true, recurringBillId: true },
     }),
-    // Actual transactions for current + past months in the range
     db.transaction.findMany({
       where: {
         userId: uid,
@@ -108,9 +108,9 @@ export default withAuth(async (req, res, session) => {
 
       // For current month: also add PENDING items (not yet paid/received)
       if (isCurrent) {
-        // Pending bills
-        for (const b of [...upcomingBills, ...recurringBills]) {
-          const due = new Date(b.dueDate)
+        // Pending bills (all unpaid bills for this month, already fetched in upcomingBills)
+        for (const b of upcomingBills) {
+          const due = new Date((b as { dueDate: unknown }).dueDate as string)
           if (due >= mS && due <= mE) {
             expenseItems.push({
               id:    `pending-bill-${b.id}`,
@@ -168,40 +168,25 @@ export default withAuth(async (req, res, session) => {
         href:   '/income',
       }))
 
-      for (const b of recurringBills) {
-        const dueDay    = new Date(b.dueDate).getDate()
-        const isOverdue = new Date(b.dueDate) < now
-
-        if (isOverdue) {
-          // 1. The unpaid overdue entry (outstanding debt from past month)
-          expenseItems.push({
-            id:      `rbill-overdue-${b.id}-${mKey}`,
-            label:   b.name,
-            amount:  Number(b.amount),
-            day:     Math.min(dueDay, maxDay),
-            type:    'bill',
-            href:    '/bills',
-            overdue: true,
-          })
-          // 2. The new projected occurrence for this month
-          expenseItems.push({
-            id:     `rbill-new-${b.id}-${mKey}`,
-            label:  b.name,
-            amount: Number(b.amount),
-            day:    Math.min(dueDay, maxDay),
-            type:   'bill',
-            href:   '/bills',
-          })
-        } else {
-          expenseItems.push({
-            id:     `rbill-${b.id}-${mKey}`,
-            label:  b.name,
-            amount: Number(b.amount),
-            day:    Math.min(dueDay, maxDay),
-            type:   'bill',
-            href:   '/bills',
-          })
-        }
+      // Bug 1+2 fix: use RecurringBill templates for future months.
+      // upcomingBills already covers generated instances; templates fill in
+      // months where no bill has been generated yet (avoiding duplicates via
+      // the upcomingBills check above).
+      const upcomingRecurringIds = new Set(
+        upcomingBills
+          .filter(b => b.recurringBillId && new Date((b as { dueDate: unknown }).dueDate as string) >= mS && new Date((b as { dueDate: unknown }).dueDate as string) <= mE)
+          .map(b => b.recurringBillId)
+      )
+      for (const t of recurringBillTemplates) {
+        if (upcomingRecurringIds.has(t.id)) continue  // already in upcomingBills for this month
+        expenseItems.push({
+          id:    `rbill-${t.id}-${mKey}`,
+          label: t.name,
+          amount: Number(t.amount),
+          day:   Math.min(t.dayOfMonth, maxDay),
+          type:  'bill',
+          href:  '/bills',
+        })
       }
 
       for (const r of recurringTxs) {
@@ -230,10 +215,9 @@ export default withAuth(async (req, res, session) => {
         }
       }
 
-      // Non-recurring overdue bills — show in ALL future months until paid
-      // (recurring overdue ones are already in recurringBills above with overdue:true)
+      // Overdue bills not covered by templates — show in ALL future months until paid
       for (const b of overdueBills) {
-        if (!b.isRecurring) {
+        if (!b.recurringBillId) {  // template-based overdue bills already handled above
           expenseItems.push({
             id:      `overdue-${b.id}-${mKey}`,
             label:   b.name,
