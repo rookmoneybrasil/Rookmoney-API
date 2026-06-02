@@ -15,14 +15,19 @@ export default withAuth(async (req, res, session) => {
       where:   { userId: session.userId, month },
       include: { category: { select: { id: true, name: true, icon: true, color: true } } },
     })
-    // Attach spent amounts
+    if (!budgets.length) return ok(res, [])
+
+    // Bug 4 fix: single query for all spending, grouped in memory — no N+1
     const [y, m] = month.split('-').map(Number)
     const start = new Date(y, m - 1, 1)
     const end   = new Date(y, m, 0, 23, 59, 59, 999)
-    const result = await Promise.all(budgets.map(async (b) => {
-      const spent = await db.transaction.aggregate({ where: { userId: session.userId, categoryId: b.categoryId, type: 'EXPENSE', date: { gte: start, lte: end } }, _sum: { amount: true } })
-      return { ...b, spent: Number(spent._sum.amount ?? 0) }
-    }))
+    const spentTxs = await db.transaction.findMany({
+      where:  { userId: session.userId, type: 'EXPENSE', date: { gte: start, lte: end }, categoryId: { in: budgets.map(b => b.categoryId) } },
+      select: { categoryId: true, amount: true },
+    })
+    const spentMap = new Map<string, number>()
+    for (const tx of spentTxs) spentMap.set(tx.categoryId, (spentMap.get(tx.categoryId) ?? 0) + Number(tx.amount))
+    const result = budgets.map(b => ({ ...b, spent: spentMap.get(b.categoryId) ?? 0 }))
     return ok(res, result)
   }
 

@@ -35,21 +35,27 @@ export default withAuth(async (req, res, session) => {
 
   // ── POST /api/v1/transactions ─────────────────────────────────────────────
   if (req.method === 'POST') {
+    const { amount, type, description, date, categoryId } = req.body
+    if (!amount || !type || !date || !categoryId) return badRequest(res, 'Campos obrigatórios faltando.')
+    if (!['INCOME', 'EXPENSE'].includes(type)) return badRequest(res, 'Tipo inválido.')
+
     const limits = getLimits(session.plan ?? 'FREE')
     if (limits.transactionsPerMonth !== null) {
+      // Bug 6 fix: atomic count + create prevents race condition on limit
       const now   = new Date()
       const start = new Date(now.getFullYear(), now.getMonth(), 1)
       const end   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
-      const count = await db.transaction.count({ where: { userId: session.userId, date: { gte: start, lte: end } } })
-      if (count >= limits.transactionsPerMonth) {
-        return planLimit(res, `Limite de ${limits.transactionsPerMonth} transações por mês atingido. Faça upgrade para o plano PRO.`)
-      }
+      const created_tx = await db.$transaction(async (prisma) => {
+        const count = await prisma.transaction.count({ where: { userId: session.userId, date: { gte: start, lte: end } } })
+        if (count >= limits.transactionsPerMonth!) return null
+        return prisma.transaction.create({
+          data: { amount: parseFloat(amount), type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId },
+          include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+        })
+      })
+      if (!created_tx) return planLimit(res, `Limite de ${limits.transactionsPerMonth} transações por mês atingido. Faça upgrade para o plano PRO.`)
+      return created(res, created_tx)
     }
-
-    const { amount, type, description, date, categoryId } = req.body
-
-    if (!amount || !type || !date || !categoryId) return badRequest(res, 'Campos obrigatórios faltando.')
-    if (!['INCOME', 'EXPENSE'].includes(type)) return badRequest(res, 'Tipo inválido.')
 
     const tx = await db.transaction.create({
       data: { amount: parseFloat(amount), type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId },
