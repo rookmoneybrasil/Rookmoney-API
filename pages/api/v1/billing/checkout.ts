@@ -5,8 +5,9 @@ import { ok, serverError } from '@/lib/respond'
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const origin    = (req.headers.origin as string) ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3001'
-  const returnUrl = `${origin}/settings`
+  // Always use NEXT_PUBLIC_APP_URL — never trust req.headers.origin
+  // (proxy headers can leak localhost in dev when both local and prod are open)
+  const returnUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.rookmoney.com'}/settings`
 
   try {
     const { url } = await createCheckoutSession(session.userId, session.email, returnUrl)
