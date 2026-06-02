@@ -115,6 +115,21 @@ const MIGRATIONS: Migration[] = [
     },
   },
 
+  // ─── 2026-06-03 ─────────────────────────────────────────────────────
+  {
+    id:  '2026-06-03-clear-test-stripe-customer-ids',
+    run: async (db) => {
+      // When we switched from Stripe test mode to production, some users
+      // had test-mode stripeCustomerId (cus_...) stored. These are invalid
+      // in production. Clear them so the billing portal check works correctly.
+      // Users will get a new customerId when they subscribe in production.
+      await db.user.updateMany({
+        where: { stripeCustomerId: { not: null } },
+        data:  { stripeCustomerId: null, stripeSubscriptionId: null },
+      })
+    },
+  },
+
   // ─── Add future migrations below ────────────────────────────────────
   // {
   //   id:  'YYYY-MM-DD-description',
