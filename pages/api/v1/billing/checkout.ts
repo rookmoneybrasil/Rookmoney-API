@@ -7,7 +7,7 @@ export default withAuth(async (req, res, session) => {
 
   // Always use NEXT_PUBLIC_APP_URL — never trust req.headers.origin
   // (proxy headers can leak localhost in dev when both local and prod are open)
-  const returnUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.rookmoney.com'}/settings`
+  const returnUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://rookmoney.com'}/settings`
 
   const annual = req.body?.annual === true
 

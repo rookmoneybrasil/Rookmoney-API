@@ -15,8 +15,7 @@ export default withAuth(async (req, res, session) => {
     return badRequest(res, 'Nenhuma assinatura encontrada.')
   }
 
-  const origin    = (req.headers.origin as string) ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3001'
-  const returnUrl = `${origin}/settings`
+  const returnUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://rookmoney.com'}/settings`
 
   try {
     const { url } = await createBillingPortal(user.stripeCustomerId, returnUrl)
