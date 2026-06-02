@@ -6,17 +6,30 @@ export const config = { api: { bodyParser: false } }
 
 function verifyStripeSignature(payload: string, sigHeader: string, secret: string): boolean {
   try {
+    // Use split with limit so values containing '=' are preserved
     const parts = sigHeader.split(',').reduce<Record<string, string>>((acc, part) => {
-      const [key, val] = part.split('='); acc[key] = val; return acc
+      const idx = part.indexOf('=')
+      if (idx === -1) return acc
+      acc[part.slice(0, idx)] = part.slice(idx + 1)
+      return acc
     }, {})
     const { t: timestamp, v1: signature } = parts
-    if (!timestamp || !signature) return false
+    if (!timestamp || !signature) {
+      console.error('[webhook] Missing t or v1 in sig header:', JSON.stringify(parts))
+      return false
+    }
     const expected    = createHmac('sha256', secret).update(`${timestamp}.${payload}`, 'utf8').digest('hex')
     const expectedBuf = Buffer.from(expected, 'hex')
     const actualBuf   = Buffer.from(signature, 'hex')
-    if (expectedBuf.length !== actualBuf.length) return false
+    if (expectedBuf.length !== actualBuf.length) {
+      console.error('[webhook] Signature length mismatch:', expectedBuf.length, actualBuf.length)
+      return false
+    }
     return timingSafeEqual(expectedBuf, actualBuf)
-  } catch { return false }
+  } catch (e) {
+    console.error('[webhook] Signature verification threw:', e)
+    return false
+  }
 }
 
 async function readRawBody(req: NextApiRequest): Promise<string> {
@@ -37,7 +50,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const rawBody   = await readRawBody(req)
   const sigHeader = (req.headers['stripe-signature'] as string) ?? ''
 
+  console.log('[webhook] secret length:', secret?.length, 'sig header prefix:', sigHeader?.slice(0, 30))
   if (!verifyStripeSignature(rawBody, sigHeader, secret)) {
+    console.error('[webhook] Invalid signature — check STRIPE_WEBHOOK_SECRET matches Stripe dashboard')
     return res.status(400).json({ error: 'Invalid signature' })
   }
 
