@@ -9,9 +9,9 @@ export type CalendarEvent = {
   type:     'bill' | 'income' | 'recurring'
   label:    string
   amount:   number
-  status:   'pending' | 'paid' | 'overdue' | 'expected'
+  status:   'pending' | 'paid' | 'overdue' | 'expected' | 'received'
   href:     string
-  color:    string   // tailwind color key
+  color:    string
 }
 
 export default withAuth(async (req, res, session) => {
@@ -20,38 +20,45 @@ export default withAuth(async (req, res, session) => {
   const now      = new Date()
   const monthStr = (req.query.month as string) ?? format(now, 'yyyy-MM')
   const [y, m]   = monthStr.split('-').map(Number)
-  const monthDate = new Date(y, m - 1, 1)   // local time — avoids UTC timezone shift
+  const monthDate = new Date(y, m - 1, 1)
   const start     = startOfMonth(monthDate)
   const end       = endOfMonth(monthDate)
+  const maxDay    = end.getDate()
   const uid       = session.userId
 
-  const [bills, incomeSources, recurring] = await Promise.all([
-    // Bills with dueDate in this month
+  const [bills, incomeSources, recurring, recurringBills] = await Promise.all([
     db.bill.findMany({
       where:   { userId: uid, dueDate: { gte: start, lte: end } },
-      select:  { id: true, name: true, amount: true, dueDate: true, isPaid: true },
+      select:  { id: true, name: true, amount: true, dueDate: true, isPaid: true, recurringBillId: true },
       orderBy: { dueDate: 'asc' },
     }),
 
-    // All recurring income sources (dayOfMonth optional — defaults to 1)
+    // Bug 3 fix: include lastAutoPayMonth to detect already-received income
     db.incomeSource.findMany({
       where:  { userId: uid, isRecurring: true },
-      select: { id: true, name: true, amount: true, dayOfMonth: true },
+      select: { id: true, name: true, amount: true, dayOfMonth: true, lastAutoPayMonth: true },
     }),
 
-    // All recurring transactions active in this month (dayOfMonth optional — defaults to 1)
     db.recurringTransaction.findMany({
       where:  { userId: uid, isActive: true, frequency: 'MONTHLY' },
       select: { id: true, name: true, amount: true, type: true, dayOfMonth: true },
+    }),
+
+    // Bug 1 fix: fetch RecurringBill templates for future months
+    db.recurringBill.findMany({
+      where:  { userId: uid, isActive: true },
+      select: { id: true, name: true, amount: true, dayOfMonth: true },
     }),
   ])
 
   const events: CalendarEvent[] = []
 
-  // Bills
+  // ── Bills (generated instances) ──────────────────────────────────────────────
+  const coveredTemplateIds = new Set<string>()
   for (const b of bills) {
     const day = new Date(b.dueDate).getDate()
     const isOverdue = !b.isPaid && new Date(b.dueDate) < now
+    if (b.recurringBillId) coveredTemplateIds.add(b.recurringBillId)
     events.push({
       id:     b.id,
       day,
@@ -64,24 +71,40 @@ export default withAuth(async (req, res, session) => {
     })
   }
 
-  const maxDay = endOfMonth(monthDate).getDate()
+  // Bug 1 fix: add RecurringBill templates NOT yet generated for this month
+  for (const t of recurringBills) {
+    if (coveredTemplateIds.has(t.id)) continue  // already covered by a generated bill
+    const day = Math.min(t.dayOfMonth, maxDay)
+    events.push({
+      id:     `recbill-${t.id}`,
+      day,
+      type:   'bill',
+      label:  t.name,
+      amount: Number(t.amount),
+      status: 'expected',   // not yet generated — shown as preview
+      href:   '/bills',
+      color:  'warning',
+    })
+  }
 
-  // Income sources (recurring) — dayOfMonth null → dia 1
+  // ── Income sources ────────────────────────────────────────────────────────────
   for (const s of incomeSources) {
     const day = Math.min(s.dayOfMonth ?? 1, maxDay)
+    // Bug 3 fix: show as 'received' if already processed this month
+    const alreadyReceived = s.lastAutoPayMonth === monthStr
     events.push({
       id:     `income-${s.id}`,
       day,
       type:   'income',
       label:  s.name,
       amount: Number(s.amount),
-      status: 'expected',
+      status: alreadyReceived ? 'received' : 'expected',
       href:   '/income',
-      color:  'success',
+      color:  alreadyReceived ? 'success' : 'success',
     })
   }
 
-  // Recurring transactions — dayOfMonth null → dia 1
+  // ── Recurring transactions ────────────────────────────────────────────────────
   for (const r of recurring) {
     const day = Math.min(r.dayOfMonth ?? 1, maxDay)
     if (day < 1 || day > maxDay) continue
@@ -105,9 +128,9 @@ export default withAuth(async (req, res, session) => {
   }
 
   return ok(res, {
-    month:   monthStr,
-    daysInMonth: endOfMonth(monthDate).getDate(),
-    firstWeekday: startOfMonth(monthDate).getDay(), // 0=Sun
+    month:        monthStr,
+    daysInMonth:  maxDay,
+    firstWeekday: startOfMonth(monthDate).getDay(),
     events,
     byDay,
   })
