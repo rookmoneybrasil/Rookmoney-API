@@ -113,10 +113,12 @@ async function processRecurringBills(userId: string) {
   const y = now.getFullYear()
   const m = now.getMonth() // 0-based
 
-  const templates = await db.recurringBill.findMany({ where: { userId, isActive: true } })
+  const templates = await db.recurringBill.findMany({
+    where: { userId, isActive: true, OR: [{ lastAutoMonth: null }, { lastAutoMonth: { not: yearMonth } }] },
+  })
+  if (templates.length === 0) return
 
   for (const t of templates) {
-    if (t.lastAutoMonth === yearMonth) continue
     // No day-of-month gate — bills are generated at month start so users see them immediately.
 
     const day     = Math.min(t.dayOfMonth, new Date(y, m + 1, 0).getDate())

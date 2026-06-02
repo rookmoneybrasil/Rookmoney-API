@@ -71,6 +71,18 @@ export default withAuth(async (req, res, session) => {
 
   if (req.method === 'DELETE') {
     await db.bill.deleteMany({ where: { id, userId: session.userId } })
+
+    // Fix 3: if this bill was generated from a RecurringBill template, mark
+    // the template as "already handled this month" so it won't regenerate.
+    // Semantic: deleting = "skip this month, generate next month as usual."
+    if (bill.recurringBillId) {
+      const yearMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
+      await db.recurringBill.updateMany({
+        where: { id: bill.recurringBillId, userId: session.userId },
+        data:  { lastAutoMonth: yearMonth },
+      })
+    }
+
     return noContent(res)
   }
 

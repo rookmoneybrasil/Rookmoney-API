@@ -45,11 +45,11 @@ async function processRecurringBills(uid: string) {
   const now       = new Date()
   const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
   const y = now.getFullYear(), m = now.getMonth()
-  const templates = await db.recurringBill.findMany({ where: { userId: uid, isActive: true } })
+  const templates = await db.recurringBill.findMany({
+    where: { userId: uid, isActive: true, OR: [{ lastAutoMonth: null }, { lastAutoMonth: { not: yearMonth } }] },
+  })
+  if (templates.length === 0) return
   for (const t of templates) {
-    // Generate at month start regardless of dayOfMonth — bill dueDate handles the timeline.
-    // Income/recurring transactions wait for the day; bills should be visible from day 1.
-    if (t.lastAutoMonth === yearMonth) continue
     const day = Math.min(t.dayOfMonth, new Date(y, m + 1, 0).getDate())
     const dueDate = new Date(Date.UTC(y, m, day, 12, 0, 0))
     const exists = await db.bill.findFirst({ where: { userId: uid, recurringBillId: t.id, dueDate: { gte: new Date(Date.UTC(y, m, 1)), lte: new Date(Date.UTC(y, m + 1, 0, 23, 59, 59)) } } })
