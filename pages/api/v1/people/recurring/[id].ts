@@ -9,11 +9,23 @@ export default withAuth(async (req, res, session) => {
   const item = await db.personEntryRecurring.findFirst({ where: { id, userId: uid } })
   if (!item) return notFound(res)
 
-  // PATCH — pause/resume or update
+  // PATCH — update any fields or pause/resume
   if (req.method === 'PATCH') {
+    const { isActive, description, amount, dayOfMonth, categoryId, notes } = req.body
     const updated = await db.personEntryRecurring.update({
       where: { id },
-      data:  { isActive: req.body.isActive ?? item.isActive },
+      data: {
+        ...(isActive    !== undefined && { isActive:    Boolean(isActive) }),
+        ...(description !== undefined && { description }),
+        ...(amount      !== undefined && { amount:      parseFloat(amount) }),
+        ...(dayOfMonth  !== undefined && { dayOfMonth:  Math.min(Math.max(parseInt(dayOfMonth), 1), 28) }),
+        ...(categoryId  !== undefined && { categoryId:  categoryId || null }),
+        ...(notes       !== undefined && { notes:       notes || null }),
+      },
+      include: {
+        person:   { select: { id: true, name: true, color: true } },
+        category: { select: { id: true, name: true, icon: true, color: true } },
+      },
     })
     return ok(res, updated)
   }
