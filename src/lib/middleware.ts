@@ -30,8 +30,12 @@ export function withAuth(handler: AuthHandler, methods?: Methods[]) {
     try {
       const session = await getSessionFromRequest(req)
       if (!session) return unauthorized(res)
-      // Attach plan from DB (needed for plan enforcement)
-      const user = await db.user.findUnique({ where: { id: session.userId }, select: { plan: true } })
+      const user = await db.user.findUnique({ where: { id: session.userId }, select: { plan: true, tokenVersion: true } })
+      // Fix 5: reject tokens issued before the current tokenVersion (revocation)
+      if (user?.tokenVersion !== undefined && session.tokenVersion !== undefined &&
+          session.tokenVersion < user.tokenVersion) {
+        return unauthorized(res, 'Sessão expirada. Faça login novamente.')
+      }
       await handler(req, res, { ...session, plan: user?.plan ?? 'FREE' })
     } catch (err) {
       serverError(res, err)

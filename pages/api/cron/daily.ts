@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '@/lib/db'
 import { format, addDays, startOfMonth, endOfMonth, subMonths } from 'date-fns'
 import { sendBillReminderEmail, sendMonthlySummaryEmail } from '@/lib/email'
+import { cleanupExpiredLimits } from '@/lib/rate-limit'
 
 async function migrateOldRecurring(userId: string) {
   const now = new Date()
@@ -238,6 +239,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Send notifications (fire-and-forget — don't block cron response)
   sendNotifications().catch(e => console.error('[notify] fatal:', e))
+  cleanupExpiredLimits().catch(e => console.error('[rate-limit] cleanup failed:', e))
 
   return res.status(200).json({ ok: true, processed, errors })
 }

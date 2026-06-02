@@ -1,19 +1,10 @@
+/**
+ * Persistent rate limiting via PostgreSQL.
+ * Replaces the in-memory Map which reset on every deploy.
+ */
+
 import type { NextApiRequest } from 'next'
-
-interface RateLimitEntry {
-  count:   number
-  resetAt: number
-}
-
-const store = new Map<string, RateLimitEntry>()
-
-// Clean up expired entries periodically
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, entry] of store.entries()) {
-    if (now > entry.resetAt) store.delete(key)
-  }
-}, 60_000)
+import { db } from './db'
 
 export interface RateLimitResult {
   allowed:   boolean
@@ -21,29 +12,39 @@ export interface RateLimitResult {
   resetAt:   number
 }
 
-export function rateLimit(
+export async function rateLimit(
   key:        string,
   maxAttempts = 5,
   windowMs    = 15 * 60 * 1000,
-): RateLimitResult {
-  const now   = Date.now()
-  const entry = store.get(key)
+): Promise<RateLimitResult> {
+  const now     = new Date()
+  const resetAt = new Date(Date.now() + windowMs)
 
-  if (!entry || now > entry.resetAt) {
-    store.set(key, { count: 1, resetAt: now + windowMs })
-    return { allowed: true, remaining: maxAttempts - 1, resetAt: now + windowMs }
+  const existing = await db.rateLimit.findUnique({ where: { id: key } })
+
+  if (!existing || existing.resetAt < now) {
+    await db.rateLimit.upsert({
+      where:  { id: key },
+      update: { count: 1, resetAt },
+      create: { id: key, count: 1, resetAt },
+    })
+    return { allowed: true, remaining: maxAttempts - 1, resetAt: resetAt.getTime() }
   }
 
-  if (entry.count >= maxAttempts) {
-    return { allowed: false, remaining: 0, resetAt: entry.resetAt }
+  if (existing.count >= maxAttempts) {
+    return { allowed: false, remaining: 0, resetAt: existing.resetAt.getTime() }
   }
 
-  entry.count++
-  return { allowed: true, remaining: maxAttempts - entry.count, resetAt: entry.resetAt }
+  await db.rateLimit.update({ where: { id: key }, data: { count: { increment: 1 } } })
+  return {
+    allowed:   true,
+    remaining: maxAttempts - existing.count - 1,
+    resetAt:   existing.resetAt.getTime(),
+  }
 }
 
-export function resetLimit(key: string) {
-  store.delete(key)
+export async function resetLimit(key: string) {
+  await db.rateLimit.deleteMany({ where: { id: key } }).catch(() => {})
 }
 
 export function getIp(req: NextApiRequest): string {
@@ -60,4 +61,8 @@ export function tooManyRequests(res: Parameters<typeof import('./respond').badRe
     error: `Muitas tentativas. Aguarde ${Math.ceil(secs / 60)} minuto(s) antes de tentar novamente.`,
     code:  'RATE_LIMITED',
   })
+}
+
+export async function cleanupExpiredLimits() {
+  await db.rateLimit.deleteMany({ where: { resetAt: { lt: new Date() } } })
 }

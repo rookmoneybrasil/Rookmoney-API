@@ -40,6 +40,7 @@ model User {
   chatUsageCount      Int       @default(0)
   scannerUsageMonth   String?
   scannerUsageCount   Int       @default(0)
+  tokenVersion        Int       @default(0)  // increment to invalidate all existing JWTs
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
@@ -372,4 +373,15 @@ model Feedback {
 model DataMigration {
   id    String   @id   // e.g. "2026-06-02-migrate-recurring-bills"
   ranAt DateTime @default(now())
+}
+
+// ─── RateLimit ────────────────────────────────────────────────────────────────
+// Persistent rate limiting (survives deploys). Replaces in-memory Map.
+
+model RateLimit {
+  id      String   @id           // e.g. "login:ip:1.2.3.4"
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
 }

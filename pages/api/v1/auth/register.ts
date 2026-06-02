@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'POST') return res.status(405).end()
 
   // Rate limit: 5 registros por IP a cada hora
-  const rl = rateLimit(`register:${getIp(req)}`, 5, 60 * 60 * 1000)
+  const rl = await rateLimit(`register:${getIp(req)}`, 5, 60 * 60 * 1000)
   if (!rl.allowed) return tooManyRequests(res, rl.resetAt)
 
   const { name, email, password } = req.body as { name: string; email: string; password: string }

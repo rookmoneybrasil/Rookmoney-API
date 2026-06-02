@@ -7,11 +7,14 @@ async function resendPost(body: Record<string, unknown>): Promise<void> {
   const key = process.env.RESEND_API_KEY
   if (!key) { console.warn('[email] RESEND_API_KEY not set — skipping email'); return }
 
+  const controller = new AbortController()
+  const timeout    = setTimeout(() => controller.abort(), 10_000)
   const res = await fetch('https://api.resend.com/emails', {
     method:  'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body:    JSON.stringify(body),
-  })
+    signal:  controller.signal,
+  }).finally(() => clearTimeout(timeout))
   if (!res.ok) {
     const err = await res.json().catch(() => ({})) as { message?: string }
     console.error('[email] Resend error:', err?.message)

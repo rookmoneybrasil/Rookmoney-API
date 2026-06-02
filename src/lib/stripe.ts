@@ -9,15 +9,18 @@ function stripeAuth() {
 }
 
 async function stripePost(path: string, body: Record<string, string>) {
-  const params = new URLSearchParams(body)
+  const params     = new URLSearchParams(body)
+  const controller = new AbortController()
+  const timeout    = setTimeout(() => controller.abort(), 15_000) // 15s timeout
   const res = await fetch(`https://api.stripe.com${path}`, {
     method:  'POST',
     headers: {
       Authorization:  stripeAuth(),
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: params.toString(),
-  })
+    body:   params.toString(),
+    signal: controller.signal,
+  }).finally(() => clearTimeout(timeout))
 
   const data = await res.json()
   if (!res.ok) {

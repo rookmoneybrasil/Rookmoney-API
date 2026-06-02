@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Rate limit: 10 tentativas por IP a cada 15 min
   const ip  = getIp(req)
   const key = `login:${ip}`
-  const rl  = rateLimit(key, 10, 15 * 60 * 1000)
+  const rl  = await rateLimit(key, 10, 15 * 60 * 1000)
   if (!rl.allowed) return tooManyRequests(res, rl.resetAt)
 
   const { email, password, rememberMe = true } = req.body as {
@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (!email || !password) return badRequest(res, 'E-mail e senha são obrigatórios.')
 
-  const user = await db.user.findUnique({ where: { email: email.toLowerCase().trim() } })
+  const user = await db.user.findUnique({ where: { email: email.toLowerCase().trim() }, select: { id: true, name: true, email: true, password: true, plan: true, tokenVersion: true } })
   if (!user)          return unauthorized(res, 'E-mail ou senha incorretos.')
   if (!user.password) return unauthorized(res, 'Esta conta usa login pelo Google.')
 
@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Reset rate limit on successful login
   resetLimit(key)
 
-  const token = await createToken({ userId: user.id, name: user.name, email: user.email }, rememberMe)
+  const token = await createToken({ userId: user.id, name: user.name, email: user.email, tokenVersion: user.tokenVersion }, rememberMe)
 
   const maxAge = rememberMe ? 60 * 60 * 24 * 30 : undefined
   res.setHeader('Set-Cookie', serialize('rook_session', token, {
