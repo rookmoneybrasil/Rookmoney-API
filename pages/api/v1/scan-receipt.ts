@@ -15,9 +15,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const session = await getSessionFromRequest(req)
   if (!session) return res.status(401).json({ error: 'Não autenticado' })
 
-  const user = await db.user.findUnique({ where: { id: session.userId }, select: { plan: true } })
+  const yearMonth = format(new Date(), 'yyyy-MM')
+  const user = await db.user.findUnique({
+    where:  { id: session.userId },
+    select: { plan: true, scannerUsageMonth: true, scannerUsageCount: true },
+  })
   const limits = getLimits(user?.plan ?? 'FREE')
   if (limits.scanner === null) return res.status(403).json({ ok: false, error: 'Scanner de recibo é exclusivo do plano PRO.', code: 'PRO_REQUIRED' })
+
+  // Persistent monthly usage tracking
+  const currentCount = user?.scannerUsageMonth === yearMonth ? (user.scannerUsageCount ?? 0) : 0
+  const monthLimit   = limits.scanner ?? 20
+  if (currentCount >= monthLimit) {
+    return res.status(429).json({ ok: false, error: `Limite de ${monthLimit} scans/mês atingido.`, code: 'SCANNER_LIMIT' })
+  }
+  await db.user.update({
+    where: { id: session.userId },
+    data:  { scannerUsageMonth: yearMonth, scannerUsageCount: currentCount + 1 },
+  })
 
   const { imageBase64, mediaType } = req.body as {
     imageBase64: string

@@ -80,24 +80,33 @@ async function executeTool(name: string, input: Record<string, unknown>, userId:
   } catch (err) { return `Erro: ${err instanceof Error ? err.message : 'desconhecido'}` }
 }
 
-// Rate limiter
-const rateLimiter = new Map<string, { count: number; resetAt: number }>()
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now(), entry = rateLimiter.get(userId)
-  if (!entry || now > entry.resetAt) { rateLimiter.set(userId, { count: 1, resetAt: now + 3600000 }); return true }
-  if (entry.count >= 30) return false
-  entry.count++; return true
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
 
   const session = await getSessionFromRequest(req)
   if (!session) return res.status(401).json({ error: 'Não autenticado' })
 
-  const user = await db.user.findUnique({ where: { id: session.userId }, select: { plan: true } })
+  const limits   = getLimits(session.plan ?? 'FREE')
+  const yearMonth = format(new Date(), 'yyyy-MM')
+
+  const user = await db.user.findUnique({
+    where:  { id: session.userId },
+    select: { plan: true, chatUsageMonth: true, chatUsageCount: true },
+  })
   if (!user || user.plan !== 'PRO') return res.status(403).json({ error: 'pro_required', message: 'O assistente Rook é exclusivo do plano Pro.' })
-  if (!checkRateLimit(session.userId)) return res.status(429).json({ error: 'rate_limited', message: 'Limite de 30 mensagens/hora atingido.' })
+
+  // Persistent monthly usage tracking (persists across deploys)
+  const currentCount = user.chatUsageMonth === yearMonth ? user.chatUsageCount : 0
+  const monthLimit   = limits.chat ?? 30
+  if (currentCount >= monthLimit) {
+    return res.status(429).json({ error: 'rate_limited', message: `Limite de ${monthLimit} mensagens/mês atingido.` })
+  }
+
+  // Increment usage counter
+  await db.user.update({
+    where: { id: session.userId },
+    data: { chatUsageMonth: yearMonth, chatUsageCount: currentCount + 1 },
+  })
 
   const { messages } = req.body as { messages: Anthropic.MessageParam[] }
   const truncated = messages.slice(-10)

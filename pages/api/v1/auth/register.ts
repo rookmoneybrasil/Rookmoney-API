@@ -16,7 +16,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { name, email, password } = req.body as { name: string; email: string; password: string }
 
   if (!name || !email || !password) return badRequest(res, 'Nome, e-mail e senha são obrigatórios.')
-  if (password.length < 8) return badRequest(res, 'Senha deve ter no mínimo 8 caracteres.')
+  if (password.length < 8)               return badRequest(res, 'Senha deve ter no mínimo 8 caracteres.')
+  if (!/[0-9]/.test(password))           return badRequest(res, 'Senha deve conter pelo menos um número.')
+  if (!/[^a-zA-Z0-9]/.test(password))   return badRequest(res, 'Senha deve conter pelo menos um caractere especial.')
 
   const existing = await db.user.findUnique({ where: { email: email.toLowerCase().trim() } })
   if (existing) return badRequest(res, 'E-mail já cadastrado.')

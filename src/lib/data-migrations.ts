@@ -101,6 +101,20 @@ const MIGRATIONS: Migration[] = [
     },
   },
 
+  // ─── 2026-06-03 ─────────────────────────────────────────────────────
+  {
+    id:  '2026-06-03-invalidate-plain-text-reset-tokens',
+    run: async (db) => {
+      // passwordResetToken now stores SHA-256 hashes.
+      // Any existing plain-text tokens are invalid — clear them so users
+      // can't use old unscoped links. They'll request a new reset link.
+      await db.user.updateMany({
+        where: { passwordResetToken: { not: null } },
+        data:  { passwordResetToken: null, passwordResetExpiry: null },
+      })
+    },
+  },
+
   // ─── Add future migrations below ────────────────────────────────────
   // {
   //   id:  'YYYY-MM-DD-description',

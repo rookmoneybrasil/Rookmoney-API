@@ -1,0 +1,91 @@
+/**
+ * Email sender using Resend API.
+ * Env vars: RESEND_API_KEY, FROM_EMAIL
+ */
+
+async function resendPost(body: Record<string, unknown>): Promise<void> {
+  const key = process.env.RESEND_API_KEY
+  if (!key) { console.warn('[email] RESEND_API_KEY not set — skipping email'); return }
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method:  'POST',
+    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { message?: string }
+    console.error('[email] Resend error:', err?.message)
+  }
+}
+
+const FROM = process.env.FROM_EMAIL ?? 'Rook Money <noreply@rookmoney.com>'
+
+export async function sendBillReminderEmail(
+  to: string, name: string,
+  bills: { name: string; amount: number; dueDate: Date }[],
+): Promise<void> {
+  const fmt = (n: number) => `R$ ${n.toFixed(2).replace('.', ',')}`
+  const rows = bills.map(b =>
+    `<tr><td style="padding:8px 0;border-bottom:1px solid #1d3255">${b.name}</td>` +
+    `<td style="padding:8px 0;border-bottom:1px solid #1d3255;text-align:right;color:#f43f5e;font-weight:600">${fmt(b.amount)}</td>` +
+    `<td style="padding:8px 0;border-bottom:1px solid #1d3255;text-align:right;color:#94a3b8">${b.dueDate.toLocaleDateString('pt-BR')}</td></tr>`
+  ).join('')
+
+  await resendPost({
+    from:    FROM,
+    to:      [to],
+    subject: `🔔 ${bills.length} conta${bills.length > 1 ? 's' : ''} venc${bills.length > 1 ? 'em' : 'e'} em 3 dias`,
+    html: `
+<div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#080e1d;color:#f1f5f9;padding:32px;border-radius:16px">
+  <h2 style="margin:0 0 8px;font-size:20px">Oi, ${name}! 👋</h2>
+  <p style="color:#94a3b8;margin:0 0 24px">Você tem contas vencendo nos próximos 3 dias:</p>
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <thead><tr>
+      <th style="text-align:left;color:#64748b;font-size:11px;padding-bottom:8px">CONTA</th>
+      <th style="text-align:right;color:#64748b;font-size:11px;padding-bottom:8px">VALOR</th>
+      <th style="text-align:right;color:#64748b;font-size:11px;padding-bottom:8px">VENCIMENTO</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <a href="https://app.rookmoney.com/bills" style="display:inline-block;margin-top:24px;padding:12px 24px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Ver contas →</a>
+  <p style="color:#475569;font-size:12px;margin-top:24px">Você recebe este aviso porque ativou lembretes de contas. <a href="https://app.rookmoney.com/settings" style="color:#60a5fa">Gerenciar preferências</a></p>
+</div>`,
+  })
+}
+
+export async function sendMonthlySummaryEmail(
+  to: string, name: string,
+  summary: { month: string; income: number; expense: number; balance: number; savingsRate: number },
+): Promise<void> {
+  const fmt  = (n: number) => `R$ ${n.toFixed(2).replace('.', ',')}`
+  const sign = summary.balance >= 0 ? '+' : ''
+  const balColor = summary.balance >= 0 ? '#22c55e' : '#f43f5e'
+
+  await resendPost({
+    from:    FROM,
+    to:      [to],
+    subject: `📊 Resumo financeiro — ${summary.month}`,
+    html: `
+<div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#080e1d;color:#f1f5f9;padding:32px;border-radius:16px">
+  <h2 style="margin:0 0 4px;font-size:20px">Resumo de ${summary.month}</h2>
+  <p style="color:#94a3b8;margin:0 0 24px">Oi ${name}, aqui está o seu resumo financeiro do mês passado.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px">
+    <div style="background:#0c1628;border:1px solid #1d3255;border-radius:12px;padding:16px">
+      <p style="color:#94a3b8;font-size:11px;margin:0 0 4px">RECEITAS</p>
+      <p style="color:#22c55e;font-size:18px;font-weight:700;margin:0">+${fmt(summary.income)}</p>
+    </div>
+    <div style="background:#0c1628;border:1px solid #1d3255;border-radius:12px;padding:16px">
+      <p style="color:#94a3b8;font-size:11px;margin:0 0 4px">DESPESAS</p>
+      <p style="color:#f43f5e;font-size:18px;font-weight:700;margin:0">-${fmt(summary.expense)}</p>
+    </div>
+    <div style="background:#0c1628;border:1px solid #1d3255;border-radius:12px;padding:16px">
+      <p style="color:#94a3b8;font-size:11px;margin:0 0 4px">SALDO</p>
+      <p style="color:${balColor};font-size:18px;font-weight:700;margin:0">${sign}${fmt(summary.balance)}</p>
+    </div>
+  </div>
+  ${summary.savingsRate >= 0 ? `<p style="color:#94a3b8">Taxa de poupança: <strong style="color:#f1f5f9">${summary.savingsRate}%</strong></p>` : ''}
+  <a href="https://app.rookmoney.com/reports" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Ver relatórios completos →</a>
+  <p style="color:#475569;font-size:12px;margin-top:24px">Você recebe este resumo todo dia 1. <a href="https://app.rookmoney.com/settings" style="color:#60a5fa">Desativar</a></p>
+</div>`,
+  })
+}
