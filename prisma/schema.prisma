@@ -385,3 +385,17 @@ model RateLimit {
 
   @@index([resetAt])
 }
+
+// ─── AdminLog ─────────────────────────────────────────────────────────────────
+// Audit trail of backoffice admin actions.
+
+model AdminLog {
+  id        String   @id @default(cuid())
+  action    String   // "plan_change", "delete_user", "toggle_admin", "send_email"
+  targetId  String   // user id being acted upon
+  details   String   // human-readable description
+  createdAt DateTime @default(now())
+
+  @@index([targetId])
+  @@index([createdAt])
+}

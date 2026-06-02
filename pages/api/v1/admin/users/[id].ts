@@ -12,11 +12,16 @@ export default withBackofficeAuth(async (req, res) => {
   if (!user) return notFound(res)
 
   if (req.method === 'GET') {
-    const recentTransactions = await db.transaction.findMany({
-      where: { userId: id }, orderBy: { date: 'desc' }, take: 10,
-      include: { category: { select: { name: true, icon: true, color: true } } },
-    })
-    return ok(res, { user, recentTransactions })
+    const [recentTransactions, logs] = await Promise.all([
+      db.transaction.findMany({
+        where: { userId: id }, orderBy: { date: 'desc' }, take: 10,
+        include: { category: { select: { name: true, icon: true, color: true } } },
+      }),
+      db.adminLog.findMany({
+        where: { targetId: id }, orderBy: { createdAt: 'desc' }, take: 20,
+      }),
+    ])
+    return ok(res, { user, recentTransactions, logs })
   }
 
   if (req.method === 'PATCH') {
@@ -25,10 +30,18 @@ export default withBackofficeAuth(async (req, res) => {
       where: { id },
       data: { ...(plan !== undefined && { plan }), ...(isAdmin !== undefined && { isAdmin }) },
     })
+    // Log the action
+    if (plan !== undefined) {
+      await db.adminLog.create({ data: { action: 'plan_change', targetId: id, details: `Plano alterado de ${user.plan} para ${plan} (${user.email})` } })
+    }
+    if (isAdmin !== undefined) {
+      await db.adminLog.create({ data: { action: 'toggle_admin', targetId: id, details: `Admin ${isAdmin ? 'concedido' : 'removido'} de ${user.email}` } })
+    }
     return ok(res, { id: updated.id, plan: updated.plan, isAdmin: updated.isAdmin })
   }
 
   if (req.method === 'DELETE') {
+    await db.adminLog.create({ data: { action: 'delete_user', targetId: id, details: `Conta deletada: ${user.email} (${user.name})` } })
     await db.user.delete({ where: { id } })
     return noContent(res)
   }

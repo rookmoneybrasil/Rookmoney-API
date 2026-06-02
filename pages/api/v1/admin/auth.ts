@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { SignJWT } from 'jose'
 import { serialize } from 'cookie'
+import { rateLimit, getIp, tooManyRequests } from '@/lib/rate-limit'
 
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET ?? 'rook-dev-secret')
 
@@ -20,12 +21,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'OPTIONS') return res.status(204).end()
   if (req.method !== 'POST') return res.status(405).end()
 
+  // Rate limit: 5 attempts per IP per 15 minutes
+  const ip = getIp(req)
+  const rl  = await rateLimit(`admin-login:${ip}`, 5, 15 * 60 * 1000)
+  if (!rl.allowed) return tooManyRequests(res, rl.resetAt)
+
   const { secret } = req.body as { secret?: string }
 
   const adminSecret = process.env.ADMIN_SECRET
   if (!adminSecret) return res.status(500).json({ ok: false, error: 'ADMIN_SECRET não configurado' })
   if (!secret || secret !== adminSecret) {
-    await new Promise(r => setTimeout(r, 800)) // anti-bruteforce
+    await new Promise(r => setTimeout(r, 800))
     return res.status(401).json({ ok: false, error: 'Senha incorreta' })
   }
 
