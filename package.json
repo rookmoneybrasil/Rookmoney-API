@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma migrate deploy && prisma generate && next build",
+    "build": "prisma migrate resolve --rolled-back 20260603200000_add_token_version_and_rate_limit 2>/dev/null || true && prisma migrate deploy && prisma generate && next build",
     "start": "next start"
   },
   "dependencies": {
