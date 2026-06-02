@@ -13,9 +13,10 @@ async function generateForTemplate(
   const day    = Math.min(template.dayOfMonth, new Date(y, m, 0).getDate()) // clamp to month length
   const dueDate = new Date(Date.UTC(y, m - 1, day, 12, 0, 0))
 
-  // Check if already generated
+  // Check if already generated — use Date.UTC(y, m, 0) for last day of month
+  // (day 0 of next month = last day of current month, avoids 31-day overflow)
   const existing = await db.bill.findFirst({
-    where: { userId, recurringBillId: template.id, dueDate: { gte: new Date(Date.UTC(y, m - 1, 1)), lte: new Date(Date.UTC(y, m - 1, 31, 23, 59, 59)) } },
+    where: { userId, recurringBillId: template.id, dueDate: { gte: new Date(Date.UTC(y, m - 1, 1)), lte: new Date(Date.UTC(y, m, 0, 23, 59, 59)) } },
   })
   if (existing) return existing
 
