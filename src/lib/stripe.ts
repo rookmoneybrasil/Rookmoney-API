@@ -30,8 +30,11 @@ export async function createCheckoutSession(
   userId: string,
   email: string,
   returnUrl: string,
+  annual = false,
 ): Promise<{ url: string }> {
-  const priceId = process.env.STRIPE_PRICE_ID
+  const priceId = annual
+    ? (process.env.STRIPE_ANNUAL_PRICE_ID ?? process.env.STRIPE_PRICE_ID)
+    : process.env.STRIPE_PRICE_ID
   if (!priceId) throw new Error('STRIPE_PRICE_ID not configured')
 
   const data = await stripePost('/v1/checkout/sessions', {

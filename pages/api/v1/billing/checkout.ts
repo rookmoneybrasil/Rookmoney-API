@@ -9,8 +9,10 @@ export default withAuth(async (req, res, session) => {
   // (proxy headers can leak localhost in dev when both local and prod are open)
   const returnUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.rookmoney.com'}/settings`
 
+  const annual = req.body?.annual === true
+
   try {
-    const { url } = await createCheckoutSession(session.userId, session.email, returnUrl)
+    const { url } = await createCheckoutSession(session.userId, session.email, returnUrl, annual)
     return ok(res, { url })
   } catch (err) {
     return serverError(res, err)
