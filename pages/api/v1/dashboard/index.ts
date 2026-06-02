@@ -187,7 +187,6 @@ export default withAuth(async (req, res, session) => {
     db.recurringTransaction.findMany({ where: { userId: uid, isActive: true, frequency: 'MONTHLY' }, select: { id: true, name: true, amount: true, type: true } }),
     db.personEntry.findMany({
       where:   { userId: uid, type: 'I_OWE_THEM', isSettled: false, installmentGroupId: { not: null } },
-      select:  { id: true, amount: true, date: true, description: true, installmentGroupId: true, installmentCurrent: true, installmentTotal: true },
       include: { person: { select: { name: true } } },
     }),
     // Fix 1: use RecurringBill templates as monthly fixed expenses (not old isRecurring bills)
