@@ -94,7 +94,8 @@ export default withAuth(async (req, res, session) => {
     historyTx,
     pendingBillsAgg,
     personPayables,            // Fix 2: all unsettled past+current month
-    upcomingPersonPayables,
+    upcomingPersonPayables,    // current month only — for "A Pagar" modal (consistent with KPI)
+    futurePersonPayables,      // 45-day window — for "Compromissos com pessoas" section
     upcomingPeopleReceivable,
     // Fix 1+5: projection data merged into single Promise.all
     recurringIncomeSources,
@@ -161,6 +162,14 @@ export default withAuth(async (req, res, session) => {
     // Fix 2: all unsettled person payables up to end of current month (not just this month)
     db.personEntry.aggregate({ where: { userId: uid, type: 'I_OWE_THEM', isSettled: false, date: { lte: mE } }, _sum: { amount: true } }),
 
+    // "A Pagar" modal: only current month + overdue (consistent with the KPI aggregate)
+    db.personEntry.findMany({
+      where:   { userId: uid, type: 'I_OWE_THEM', isSettled: false, date: { lte: mE } },
+      orderBy: { date: 'asc' }, take: 4,
+      include: { person: { select: { name: true } } },
+    }),
+
+    // "Compromissos com pessoas" section: broader 45-day view (can include next month)
     db.personEntry.findMany({
       where:   { userId: uid, type: 'I_OWE_THEM', isSettled: false, date: { lte: addDays(now, 45) } },
       orderBy: { date: 'asc' }, take: 4,
@@ -329,7 +338,8 @@ export default withAuth(async (req, res, session) => {
     recentTransactions:    recentTx,
     goals,
     upcomingBills,
-    upcomingPersonPayables,
+    upcomingPersonPayables,   // current month — A Pagar modal
+    futurePersonPayables,     // 45-day — Compromissos section
     upcomingPeopleReceivable,
     pendingBillsCount,
     pendingBillsAmount:    Number(pendingBillsAgg._sum.amount ?? 0),
