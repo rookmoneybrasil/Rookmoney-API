@@ -145,10 +145,10 @@ export default withAuth(async (req, res, session) => {
     db.transaction.findMany({ where: { userId: uid, type: 'INCOME', date: { gte: mS, lte: mE } }, select: { description: true } }),
 
     // Fix 3: categoryTx used for donut AND overBudgetCount (no separate query needed)
+    // Cannot mix include + select in Prisma — use include only, fields accessed via type cast
     db.transaction.findMany({
       where:   { userId: uid, type: 'EXPENSE', date: { gte: mS, lte: mE } },
       include: { category: { select: { name: true, icon: true, color: true } } },
-      select:  { amount: true, categoryId: true, category: true } as never,
     }),
 
     // Monthly history for sparklines (last 6 months)
