@@ -42,11 +42,9 @@ export default withAuth(async (req, res, session) => {
         else                           iOweThem  += Number(e.amount)
       }
 
-      // Include recurring templates
-      for (const r of recurringAll.filter(r => r.personId === p.id)) {
-        if (r.type === 'THEY_OWE_ME') theyOweMe += Number(r.amount)
-        else                           iOweThem  += Number(r.amount)
-      }
+      // Note: PersonEntryRecurring templates are NOT added to balance here.
+      // They generate PersonEntry instances each month — counting the template
+      // again would double the balance.
 
       const { entries, _count, ...rest } = p
       return {
