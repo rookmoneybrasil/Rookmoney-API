@@ -38,7 +38,10 @@ export default withAuth(async (req, res, session) => {
   if (req.method === 'POST') {
     const limits = getLimits(session.plan ?? 'FREE')
     if (limits.bills !== null) {
-      const count = await db.bill.count({ where: { userId: session.userId, isPaid: false } })
+      // Count only current-month-and-future unpaid bills — overdue from past months
+      // shouldn't penalize users who haven't cleaned up yet.
+      const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      const count = await db.bill.count({ where: { userId: session.userId, isPaid: false, dueDate: { gte: monthStart } } })
       if (count >= limits.bills) {
         return planLimit(res, `Limite de ${limits.bills} contas ativas atingido. Faça upgrade para o plano PRO.`)
       }
