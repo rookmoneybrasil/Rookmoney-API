@@ -16,8 +16,9 @@ export default withAuth(async (req, res, session) => {
         orderBy: { name: 'asc' },
         include: {
           entries: {
-            where: { isSettled: false },
-            select: { type: true, amount: true, date: true, installmentTotal: true, installmentGroupId: true },
+            // Include current-month entries (settled or not) to detect recurring duplicates
+            // Balance loop below only sums unsettled; settled ones are used only for duplicate detection
+            select: { type: true, amount: true, date: true, installmentTotal: true, installmentGroupId: true, isSettled: true, description: true },
           },
           _count: { select: { entries: { where: { isSettled: false } } } },
         },
@@ -34,6 +35,7 @@ export default withAuth(async (req, res, session) => {
       let iOweThem  = 0
 
       for (const e of p.entries) {
+        if (e.isSettled) continue // settled entries only used for duplicate detection below
         const isOldRecurring = (e.installmentTotal ?? 0) >= 24
         if (isOldRecurring && new Date(e.date) > cutoff) continue
         if (e.installmentGroupId) {
@@ -44,11 +46,21 @@ export default withAuth(async (req, res, session) => {
         else                           iOweThem  += Number(e.amount)
       }
 
-      // Add recurring templates not yet processed this month
-      // (if lastMonth === yearMonth, the entry was already generated and is in p.entries above)
+      // Add recurring templates only when no PersonEntry already exists for them this month
+      // Use description+type match (same as detail page) — lastMonth alone misses manually-created entries
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+      const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
       const personRecurring = recurringAll.filter(r => r.personId === p.id)
+
       for (const r of personRecurring) {
-        if (r.lastMonth === yearMonth) continue // already generated, counted in entries
+        const alreadyHasEntry = p.entries.some(e =>
+          e.description === r.description &&
+          e.type        === r.type &&
+          !e.installmentGroupId &&
+          new Date(e.date) >= monthStart &&
+          new Date(e.date) <= monthEnd
+        )
+        if (alreadyHasEntry) continue // entry already counted above
         if (r.type === 'THEY_OWE_ME') theyOweMe += Number(r.amount)
         else                           iOweThem  += Number(r.amount)
       }
