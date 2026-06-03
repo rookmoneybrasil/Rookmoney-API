@@ -16,12 +16,24 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'POST') {
-    const { personId, type, description, amount, dayOfMonth = 1, notes, categoryId } = req.body
+    const { personId, type, description, amount, dayOfMonth = 1, firstDate, notes, categoryId } = req.body
     if (!personId || !type || !description || !amount) return badRequest(res, 'Campos obrigatórios faltando.')
 
     // Verify person belongs to user
     const person = await db.person.findFirst({ where: { id: personId, userId: uid } })
     if (!person) return badRequest(res, 'Pessoa não encontrada.')
+
+    const now        = new Date()
+    const yearMonth  = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    const parsedDay  = Math.min(Math.max(parseInt(dayOfMonth), 1), 28)
+    const amountNum  = parseFloat(amount)
+
+    // Determine if we should create the first entry immediately.
+    // If firstDate is provided and is today or earlier this month, generate the entry now.
+    const firstDateObj   = firstDate ? new Date(firstDate) : null
+    const isThisMonth    = firstDateObj && firstDateObj.getFullYear() === now.getFullYear() && firstDateObj.getMonth() === now.getMonth()
+    const isInPast       = firstDateObj && firstDateObj <= now
+    const shouldCreateFirst = isThisMonth && isInPast && categoryId
 
     const item = await db.personEntryRecurring.create({
       data: {
@@ -29,13 +41,32 @@ export default withAuth(async (req, res, session) => {
         userId:     uid,
         type,
         description,
-        amount:     parseFloat(amount),
-        dayOfMonth: Math.min(Math.max(parseInt(dayOfMonth), 1), 28),
+        amount:     amountNum,
+        dayOfMonth: parsedDay,
         notes:      notes || null,
         categoryId: categoryId || null,
+        // Mark this month as processed if we're creating the first entry now
+        lastMonth:  shouldCreateFirst ? yearMonth : null,
       },
       include: { person: { select: { id: true, name: true, color: true } }, category: { select: { id: true, name: true, icon: true, color: true } } },
     })
+
+    // Create the first PersonEntry immediately if firstDate is today or already passed
+    if (shouldCreateFirst && firstDateObj) {
+      await db.personEntry.create({
+        data: {
+          personId,
+          userId:      uid,
+          type,
+          description,
+          amount:      amountNum,
+          date:        firstDateObj,
+          categoryId:  categoryId || null,
+          notes:       notes || null,
+        },
+      })
+    }
+
     return created(res, item)
   }
 
