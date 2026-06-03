@@ -130,11 +130,40 @@ const MIGRATIONS: Migration[] = [
     },
   },
 
-  // ─── Add future migrations below ────────────────────────────────────
-  // {
-  //   id:  'YYYY-MM-DD-description',
-  //   run: async (db) => { ... },
-  // },
+  // ─── 2026-06-05 ─────────────────────────────────────────────────────
+  {
+    id:  '2026-06-05-revert-future-startdate-income',
+    run: async (db) => {
+      // Reverts income transactions incorrectly created for sources with a future startDate.
+      // This happened because processAutoIncome() didn't check startDate before this fix.
+      const now        = new Date()
+      const yearMonth  = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+      const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
+
+      const sources = await db.incomeSource.findMany({
+        where: {
+          startDate:        { gt: now },    // startDate is in the future
+          lastAutoPayMonth: yearMonth,      // but was processed this month (bug)
+        },
+      })
+
+      for (const src of sources) {
+        await db.transaction.deleteMany({
+          where: {
+            userId:      src.userId,
+            type:        'INCOME',
+            description: src.name,
+            date:        { gte: monthStart, lte: monthEnd },
+          },
+        })
+        await db.incomeSource.update({
+          where: { id: src.id },
+          data:  { lastAutoPayMonth: null },
+        })
+      }
+    },
+  },
 ]
 
 // ─── Runner ──────────────────────────────────────────────────────────────────
