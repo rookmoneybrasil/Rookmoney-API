@@ -25,7 +25,7 @@ export default withAuth(async (req, res, session) => {
       }),
       db.personEntryRecurring.findMany({
         where:  { userId: session.userId, isActive: true },
-        select: { personId: true, type: true, amount: true, lastMonth: true },
+        select: { personId: true, type: true, amount: true, description: true, lastMonth: true },
       }),
     ])
 
