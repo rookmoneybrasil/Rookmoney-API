@@ -5,6 +5,8 @@ import { getLimits } from '@/lib/plans'
 
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
+    const now      = new Date()
+    const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
     // Cutoff only for old-style recurring (installmentTotal >= 24) that haven't been migrated yet
     const cutoff = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000)
 
@@ -22,7 +24,7 @@ export default withAuth(async (req, res, session) => {
       }),
       db.personEntryRecurring.findMany({
         where:  { userId: session.userId, isActive: true },
-        select: { personId: true, type: true, amount: true },
+        select: { personId: true, type: true, amount: true, lastMonth: true },
       }),
     ])
 
@@ -42,9 +44,14 @@ export default withAuth(async (req, res, session) => {
         else                           iOweThem  += Number(e.amount)
       }
 
-      // Note: PersonEntryRecurring templates are NOT added to balance here.
-      // They generate PersonEntry instances each month — counting the template
-      // again would double the balance.
+      // Add recurring templates not yet processed this month
+      // (if lastMonth === yearMonth, the entry was already generated and is in p.entries above)
+      const personRecurring = recurringAll.filter(r => r.personId === p.id)
+      for (const r of personRecurring) {
+        if (r.lastMonth === yearMonth) continue // already generated, counted in entries
+        if (r.type === 'THEY_OWE_ME') theyOweMe += Number(r.amount)
+        else                           iOweThem  += Number(r.amount)
+      }
 
       const { entries, _count, ...rest } = p
       return {

@@ -127,8 +127,10 @@ export default withAuth(async (req, res, session) => {
     db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { gte: mS, lte: mE } } }),
     db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { lt: now } } }),
 
-    db.personEntry.aggregate({ where: { userId: uid, type: 'THEY_OWE_ME', isSettled: false, date: { lte: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000) } }, _sum: { amount: true } }),
-    db.personEntryRecurring.aggregate({ where: { userId: uid, isActive: true, type: 'THEY_OWE_ME' }, _sum: { amount: true } }),
+    // PersonEntry: all unsettled THEY_OWE_ME entries (no date filter — old debts still count)
+    db.personEntry.aggregate({ where: { userId: uid, type: 'THEY_OWE_ME', isSettled: false }, _sum: { amount: true } }),
+    // PersonEntryRecurring: only templates NOT yet processed this month (avoid double-count with entries above)
+    db.personEntryRecurring.aggregate({ where: { userId: uid, isActive: true, type: 'THEY_OWE_ME', OR: [{ lastMonth: null }, { lastMonth: { not: yearMonth } }] }, _sum: { amount: true } }),
 
     db.incomeSource.findMany({
       where: {
