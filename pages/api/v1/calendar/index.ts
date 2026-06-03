@@ -36,7 +36,7 @@ export default withAuth(async (req, res, session) => {
     // Bug 3 fix: include lastAutoPayMonth to detect already-received income
     db.incomeSource.findMany({
       where:  { userId: uid, isRecurring: true },
-      select: { id: true, name: true, amount: true, dayOfMonth: true, lastAutoPayMonth: true },
+      select: { id: true, name: true, amount: true, dayOfMonth: true, lastAutoPayMonth: true, startDate: true },
     }),
 
     db.recurringTransaction.findMany({
@@ -89,6 +89,8 @@ export default withAuth(async (req, res, session) => {
 
   // ── Income sources ────────────────────────────────────────────────────────────
   for (const s of incomeSources) {
+    // Skip sources that haven't started yet
+    if (s.startDate && s.startDate > monthDate) continue
     const day = Math.min(s.dayOfMonth ?? 1, maxDay)
     // Bug 3 fix: show as 'received' if already processed this month
     const alreadyReceived = s.lastAutoPayMonth === monthStr

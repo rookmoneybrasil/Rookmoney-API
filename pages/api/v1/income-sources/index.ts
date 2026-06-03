@@ -13,10 +13,19 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'POST') {
-    const { name, type = 'EMPLOYMENT', amount, isRecurring = true, dayOfMonth, notes, categoryId } = req.body
+    const { name, type = 'EMPLOYMENT', amount, isRecurring = true, dayOfMonth, startDate, notes, categoryId } = req.body
     if (!name || !amount) return badRequest(res, 'Nome e valor são obrigatórios.')
     const source = await db.incomeSource.create({
-      data: { name, type, amount: parseFloat(amount), isRecurring, dayOfMonth: dayOfMonth ? parseInt(dayOfMonth) : null, notes: notes ?? null, categoryId: categoryId ?? null, userId: session.userId },
+      data: {
+        name, type,
+        amount:     parseFloat(amount),
+        isRecurring,
+        dayOfMonth: dayOfMonth ? parseInt(dayOfMonth) : null,
+        startDate:  startDate  ? new Date(startDate)  : null,
+        notes:      notes      ?? null,
+        categoryId: categoryId ?? null,
+        userId:     session.userId,
+      },
     })
     return created(res, source)
   }

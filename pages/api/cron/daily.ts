@@ -51,6 +51,8 @@ async function processAutoIncome(userId: string) {
     if (!src.categoryId || !src.dayOfMonth) continue
     if (src.lastAutoPayMonth === yearMonth) continue
     if (today < src.dayOfMonth) continue
+    // Don't auto-pay if startDate is in the future
+    if (src.startDate && src.startDate > now) continue
     await db.$transaction([
       db.transaction.create({ data: { amount: src.amount, type: 'INCOME', description: src.name, date: new Date(now.getFullYear(), now.getMonth(), src.dayOfMonth), userId, categoryId: src.categoryId } }),
       db.incomeSource.update({ where: { id: src.id }, data: { lastAutoPayMonth: yearMonth } }),

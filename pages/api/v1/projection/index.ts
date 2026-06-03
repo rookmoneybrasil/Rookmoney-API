@@ -25,7 +25,7 @@ export default withAuth(async (req, res, session) => {
   ] = await Promise.all([
     db.incomeSource.findMany({
       where:  { userId: uid, isRecurring: true },
-      select: { id: true, name: true, amount: true, dayOfMonth: true, type: true },
+      select: { id: true, name: true, amount: true, dayOfMonth: true, type: true, startDate: true },
     }),
     // Bug 1 fix: use RecurringBill templates (isRecurring flag retired after migration)
     db.recurringBill.findMany({
@@ -158,15 +158,17 @@ export default withAuth(async (req, res, session) => {
         }
       }
     } else {
-      // Future months: pure projection
-      incomeItems = incomeSources.map((s) => ({
-        id:     `income-${s.id}-${mKey}`,
-        label:  s.name,
-        amount: Number(s.amount),
-        day:    Math.min(s.dayOfMonth ?? 1, maxDay),
-        type:   'income',
-        href:   '/income',
-      }))
+      // Future months: pure projection — only include sources active in this month
+      incomeItems = incomeSources
+        .filter(s => !s.startDate || s.startDate <= mE)
+        .map((s) => ({
+          id:     `income-${s.id}-${mKey}`,
+          label:  s.name,
+          amount: Number(s.amount),
+          day:    Math.min(s.dayOfMonth ?? 1, maxDay),
+          type:   'income',
+          href:   '/income',
+        }))
 
       // Bug 1+2 fix: use RecurringBill templates for future months.
       // upcomingBills already covers generated instances; templates fill in
