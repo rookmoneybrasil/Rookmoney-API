@@ -8,6 +8,43 @@ function stripeAuth() {
   return 'Basic ' + Buffer.from(getSecretKey() + ':').toString('base64')
 }
 
+async function stripeGet(path: string, params?: Record<string, string>): Promise<Record<string, unknown>> {
+  const qs = params ? '?' + new URLSearchParams(params).toString() : ''
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 15_000)
+  const res = await fetch(`https://api.stripe.com${path}${qs}`, {
+    headers: { Authorization: stripeAuth() },
+    signal: controller.signal,
+  }).finally(() => clearTimeout(timeout))
+  const data = await res.json()
+  if (!res.ok) throw new Error(data?.error?.message ?? 'Stripe error')
+  return data as Record<string, unknown>
+}
+
+export interface StripeSub {
+  id: string
+  customer: string
+  status: string
+  current_period_end: number
+  cancel_at_period_end: boolean
+  items: { data: { price: { unit_amount: number; currency: string } }[] }
+}
+
+export async function listActiveSubscriptions(): Promise<StripeSub[]> {
+  const all: StripeSub[] = []
+  let startingAfter: string | undefined
+  for (;;) {
+    const params: Record<string, string> = { limit: '100', status: 'active', expand: 'data.items' }
+    if (startingAfter) params['starting_after'] = startingAfter
+    const data = await stripeGet('/v1/subscriptions', params)
+    const rows = data['data'] as StripeSub[]
+    all.push(...rows)
+    if (!data['has_more']) break
+    startingAfter = rows[rows.length - 1].id
+  }
+  return all
+}
+
 async function stripePost(path: string, body: Record<string, string>) {
   const params     = new URLSearchParams(body)
   const controller = new AbortController()
