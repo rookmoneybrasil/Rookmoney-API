@@ -92,6 +92,7 @@ export default withAuth(async (req, res, session) => {
     recurringPeopleReceivable,
     rawPendingIncomeSources,
     incomeThisMonth,
+    monthIncomeTx,             // all INCOME transactions this month — for "Receitas do mês" modal
     categoryTx,                // used for donut chart AND overBudgetCount (Fix 3)
     historyTx,
     pendingBillsAgg,
@@ -147,6 +148,13 @@ export default withAuth(async (req, res, session) => {
     }),
 
     db.transaction.findMany({ where: { userId: uid, type: 'INCOME', date: { gte: mS, lte: mE } }, select: { description: true } }),
+
+    // All INCOME transactions this month (not just the global "recent 7") — Receitas do mês modal
+    db.transaction.findMany({
+      where:   { userId: uid, type: 'INCOME', date: { gte: mS, lte: mE } },
+      orderBy: { date: 'desc' },
+      include: { category: { select: { name: true, icon: true, color: true } } },
+    }),
 
     // Fix 3: categoryTx used for donut AND overBudgetCount (no separate query needed)
     // Cannot mix include + select in Prisma — use include only, fields accessed via type cast
@@ -372,6 +380,7 @@ export default withAuth(async (req, res, session) => {
     totalIncomeReceivable,
     pendingIncomeSources,
     recentTransactions:    recentTx,
+    monthIncomeTransactions: monthIncomeTx,
     goals,
     upcomingBills,
     upcomingPersonPayables,   // current month — A Pagar modal
