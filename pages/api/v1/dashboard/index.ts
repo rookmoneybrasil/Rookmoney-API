@@ -93,6 +93,7 @@ export default withAuth(async (req, res, session) => {
     rawPendingIncomeSources,
     incomeThisMonth,
     monthIncomeTx,             // all INCOME transactions this month — for "Receitas do mês" modal
+    monthPeopleReceivedRaw,    // settled THEY_OWE_ME entries this month — for "Receitas do mês" modal
     categoryTx,                // used for donut chart AND overBudgetCount (Fix 3)
     historyTx,
     pendingBillsAgg,
@@ -154,6 +155,13 @@ export default withAuth(async (req, res, session) => {
       where:   { userId: uid, type: 'INCOME', date: { gte: mS, lte: mE } },
       orderBy: { date: 'desc' },
       include: { category: { select: { name: true, icon: true, color: true } } },
+    }),
+
+    // Settled "they owe me" entries resolved this month — Receitas do mês modal (Pessoas)
+    db.personEntry.findMany({
+      where:   { userId: uid, type: 'THEY_OWE_ME', isSettled: true, settledAt: { gte: mS, lte: mE } },
+      orderBy: { settledAt: 'desc' },
+      include: { person: { select: { name: true } } },
     }),
 
     // Fix 3: categoryTx used for donut AND overBudgetCount (no separate query needed)
@@ -218,6 +226,23 @@ export default withAuth(async (req, res, session) => {
   )
   const pendingIncomeSources = (rawPendingIncomeSources as { id: string; name: string; amount: unknown; isRecurring: boolean; dayOfMonth: number | null }[])
     .filter(s => !receivedSourceNames.has(s.name))
+
+  // Classify month income transactions as fixed/recurring vs avulso (one-off) by matching
+  // their description against known recurring income source / recurring transaction names —
+  // Transaction has no FK back to its originating template, so name-matching is the best signal.
+  const recurringIncomeNames = new Set([
+    ...(recurringIncomeSources as { name: string }[]).map(s => s.name),
+    ...(recurringTransactionItems as { name: string; type: string }[]).filter(t => t.type === 'INCOME').map(t => t.name),
+  ])
+  const monthIncomeTransactions = (monthIncomeTx as { id: string; description: string | null }[]).map(tx => ({
+    ...tx,
+    isRecurringIncome: tx.description ? recurringIncomeNames.has(tx.description) : false,
+  }))
+
+  const monthPeopleReceived = (monthPeopleReceivedRaw as { settledAt: Date | null }[]).map(({ settledAt, ...rest }) => ({
+    ...rest,
+    date: settledAt,
+  }))
 
   const totalPeopleReceivable = Number(peopleEntriesReceivable._sum.amount ?? 0) + Number(recurringPeopleReceivable._sum.amount ?? 0)
   const totalIncomeReceivable = pendingIncomeSources.reduce((sum: number, src) => sum + Number(src.amount), 0)
@@ -380,7 +405,8 @@ export default withAuth(async (req, res, session) => {
     totalIncomeReceivable,
     pendingIncomeSources,
     recentTransactions:    recentTx,
-    monthIncomeTransactions: monthIncomeTx,
+    monthIncomeTransactions: monthIncomeTransactions,
+    monthPeopleReceived,
     goals,
     upcomingBills,
     upcomingPersonPayables,   // current month — A Pagar modal
