@@ -9,7 +9,8 @@ export default withBackofficeAuth(async (req, res) => {
   const skip = (parseInt(page) - 1) * parseInt(pageSize)
 
   const where: Record<string, unknown> = {}
-  if (plan === 'PRO' || plan === 'FREE') where.plan = plan
+  if (plan === 'PRO_MANUAL') { where.plan = 'PRO'; where.stripeSubscriptionId = null }
+  else if (plan === 'PRO' || plan === 'FREE') where.plan = plan
   if (search) where.OR = [
     { name:  { contains: search, mode: 'insensitive' } },
     { email: { contains: search, mode: 'insensitive' } },
@@ -19,7 +20,7 @@ export default withBackofficeAuth(async (req, res) => {
     db.user.findMany({
       where, skip, take: parseInt(pageSize),
       orderBy: { createdAt: 'desc' },
-      select: { id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true, _count: { select: { transactions: true, goals: true } } },
+      select: { id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true, stripeSubscriptionId: true, _count: { select: { transactions: true, goals: true } } },
     }),
     db.user.count({ where }),
   ])
