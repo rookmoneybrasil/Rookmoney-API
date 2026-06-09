@@ -20,8 +20,22 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
+}
+
+export type UserAvgAggregateOutputType = {
+  chatUsageCount: number | null
+  scannerUsageCount: number | null
+  tokenVersion: number | null
+}
+
+export type UserSumAggregateOutputType = {
+  chatUsageCount: number | null
+  scannerUsageCount: number | null
+  tokenVersion: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -38,6 +52,21 @@ export type UserMinAggregateOutputType = {
   passwordResetToken: string | null
   passwordResetExpiry: Date | null
   whatsappPhone: string | null
+  profileImage: string | null
+  bio: string | null
+  city: string | null
+  occupation: string | null
+  birthdate: Date | null
+  notifBillReminder: boolean | null
+  notifCategoryLimit: boolean | null
+  notifMonthlyEmail: boolean | null
+  currency: string | null
+  dateFormat: string | null
+  chatUsageMonth: string | null
+  chatUsageCount: number | null
+  scannerUsageMonth: string | null
+  scannerUsageCount: number | null
+  tokenVersion: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +85,21 @@ export type UserMaxAggregateOutputType = {
   passwordResetToken: string | null
   passwordResetExpiry: Date | null
   whatsappPhone: string | null
+  profileImage: string | null
+  bio: string | null
+  city: string | null
+  occupation: string | null
+  birthdate: Date | null
+  notifBillReminder: boolean | null
+  notifCategoryLimit: boolean | null
+  notifMonthlyEmail: boolean | null
+  currency: string | null
+  dateFormat: string | null
+  chatUsageMonth: string | null
+  chatUsageCount: number | null
+  scannerUsageMonth: string | null
+  scannerUsageCount: number | null
+  tokenVersion: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -74,11 +118,38 @@ export type UserCountAggregateOutputType = {
   passwordResetToken: number
   passwordResetExpiry: number
   whatsappPhone: number
+  profileImage: number
+  bio: number
+  city: number
+  occupation: number
+  birthdate: number
+  notifBillReminder: number
+  notifCategoryLimit: number
+  notifMonthlyEmail: number
+  currency: number
+  dateFormat: number
+  chatUsageMonth: number
+  chatUsageCount: number
+  scannerUsageMonth: number
+  scannerUsageCount: number
+  tokenVersion: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type UserAvgAggregateInputType = {
+  chatUsageCount?: true
+  scannerUsageCount?: true
+  tokenVersion?: true
+}
+
+export type UserSumAggregateInputType = {
+  chatUsageCount?: true
+  scannerUsageCount?: true
+  tokenVersion?: true
+}
 
 export type UserMinAggregateInputType = {
   id?: true
@@ -94,6 +165,21 @@ export type UserMinAggregateInputType = {
   passwordResetToken?: true
   passwordResetExpiry?: true
   whatsappPhone?: true
+  profileImage?: true
+  bio?: true
+  city?: true
+  occupation?: true
+  birthdate?: true
+  notifBillReminder?: true
+  notifCategoryLimit?: true
+  notifMonthlyEmail?: true
+  currency?: true
+  dateFormat?: true
+  chatUsageMonth?: true
+  chatUsageCount?: true
+  scannerUsageMonth?: true
+  scannerUsageCount?: true
+  tokenVersion?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +198,21 @@ export type UserMaxAggregateInputType = {
   passwordResetToken?: true
   passwordResetExpiry?: true
   whatsappPhone?: true
+  profileImage?: true
+  bio?: true
+  city?: true
+  occupation?: true
+  birthdate?: true
+  notifBillReminder?: true
+  notifCategoryLimit?: true
+  notifMonthlyEmail?: true
+  currency?: true
+  dateFormat?: true
+  chatUsageMonth?: true
+  chatUsageCount?: true
+  scannerUsageMonth?: true
+  scannerUsageCount?: true
+  tokenVersion?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -130,6 +231,21 @@ export type UserCountAggregateInputType = {
   passwordResetToken?: true
   passwordResetExpiry?: true
   whatsappPhone?: true
+  profileImage?: true
+  bio?: true
+  city?: true
+  occupation?: true
+  birthdate?: true
+  notifBillReminder?: true
+  notifCategoryLimit?: true
+  notifMonthlyEmail?: true
+  currency?: true
+  dateFormat?: true
+  chatUsageMonth?: true
+  chatUsageCount?: true
+  scannerUsageMonth?: true
+  scannerUsageCount?: true
+  tokenVersion?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -173,6 +289,18 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: UserAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: UserSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -203,6 +331,8 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
+  _avg?: UserAvgAggregateInputType
+  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -221,9 +351,26 @@ export type UserGroupByOutputType = {
   passwordResetToken: string | null
   passwordResetExpiry: Date | null
   whatsappPhone: string | null
+  profileImage: string | null
+  bio: string | null
+  city: string | null
+  occupation: string | null
+  birthdate: Date | null
+  notifBillReminder: boolean
+  notifCategoryLimit: boolean
+  notifMonthlyEmail: boolean
+  currency: string
+  dateFormat: string
+  chatUsageMonth: string | null
+  chatUsageCount: number
+  scannerUsageMonth: string | null
+  scannerUsageCount: number
+  tokenVersion: number
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -260,6 +407,21 @@ export type UserWhereInput = {
   passwordResetToken?: Prisma.StringNullableFilter<"User"> | string | null
   passwordResetExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   whatsappPhone?: Prisma.StringNullableFilter<"User"> | string | null
+  profileImage?: Prisma.StringNullableFilter<"User"> | string | null
+  bio?: Prisma.StringNullableFilter<"User"> | string | null
+  city?: Prisma.StringNullableFilter<"User"> | string | null
+  occupation?: Prisma.StringNullableFilter<"User"> | string | null
+  birthdate?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  notifBillReminder?: Prisma.BoolFilter<"User"> | boolean
+  notifCategoryLimit?: Prisma.BoolFilter<"User"> | boolean
+  notifMonthlyEmail?: Prisma.BoolFilter<"User"> | boolean
+  currency?: Prisma.StringFilter<"User"> | string
+  dateFormat?: Prisma.StringFilter<"User"> | string
+  chatUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
+  chatUsageCount?: Prisma.IntFilter<"User"> | number
+  scannerUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
+  scannerUsageCount?: Prisma.IntFilter<"User"> | number
+  tokenVersion?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   transactions?: Prisma.TransactionListRelationFilter
@@ -271,6 +433,10 @@ export type UserWhereInput = {
   recurringTransactions?: Prisma.RecurringTransactionListRelationFilter
   people?: Prisma.PersonListRelationFilter
   personEntries?: Prisma.PersonEntryListRelationFilter
+  personEntryRecurring?: Prisma.PersonEntryRecurringListRelationFilter
+  feedbacks?: Prisma.FeedbackListRelationFilter
+  recurringBills?: Prisma.RecurringBillListRelationFilter
+  pluggyItems?: Prisma.PluggyItemListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -287,6 +453,21 @@ export type UserOrderByWithRelationInput = {
   passwordResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
   passwordResetExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
   whatsappPhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  profileImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  occupation?: Prisma.SortOrderInput | Prisma.SortOrder
+  birthdate?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifBillReminder?: Prisma.SortOrder
+  notifCategoryLimit?: Prisma.SortOrder
+  notifMonthlyEmail?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  dateFormat?: Prisma.SortOrder
+  chatUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  chatUsageCount?: Prisma.SortOrder
+  scannerUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  scannerUsageCount?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
@@ -298,6 +479,10 @@ export type UserOrderByWithRelationInput = {
   recurringTransactions?: Prisma.RecurringTransactionOrderByRelationAggregateInput
   people?: Prisma.PersonOrderByRelationAggregateInput
   personEntries?: Prisma.PersonEntryOrderByRelationAggregateInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringOrderByRelationAggregateInput
+  feedbacks?: Prisma.FeedbackOrderByRelationAggregateInput
+  recurringBills?: Prisma.RecurringBillOrderByRelationAggregateInput
+  pluggyItems?: Prisma.PluggyItemOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -317,6 +502,21 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   stripeSubscriptionId?: Prisma.StringNullableFilter<"User"> | string | null
   passwordResetToken?: Prisma.StringNullableFilter<"User"> | string | null
   passwordResetExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  profileImage?: Prisma.StringNullableFilter<"User"> | string | null
+  bio?: Prisma.StringNullableFilter<"User"> | string | null
+  city?: Prisma.StringNullableFilter<"User"> | string | null
+  occupation?: Prisma.StringNullableFilter<"User"> | string | null
+  birthdate?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  notifBillReminder?: Prisma.BoolFilter<"User"> | boolean
+  notifCategoryLimit?: Prisma.BoolFilter<"User"> | boolean
+  notifMonthlyEmail?: Prisma.BoolFilter<"User"> | boolean
+  currency?: Prisma.StringFilter<"User"> | string
+  dateFormat?: Prisma.StringFilter<"User"> | string
+  chatUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
+  chatUsageCount?: Prisma.IntFilter<"User"> | number
+  scannerUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
+  scannerUsageCount?: Prisma.IntFilter<"User"> | number
+  tokenVersion?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   transactions?: Prisma.TransactionListRelationFilter
@@ -328,6 +528,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   recurringTransactions?: Prisma.RecurringTransactionListRelationFilter
   people?: Prisma.PersonListRelationFilter
   personEntries?: Prisma.PersonEntryListRelationFilter
+  personEntryRecurring?: Prisma.PersonEntryRecurringListRelationFilter
+  feedbacks?: Prisma.FeedbackListRelationFilter
+  recurringBills?: Prisma.RecurringBillListRelationFilter
+  pluggyItems?: Prisma.PluggyItemListRelationFilter
 }, "id" | "email" | "googleId" | "whatsappPhone">
 
 export type UserOrderByWithAggregationInput = {
@@ -344,11 +548,28 @@ export type UserOrderByWithAggregationInput = {
   passwordResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
   passwordResetExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
   whatsappPhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  profileImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  occupation?: Prisma.SortOrderInput | Prisma.SortOrder
+  birthdate?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifBillReminder?: Prisma.SortOrder
+  notifCategoryLimit?: Prisma.SortOrder
+  notifMonthlyEmail?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  dateFormat?: Prisma.SortOrder
+  chatUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  chatUsageCount?: Prisma.SortOrder
+  scannerUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  scannerUsageCount?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
+  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
+  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -368,6 +589,21 @@ export type UserScalarWhereWithAggregatesInput = {
   passwordResetToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   passwordResetExpiry?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   whatsappPhone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  profileImage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  bio?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  city?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  occupation?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  birthdate?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  notifBillReminder?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  notifCategoryLimit?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  notifMonthlyEmail?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  currency?: Prisma.StringWithAggregatesFilter<"User"> | string
+  dateFormat?: Prisma.StringWithAggregatesFilter<"User"> | string
+  chatUsageMonth?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  chatUsageCount?: Prisma.IntWithAggregatesFilter<"User"> | number
+  scannerUsageMonth?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  scannerUsageCount?: Prisma.IntWithAggregatesFilter<"User"> | number
+  tokenVersion?: Prisma.IntWithAggregatesFilter<"User"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -386,6 +622,21 @@ export type UserCreateInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -397,6 +648,10 @@ export type UserCreateInput = {
   recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
   people?: Prisma.PersonCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -413,6 +668,21 @@ export type UserUncheckedCreateInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -424,6 +694,10 @@ export type UserUncheckedCreateInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
   people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -440,6 +714,21 @@ export type UserUpdateInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -451,6 +740,10 @@ export type UserUpdateInput = {
   recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -467,6 +760,21 @@ export type UserUncheckedUpdateInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -478,6 +786,10 @@ export type UserUncheckedUpdateInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -494,6 +806,21 @@ export type UserCreateManyInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -512,6 +839,21 @@ export type UserUpdateManyMutationInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -530,6 +872,21 @@ export type UserUncheckedUpdateManyInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -548,8 +905,29 @@ export type UserCountOrderByAggregateInput = {
   passwordResetToken?: Prisma.SortOrder
   passwordResetExpiry?: Prisma.SortOrder
   whatsappPhone?: Prisma.SortOrder
+  profileImage?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  occupation?: Prisma.SortOrder
+  birthdate?: Prisma.SortOrder
+  notifBillReminder?: Prisma.SortOrder
+  notifCategoryLimit?: Prisma.SortOrder
+  notifMonthlyEmail?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  dateFormat?: Prisma.SortOrder
+  chatUsageMonth?: Prisma.SortOrder
+  chatUsageCount?: Prisma.SortOrder
+  scannerUsageMonth?: Prisma.SortOrder
+  scannerUsageCount?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type UserAvgOrderByAggregateInput = {
+  chatUsageCount?: Prisma.SortOrder
+  scannerUsageCount?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -566,6 +944,21 @@ export type UserMaxOrderByAggregateInput = {
   passwordResetToken?: Prisma.SortOrder
   passwordResetExpiry?: Prisma.SortOrder
   whatsappPhone?: Prisma.SortOrder
+  profileImage?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  occupation?: Prisma.SortOrder
+  birthdate?: Prisma.SortOrder
+  notifBillReminder?: Prisma.SortOrder
+  notifCategoryLimit?: Prisma.SortOrder
+  notifMonthlyEmail?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  dateFormat?: Prisma.SortOrder
+  chatUsageMonth?: Prisma.SortOrder
+  chatUsageCount?: Prisma.SortOrder
+  scannerUsageMonth?: Prisma.SortOrder
+  scannerUsageCount?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -584,8 +977,29 @@ export type UserMinOrderByAggregateInput = {
   passwordResetToken?: Prisma.SortOrder
   passwordResetExpiry?: Prisma.SortOrder
   whatsappPhone?: Prisma.SortOrder
+  profileImage?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  occupation?: Prisma.SortOrder
+  birthdate?: Prisma.SortOrder
+  notifBillReminder?: Prisma.SortOrder
+  notifCategoryLimit?: Prisma.SortOrder
+  notifMonthlyEmail?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  dateFormat?: Prisma.SortOrder
+  chatUsageMonth?: Prisma.SortOrder
+  chatUsageCount?: Prisma.SortOrder
+  scannerUsageMonth?: Prisma.SortOrder
+  scannerUsageCount?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type UserSumOrderByAggregateInput = {
+  chatUsageCount?: Prisma.SortOrder
+  scannerUsageCount?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
 }
 
 export type UserNullableScalarRelationFilter = {
@@ -612,6 +1026,14 @@ export type BoolFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -718,6 +1140,20 @@ export type UserUpdateOneRequiredWithoutBillsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBillsInput, Prisma.UserUpdateWithoutBillsInput>, Prisma.UserUncheckedUpdateWithoutBillsInput>
 }
 
+export type UserCreateNestedOneWithoutRecurringBillsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecurringBillsInput, Prisma.UserUncheckedCreateWithoutRecurringBillsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecurringBillsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutRecurringBillsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecurringBillsInput, Prisma.UserUncheckedCreateWithoutRecurringBillsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecurringBillsInput
+  upsert?: Prisma.UserUpsertWithoutRecurringBillsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecurringBillsInput, Prisma.UserUpdateWithoutRecurringBillsInput>, Prisma.UserUncheckedUpdateWithoutRecurringBillsInput>
+}
+
 export type UserCreateNestedOneWithoutPeopleInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutPeopleInput, Prisma.UserUncheckedCreateWithoutPeopleInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutPeopleInput
@@ -730,6 +1166,20 @@ export type UserUpdateOneRequiredWithoutPeopleNestedInput = {
   upsert?: Prisma.UserUpsertWithoutPeopleInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPeopleInput, Prisma.UserUpdateWithoutPeopleInput>, Prisma.UserUncheckedUpdateWithoutPeopleInput>
+}
+
+export type UserCreateNestedOneWithoutPersonEntryRecurringInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPersonEntryRecurringInput, Prisma.UserUncheckedCreateWithoutPersonEntryRecurringInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPersonEntryRecurringInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPersonEntryRecurringNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPersonEntryRecurringInput, Prisma.UserUncheckedCreateWithoutPersonEntryRecurringInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPersonEntryRecurringInput
+  upsert?: Prisma.UserUpsertWithoutPersonEntryRecurringInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPersonEntryRecurringInput, Prisma.UserUpdateWithoutPersonEntryRecurringInput>, Prisma.UserUncheckedUpdateWithoutPersonEntryRecurringInput>
 }
 
 export type UserCreateNestedOneWithoutPersonEntriesInput = {
@@ -746,6 +1196,34 @@ export type UserUpdateOneRequiredWithoutPersonEntriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPersonEntriesInput, Prisma.UserUpdateWithoutPersonEntriesInput>, Prisma.UserUncheckedUpdateWithoutPersonEntriesInput>
 }
 
+export type UserCreateNestedOneWithoutFeedbacksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutFeedbacksInput, Prisma.UserUncheckedCreateWithoutFeedbacksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFeedbacksInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutFeedbacksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutFeedbacksInput, Prisma.UserUncheckedCreateWithoutFeedbacksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFeedbacksInput
+  upsert?: Prisma.UserUpsertWithoutFeedbacksInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFeedbacksInput, Prisma.UserUpdateWithoutFeedbacksInput>, Prisma.UserUncheckedUpdateWithoutFeedbacksInput>
+}
+
+export type UserCreateNestedOneWithoutPluggyItemsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPluggyItemsInput, Prisma.UserUncheckedCreateWithoutPluggyItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPluggyItemsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPluggyItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPluggyItemsInput, Prisma.UserUncheckedCreateWithoutPluggyItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPluggyItemsInput
+  upsert?: Prisma.UserUpsertWithoutPluggyItemsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPluggyItemsInput, Prisma.UserUpdateWithoutPluggyItemsInput>, Prisma.UserUncheckedUpdateWithoutPluggyItemsInput>
+}
+
 export type UserCreateWithoutCategoriesInput = {
   id?: string
   name: string
@@ -760,6 +1238,21 @@ export type UserCreateWithoutCategoriesInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -770,6 +1263,10 @@ export type UserCreateWithoutCategoriesInput = {
   recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
   people?: Prisma.PersonCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCategoriesInput = {
@@ -786,6 +1283,21 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -796,6 +1308,10 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
   people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCategoriesInput = {
@@ -828,6 +1344,21 @@ export type UserUpdateWithoutCategoriesInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -838,6 +1369,10 @@ export type UserUpdateWithoutCategoriesInput = {
   recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCategoriesInput = {
@@ -854,6 +1389,21 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -864,6 +1414,10 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTransactionsInput = {
@@ -880,6 +1434,21 @@ export type UserCreateWithoutTransactionsInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
@@ -890,6 +1459,10 @@ export type UserCreateWithoutTransactionsInput = {
   recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
   people?: Prisma.PersonCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTransactionsInput = {
@@ -906,6 +1479,21 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
@@ -916,6 +1504,10 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
   people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTransactionsInput = {
@@ -948,6 +1540,21 @@ export type UserUpdateWithoutTransactionsInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
@@ -958,6 +1565,10 @@ export type UserUpdateWithoutTransactionsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTransactionsInput = {
@@ -974,6 +1585,21 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
@@ -984,6 +1610,10 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRecurringTransactionsInput = {
@@ -1000,6 +1630,21 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1010,6 +1655,10 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   incomeSources?: Prisma.IncomeSourceCreateNestedManyWithoutUserInput
   people?: Prisma.PersonCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
@@ -1026,6 +1675,21 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1036,6 +1700,10 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   incomeSources?: Prisma.IncomeSourceUncheckedCreateNestedManyWithoutUserInput
   people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRecurringTransactionsInput = {
@@ -1068,6 +1736,21 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1078,6 +1761,10 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   incomeSources?: Prisma.IncomeSourceUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
@@ -1094,6 +1781,21 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1104,6 +1806,10 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   incomeSources?: Prisma.IncomeSourceUncheckedUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGoalsInput = {
@@ -1120,6 +1826,21 @@ export type UserCreateWithoutGoalsInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1130,6 +1851,10 @@ export type UserCreateWithoutGoalsInput = {
   recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
   people?: Prisma.PersonCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGoalsInput = {
@@ -1146,6 +1871,21 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1156,6 +1896,10 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
   people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGoalsInput = {
@@ -1188,6 +1932,21 @@ export type UserUpdateWithoutGoalsInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1198,6 +1957,10 @@ export type UserUpdateWithoutGoalsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGoalsInput = {
@@ -1214,6 +1977,21 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1224,6 +2002,10 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBudgetsInput = {
@@ -1240,6 +2022,21 @@ export type UserCreateWithoutBudgetsInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1250,6 +2047,10 @@ export type UserCreateWithoutBudgetsInput = {
   recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
   people?: Prisma.PersonCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBudgetsInput = {
@@ -1266,6 +2067,21 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1276,6 +2092,10 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
   people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBudgetsInput = {
@@ -1308,6 +2128,21 @@ export type UserUpdateWithoutBudgetsInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1318,6 +2153,10 @@ export type UserUpdateWithoutBudgetsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBudgetsInput = {
@@ -1334,6 +2173,21 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1344,6 +2198,10 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutIncomeSourcesInput = {
@@ -1360,6 +2218,21 @@ export type UserCreateWithoutIncomeSourcesInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1370,6 +2243,10 @@ export type UserCreateWithoutIncomeSourcesInput = {
   recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
   people?: Prisma.PersonCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutIncomeSourcesInput = {
@@ -1386,6 +2263,21 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1396,6 +2288,10 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
   people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutIncomeSourcesInput = {
@@ -1428,6 +2324,21 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1438,6 +2349,10 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
@@ -1454,6 +2369,21 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1464,6 +2394,10 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBillsInput = {
@@ -1480,6 +2414,21 @@ export type UserCreateWithoutBillsInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1490,6 +2439,10 @@ export type UserCreateWithoutBillsInput = {
   recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
   people?: Prisma.PersonCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBillsInput = {
@@ -1506,6 +2459,21 @@ export type UserUncheckedCreateWithoutBillsInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1516,6 +2484,10 @@ export type UserUncheckedCreateWithoutBillsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
   people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBillsInput = {
@@ -1548,6 +2520,21 @@ export type UserUpdateWithoutBillsInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1558,6 +2545,10 @@ export type UserUpdateWithoutBillsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBillsInput = {
@@ -1574,6 +2565,21 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1584,6 +2590,206 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutRecurringBillsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutRecurringBillsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceUncheckedCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutRecurringBillsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecurringBillsInput, Prisma.UserUncheckedCreateWithoutRecurringBillsInput>
+}
+
+export type UserUpsertWithoutRecurringBillsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRecurringBillsInput, Prisma.UserUncheckedUpdateWithoutRecurringBillsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecurringBillsInput, Prisma.UserUncheckedCreateWithoutRecurringBillsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRecurringBillsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRecurringBillsInput, Prisma.UserUncheckedUpdateWithoutRecurringBillsInput>
+}
+
+export type UserUpdateWithoutRecurringBillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRecurringBillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUncheckedUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPeopleInput = {
@@ -1600,6 +2806,21 @@ export type UserCreateWithoutPeopleInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1610,6 +2831,10 @@ export type UserCreateWithoutPeopleInput = {
   incomeSources?: Prisma.IncomeSourceCreateNestedManyWithoutUserInput
   recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPeopleInput = {
@@ -1626,6 +2851,21 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1636,6 +2876,10 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   incomeSources?: Prisma.IncomeSourceUncheckedCreateNestedManyWithoutUserInput
   recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
   personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPeopleInput = {
@@ -1668,6 +2912,21 @@ export type UserUpdateWithoutPeopleInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1678,6 +2937,10 @@ export type UserUpdateWithoutPeopleInput = {
   incomeSources?: Prisma.IncomeSourceUpdateManyWithoutUserNestedInput
   recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPeopleInput = {
@@ -1694,6 +2957,21 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1704,6 +2982,206 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   incomeSources?: Prisma.IncomeSourceUncheckedUpdateManyWithoutUserNestedInput
   recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPersonEntryRecurringInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceUncheckedCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPersonEntryRecurringInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPersonEntryRecurringInput, Prisma.UserUncheckedCreateWithoutPersonEntryRecurringInput>
+}
+
+export type UserUpsertWithoutPersonEntryRecurringInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPersonEntryRecurringInput, Prisma.UserUncheckedUpdateWithoutPersonEntryRecurringInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPersonEntryRecurringInput, Prisma.UserUncheckedCreateWithoutPersonEntryRecurringInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPersonEntryRecurringInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPersonEntryRecurringInput, Prisma.UserUncheckedUpdateWithoutPersonEntryRecurringInput>
+}
+
+export type UserUpdateWithoutPersonEntryRecurringInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUncheckedUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPersonEntriesInput = {
@@ -1720,6 +3198,21 @@ export type UserCreateWithoutPersonEntriesInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1730,6 +3223,10 @@ export type UserCreateWithoutPersonEntriesInput = {
   incomeSources?: Prisma.IncomeSourceCreateNestedManyWithoutUserInput
   recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
   people?: Prisma.PersonCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPersonEntriesInput = {
@@ -1746,6 +3243,21 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   passwordResetToken?: string | null
   passwordResetExpiry?: Date | string | null
   whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1756,6 +3268,10 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   incomeSources?: Prisma.IncomeSourceUncheckedCreateNestedManyWithoutUserInput
   recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
   people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPersonEntriesInput = {
@@ -1788,6 +3304,21 @@ export type UserUpdateWithoutPersonEntriesInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1798,6 +3329,10 @@ export type UserUpdateWithoutPersonEntriesInput = {
   incomeSources?: Prisma.IncomeSourceUpdateManyWithoutUserNestedInput
   recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPersonEntriesInput = {
@@ -1814,6 +3349,21 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1824,6 +3374,402 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   incomeSources?: Prisma.IncomeSourceUncheckedUpdateManyWithoutUserNestedInput
   recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
   people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutFeedbacksInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutFeedbacksInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceUncheckedCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutFeedbacksInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutFeedbacksInput, Prisma.UserUncheckedCreateWithoutFeedbacksInput>
+}
+
+export type UserUpsertWithoutFeedbacksInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutFeedbacksInput, Prisma.UserUncheckedUpdateWithoutFeedbacksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutFeedbacksInput, Prisma.UserUncheckedCreateWithoutFeedbacksInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutFeedbacksInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutFeedbacksInput, Prisma.UserUncheckedUpdateWithoutFeedbacksInput>
+}
+
+export type UserUpdateWithoutFeedbacksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutFeedbacksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUncheckedUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPluggyItemsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPluggyItemsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  tokenVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceUncheckedCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPluggyItemsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPluggyItemsInput, Prisma.UserUncheckedCreateWithoutPluggyItemsInput>
+}
+
+export type UserUpsertWithoutPluggyItemsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPluggyItemsInput, Prisma.UserUncheckedUpdateWithoutPluggyItemsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPluggyItemsInput, Prisma.UserUncheckedCreateWithoutPluggyItemsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPluggyItemsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPluggyItemsInput, Prisma.UserUncheckedUpdateWithoutPluggyItemsInput>
+}
+
+export type UserUpdateWithoutPluggyItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPluggyItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUncheckedUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1841,6 +3787,10 @@ export type UserCountOutputType = {
   recurringTransactions: number
   people: number
   personEntries: number
+  personEntryRecurring: number
+  feedbacks: number
+  recurringBills: number
+  pluggyItems: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1853,6 +3803,10 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   recurringTransactions?: boolean | UserCountOutputTypeCountRecurringTransactionsArgs
   people?: boolean | UserCountOutputTypeCountPeopleArgs
   personEntries?: boolean | UserCountOutputTypeCountPersonEntriesArgs
+  personEntryRecurring?: boolean | UserCountOutputTypeCountPersonEntryRecurringArgs
+  feedbacks?: boolean | UserCountOutputTypeCountFeedbacksArgs
+  recurringBills?: boolean | UserCountOutputTypeCountRecurringBillsArgs
+  pluggyItems?: boolean | UserCountOutputTypeCountPluggyItemsArgs
 }
 
 /**
@@ -1928,6 +3882,34 @@ export type UserCountOutputTypeCountPersonEntriesArgs<ExtArgs extends runtime.Ty
   where?: Prisma.PersonEntryWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPersonEntryRecurringArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PersonEntryRecurringWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountFeedbacksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FeedbackWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRecurringBillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecurringBillWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPluggyItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PluggyItemWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1943,6 +3925,21 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   passwordResetToken?: boolean
   passwordResetExpiry?: boolean
   whatsappPhone?: boolean
+  profileImage?: boolean
+  bio?: boolean
+  city?: boolean
+  occupation?: boolean
+  birthdate?: boolean
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: boolean
+  dateFormat?: boolean
+  chatUsageMonth?: boolean
+  chatUsageCount?: boolean
+  scannerUsageMonth?: boolean
+  scannerUsageCount?: boolean
+  tokenVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
@@ -1954,6 +3951,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   recurringTransactions?: boolean | Prisma.User$recurringTransactionsArgs<ExtArgs>
   people?: boolean | Prisma.User$peopleArgs<ExtArgs>
   personEntries?: boolean | Prisma.User$personEntriesArgs<ExtArgs>
+  personEntryRecurring?: boolean | Prisma.User$personEntryRecurringArgs<ExtArgs>
+  feedbacks?: boolean | Prisma.User$feedbacksArgs<ExtArgs>
+  recurringBills?: boolean | Prisma.User$recurringBillsArgs<ExtArgs>
+  pluggyItems?: boolean | Prisma.User$pluggyItemsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1971,6 +3972,21 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordResetToken?: boolean
   passwordResetExpiry?: boolean
   whatsappPhone?: boolean
+  profileImage?: boolean
+  bio?: boolean
+  city?: boolean
+  occupation?: boolean
+  birthdate?: boolean
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: boolean
+  dateFormat?: boolean
+  chatUsageMonth?: boolean
+  chatUsageCount?: boolean
+  scannerUsageMonth?: boolean
+  scannerUsageCount?: boolean
+  tokenVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1989,6 +4005,21 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordResetToken?: boolean
   passwordResetExpiry?: boolean
   whatsappPhone?: boolean
+  profileImage?: boolean
+  bio?: boolean
+  city?: boolean
+  occupation?: boolean
+  birthdate?: boolean
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: boolean
+  dateFormat?: boolean
+  chatUsageMonth?: boolean
+  chatUsageCount?: boolean
+  scannerUsageMonth?: boolean
+  scannerUsageCount?: boolean
+  tokenVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -2007,11 +4038,26 @@ export type UserSelectScalar = {
   passwordResetToken?: boolean
   passwordResetExpiry?: boolean
   whatsappPhone?: boolean
+  profileImage?: boolean
+  bio?: boolean
+  city?: boolean
+  occupation?: boolean
+  birthdate?: boolean
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  currency?: boolean
+  dateFormat?: boolean
+  chatUsageMonth?: boolean
+  chatUsageCount?: boolean
+  scannerUsageMonth?: boolean
+  scannerUsageCount?: boolean
+  tokenVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "profileImage" | "bio" | "city" | "occupation" | "birthdate" | "notifBillReminder" | "notifCategoryLimit" | "notifMonthlyEmail" | "currency" | "dateFormat" | "chatUsageMonth" | "chatUsageCount" | "scannerUsageMonth" | "scannerUsageCount" | "tokenVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
   categories?: boolean | Prisma.User$categoriesArgs<ExtArgs>
@@ -2022,6 +4068,10 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   recurringTransactions?: boolean | Prisma.User$recurringTransactionsArgs<ExtArgs>
   people?: boolean | Prisma.User$peopleArgs<ExtArgs>
   personEntries?: boolean | Prisma.User$personEntriesArgs<ExtArgs>
+  personEntryRecurring?: boolean | Prisma.User$personEntryRecurringArgs<ExtArgs>
+  feedbacks?: boolean | Prisma.User$feedbacksArgs<ExtArgs>
+  recurringBills?: boolean | Prisma.User$recurringBillsArgs<ExtArgs>
+  pluggyItems?: boolean | Prisma.User$pluggyItemsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2039,6 +4089,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     recurringTransactions: Prisma.$RecurringTransactionPayload<ExtArgs>[]
     people: Prisma.$PersonPayload<ExtArgs>[]
     personEntries: Prisma.$PersonEntryPayload<ExtArgs>[]
+    personEntryRecurring: Prisma.$PersonEntryRecurringPayload<ExtArgs>[]
+    feedbacks: Prisma.$FeedbackPayload<ExtArgs>[]
+    recurringBills: Prisma.$RecurringBillPayload<ExtArgs>[]
+    pluggyItems: Prisma.$PluggyItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2054,6 +4108,21 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     passwordResetToken: string | null
     passwordResetExpiry: Date | null
     whatsappPhone: string | null
+    profileImage: string | null
+    bio: string | null
+    city: string | null
+    occupation: string | null
+    birthdate: Date | null
+    notifBillReminder: boolean
+    notifCategoryLimit: boolean
+    notifMonthlyEmail: boolean
+    currency: string
+    dateFormat: string
+    chatUsageMonth: string | null
+    chatUsageCount: number
+    scannerUsageMonth: string | null
+    scannerUsageCount: number
+    tokenVersion: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -2459,6 +4528,10 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   recurringTransactions<T extends Prisma.User$recurringTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recurringTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   people<T extends Prisma.User$peopleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$peopleArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   personEntries<T extends Prisma.User$personEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$personEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PersonEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  personEntryRecurring<T extends Prisma.User$personEntryRecurringArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$personEntryRecurringArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PersonEntryRecurringPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  feedbacks<T extends Prisma.User$feedbacksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$feedbacksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recurringBills<T extends Prisma.User$recurringBillsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recurringBillsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringBillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pluggyItems<T extends Prisma.User$pluggyItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pluggyItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PluggyItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2501,6 +4574,21 @@ export interface UserFieldRefs {
   readonly passwordResetToken: Prisma.FieldRef<"User", 'String'>
   readonly passwordResetExpiry: Prisma.FieldRef<"User", 'DateTime'>
   readonly whatsappPhone: Prisma.FieldRef<"User", 'String'>
+  readonly profileImage: Prisma.FieldRef<"User", 'String'>
+  readonly bio: Prisma.FieldRef<"User", 'String'>
+  readonly city: Prisma.FieldRef<"User", 'String'>
+  readonly occupation: Prisma.FieldRef<"User", 'String'>
+  readonly birthdate: Prisma.FieldRef<"User", 'DateTime'>
+  readonly notifBillReminder: Prisma.FieldRef<"User", 'Boolean'>
+  readonly notifCategoryLimit: Prisma.FieldRef<"User", 'Boolean'>
+  readonly notifMonthlyEmail: Prisma.FieldRef<"User", 'Boolean'>
+  readonly currency: Prisma.FieldRef<"User", 'String'>
+  readonly dateFormat: Prisma.FieldRef<"User", 'String'>
+  readonly chatUsageMonth: Prisma.FieldRef<"User", 'String'>
+  readonly chatUsageCount: Prisma.FieldRef<"User", 'Int'>
+  readonly scannerUsageMonth: Prisma.FieldRef<"User", 'String'>
+  readonly scannerUsageCount: Prisma.FieldRef<"User", 'Int'>
+  readonly tokenVersion: Prisma.FieldRef<"User", 'Int'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -3109,6 +5197,102 @@ export type User$personEntriesArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.PersonEntryScalarFieldEnum | Prisma.PersonEntryScalarFieldEnum[]
+}
+
+/**
+ * User.personEntryRecurring
+ */
+export type User$personEntryRecurringArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PersonEntryRecurring
+   */
+  select?: Prisma.PersonEntryRecurringSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PersonEntryRecurring
+   */
+  omit?: Prisma.PersonEntryRecurringOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PersonEntryRecurringInclude<ExtArgs> | null
+  where?: Prisma.PersonEntryRecurringWhereInput
+  orderBy?: Prisma.PersonEntryRecurringOrderByWithRelationInput | Prisma.PersonEntryRecurringOrderByWithRelationInput[]
+  cursor?: Prisma.PersonEntryRecurringWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PersonEntryRecurringScalarFieldEnum | Prisma.PersonEntryRecurringScalarFieldEnum[]
+}
+
+/**
+ * User.feedbacks
+ */
+export type User$feedbacksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Feedback
+   */
+  select?: Prisma.FeedbackSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Feedback
+   */
+  omit?: Prisma.FeedbackOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FeedbackInclude<ExtArgs> | null
+  where?: Prisma.FeedbackWhereInput
+  orderBy?: Prisma.FeedbackOrderByWithRelationInput | Prisma.FeedbackOrderByWithRelationInput[]
+  cursor?: Prisma.FeedbackWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FeedbackScalarFieldEnum | Prisma.FeedbackScalarFieldEnum[]
+}
+
+/**
+ * User.recurringBills
+ */
+export type User$recurringBillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecurringBill
+   */
+  select?: Prisma.RecurringBillSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecurringBill
+   */
+  omit?: Prisma.RecurringBillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecurringBillInclude<ExtArgs> | null
+  where?: Prisma.RecurringBillWhereInput
+  orderBy?: Prisma.RecurringBillOrderByWithRelationInput | Prisma.RecurringBillOrderByWithRelationInput[]
+  cursor?: Prisma.RecurringBillWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecurringBillScalarFieldEnum | Prisma.RecurringBillScalarFieldEnum[]
+}
+
+/**
+ * User.pluggyItems
+ */
+export type User$pluggyItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PluggyItem
+   */
+  select?: Prisma.PluggyItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PluggyItem
+   */
+  omit?: Prisma.PluggyItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PluggyItemInclude<ExtArgs> | null
+  where?: Prisma.PluggyItemWhereInput
+  orderBy?: Prisma.PluggyItemOrderByWithRelationInput | Prisma.PluggyItemOrderByWithRelationInput[]
+  cursor?: Prisma.PluggyItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PluggyItemScalarFieldEnum | Prisma.PluggyItemScalarFieldEnum[]
 }
 
 /**

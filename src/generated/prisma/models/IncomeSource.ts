@@ -43,6 +43,7 @@ export type IncomeSourceMinAggregateOutputType = {
   amount: runtime.Decimal | null
   isRecurring: boolean | null
   dayOfMonth: number | null
+  startDate: Date | null
   lastAutoPayMonth: string | null
   notes: string | null
   createdAt: Date | null
@@ -58,6 +59,7 @@ export type IncomeSourceMaxAggregateOutputType = {
   amount: runtime.Decimal | null
   isRecurring: boolean | null
   dayOfMonth: number | null
+  startDate: Date | null
   lastAutoPayMonth: string | null
   notes: string | null
   createdAt: Date | null
@@ -73,6 +75,7 @@ export type IncomeSourceCountAggregateOutputType = {
   amount: number
   isRecurring: number
   dayOfMonth: number
+  startDate: number
   lastAutoPayMonth: number
   notes: number
   createdAt: number
@@ -100,6 +103,7 @@ export type IncomeSourceMinAggregateInputType = {
   amount?: true
   isRecurring?: true
   dayOfMonth?: true
+  startDate?: true
   lastAutoPayMonth?: true
   notes?: true
   createdAt?: true
@@ -115,6 +119,7 @@ export type IncomeSourceMaxAggregateInputType = {
   amount?: true
   isRecurring?: true
   dayOfMonth?: true
+  startDate?: true
   lastAutoPayMonth?: true
   notes?: true
   createdAt?: true
@@ -130,6 +135,7 @@ export type IncomeSourceCountAggregateInputType = {
   amount?: true
   isRecurring?: true
   dayOfMonth?: true
+  startDate?: true
   lastAutoPayMonth?: true
   notes?: true
   createdAt?: true
@@ -232,6 +238,7 @@ export type IncomeSourceGroupByOutputType = {
   amount: runtime.Decimal
   isRecurring: boolean
   dayOfMonth: number | null
+  startDate: Date | null
   lastAutoPayMonth: string | null
   notes: string | null
   createdAt: Date
@@ -270,6 +277,7 @@ export type IncomeSourceWhereInput = {
   amount?: Prisma.DecimalFilter<"IncomeSource"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFilter<"IncomeSource"> | boolean
   dayOfMonth?: Prisma.IntNullableFilter<"IncomeSource"> | number | null
+  startDate?: Prisma.DateTimeNullableFilter<"IncomeSource"> | Date | string | null
   lastAutoPayMonth?: Prisma.StringNullableFilter<"IncomeSource"> | string | null
   notes?: Prisma.StringNullableFilter<"IncomeSource"> | string | null
   createdAt?: Prisma.DateTimeFilter<"IncomeSource"> | Date | string
@@ -287,6 +295,7 @@ export type IncomeSourceOrderByWithRelationInput = {
   amount?: Prisma.SortOrder
   isRecurring?: Prisma.SortOrder
   dayOfMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
   lastAutoPayMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -307,6 +316,7 @@ export type IncomeSourceWhereUniqueInput = Prisma.AtLeast<{
   amount?: Prisma.DecimalFilter<"IncomeSource"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFilter<"IncomeSource"> | boolean
   dayOfMonth?: Prisma.IntNullableFilter<"IncomeSource"> | number | null
+  startDate?: Prisma.DateTimeNullableFilter<"IncomeSource"> | Date | string | null
   lastAutoPayMonth?: Prisma.StringNullableFilter<"IncomeSource"> | string | null
   notes?: Prisma.StringNullableFilter<"IncomeSource"> | string | null
   createdAt?: Prisma.DateTimeFilter<"IncomeSource"> | Date | string
@@ -324,6 +334,7 @@ export type IncomeSourceOrderByWithAggregationInput = {
   amount?: Prisma.SortOrder
   isRecurring?: Prisma.SortOrder
   dayOfMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
   lastAutoPayMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -347,6 +358,7 @@ export type IncomeSourceScalarWhereWithAggregatesInput = {
   amount?: Prisma.DecimalWithAggregatesFilter<"IncomeSource"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolWithAggregatesFilter<"IncomeSource"> | boolean
   dayOfMonth?: Prisma.IntNullableWithAggregatesFilter<"IncomeSource"> | number | null
+  startDate?: Prisma.DateTimeNullableWithAggregatesFilter<"IncomeSource"> | Date | string | null
   lastAutoPayMonth?: Prisma.StringNullableWithAggregatesFilter<"IncomeSource"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"IncomeSource"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"IncomeSource"> | Date | string
@@ -362,6 +374,7 @@ export type IncomeSourceCreateInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: boolean
   dayOfMonth?: number | null
+  startDate?: Date | string | null
   lastAutoPayMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
@@ -377,6 +390,7 @@ export type IncomeSourceUncheckedCreateInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: boolean
   dayOfMonth?: number | null
+  startDate?: Date | string | null
   lastAutoPayMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
@@ -392,6 +406,7 @@ export type IncomeSourceUpdateInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastAutoPayMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -407,6 +422,7 @@ export type IncomeSourceUncheckedUpdateInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastAutoPayMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -422,6 +438,7 @@ export type IncomeSourceCreateManyInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: boolean
   dayOfMonth?: number | null
+  startDate?: Date | string | null
   lastAutoPayMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
@@ -437,6 +454,7 @@ export type IncomeSourceUpdateManyMutationInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastAutoPayMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -450,6 +468,7 @@ export type IncomeSourceUncheckedUpdateManyInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastAutoPayMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -475,6 +494,7 @@ export type IncomeSourceCountOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   isRecurring?: Prisma.SortOrder
   dayOfMonth?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
   lastAutoPayMonth?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -495,6 +515,7 @@ export type IncomeSourceMaxOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   isRecurring?: Prisma.SortOrder
   dayOfMonth?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
   lastAutoPayMonth?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -510,6 +531,7 @@ export type IncomeSourceMinOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   isRecurring?: Prisma.SortOrder
   dayOfMonth?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
   lastAutoPayMonth?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -618,6 +640,7 @@ export type IncomeSourceCreateWithoutUserInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: boolean
   dayOfMonth?: number | null
+  startDate?: Date | string | null
   lastAutoPayMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
@@ -632,6 +655,7 @@ export type IncomeSourceUncheckedCreateWithoutUserInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: boolean
   dayOfMonth?: number | null
+  startDate?: Date | string | null
   lastAutoPayMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
@@ -675,6 +699,7 @@ export type IncomeSourceScalarWhereInput = {
   amount?: Prisma.DecimalFilter<"IncomeSource"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFilter<"IncomeSource"> | boolean
   dayOfMonth?: Prisma.IntNullableFilter<"IncomeSource"> | number | null
+  startDate?: Prisma.DateTimeNullableFilter<"IncomeSource"> | Date | string | null
   lastAutoPayMonth?: Prisma.StringNullableFilter<"IncomeSource"> | string | null
   notes?: Prisma.StringNullableFilter<"IncomeSource"> | string | null
   createdAt?: Prisma.DateTimeFilter<"IncomeSource"> | Date | string
@@ -690,6 +715,7 @@ export type IncomeSourceCreateWithoutCategoryInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: boolean
   dayOfMonth?: number | null
+  startDate?: Date | string | null
   lastAutoPayMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
@@ -704,6 +730,7 @@ export type IncomeSourceUncheckedCreateWithoutCategoryInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: boolean
   dayOfMonth?: number | null
+  startDate?: Date | string | null
   lastAutoPayMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
@@ -744,6 +771,7 @@ export type IncomeSourceCreateManyUserInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: boolean
   dayOfMonth?: number | null
+  startDate?: Date | string | null
   lastAutoPayMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
@@ -758,6 +786,7 @@ export type IncomeSourceUpdateWithoutUserInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastAutoPayMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -772,6 +801,7 @@ export type IncomeSourceUncheckedUpdateWithoutUserInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastAutoPayMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -786,6 +816,7 @@ export type IncomeSourceUncheckedUpdateManyWithoutUserInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastAutoPayMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -800,6 +831,7 @@ export type IncomeSourceCreateManyCategoryInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: boolean
   dayOfMonth?: number | null
+  startDate?: Date | string | null
   lastAutoPayMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
@@ -814,6 +846,7 @@ export type IncomeSourceUpdateWithoutCategoryInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastAutoPayMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -828,6 +861,7 @@ export type IncomeSourceUncheckedUpdateWithoutCategoryInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastAutoPayMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -842,6 +876,7 @@ export type IncomeSourceUncheckedUpdateManyWithoutCategoryInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastAutoPayMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -858,6 +893,7 @@ export type IncomeSourceSelect<ExtArgs extends runtime.Types.Extensions.Internal
   amount?: boolean
   isRecurring?: boolean
   dayOfMonth?: boolean
+  startDate?: boolean
   lastAutoPayMonth?: boolean
   notes?: boolean
   createdAt?: boolean
@@ -875,6 +911,7 @@ export type IncomeSourceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   amount?: boolean
   isRecurring?: boolean
   dayOfMonth?: boolean
+  startDate?: boolean
   lastAutoPayMonth?: boolean
   notes?: boolean
   createdAt?: boolean
@@ -892,6 +929,7 @@ export type IncomeSourceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   amount?: boolean
   isRecurring?: boolean
   dayOfMonth?: boolean
+  startDate?: boolean
   lastAutoPayMonth?: boolean
   notes?: boolean
   createdAt?: boolean
@@ -909,6 +947,7 @@ export type IncomeSourceSelectScalar = {
   amount?: boolean
   isRecurring?: boolean
   dayOfMonth?: boolean
+  startDate?: boolean
   lastAutoPayMonth?: boolean
   notes?: boolean
   createdAt?: boolean
@@ -917,7 +956,7 @@ export type IncomeSourceSelectScalar = {
   categoryId?: boolean
 }
 
-export type IncomeSourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "type" | "amount" | "isRecurring" | "dayOfMonth" | "lastAutoPayMonth" | "notes" | "createdAt" | "updatedAt" | "userId" | "categoryId", ExtArgs["result"]["incomeSource"]>
+export type IncomeSourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "type" | "amount" | "isRecurring" | "dayOfMonth" | "startDate" | "lastAutoPayMonth" | "notes" | "createdAt" | "updatedAt" | "userId" | "categoryId", ExtArgs["result"]["incomeSource"]>
 export type IncomeSourceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.IncomeSource$categoryArgs<ExtArgs>
@@ -944,6 +983,7 @@ export type $IncomeSourcePayload<ExtArgs extends runtime.Types.Extensions.Intern
     amount: runtime.Decimal
     isRecurring: boolean
     dayOfMonth: number | null
+    startDate: Date | null
     lastAutoPayMonth: string | null
     notes: string | null
     createdAt: Date
@@ -1381,6 +1421,7 @@ export interface IncomeSourceFieldRefs {
   readonly amount: Prisma.FieldRef<"IncomeSource", 'Decimal'>
   readonly isRecurring: Prisma.FieldRef<"IncomeSource", 'Boolean'>
   readonly dayOfMonth: Prisma.FieldRef<"IncomeSource", 'Int'>
+  readonly startDate: Prisma.FieldRef<"IncomeSource", 'DateTime'>
   readonly lastAutoPayMonth: Prisma.FieldRef<"IncomeSource", 'String'>
   readonly notes: Prisma.FieldRef<"IncomeSource", 'String'>
   readonly createdAt: Prisma.FieldRef<"IncomeSource", 'DateTime'>

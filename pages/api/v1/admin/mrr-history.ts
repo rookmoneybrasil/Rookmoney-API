@@ -13,10 +13,10 @@ export default withBackofficeAuth(async (_req, res) => {
     db.$queryRaw<MonthRow[]>`
       SELECT DATE_TRUNC('month', "createdAt")::date AS month, COUNT(*)::int AS new_pro
       FROM "User"
-      WHERE plan = 'PRO' AND "createdAt" >= NOW() - INTERVAL '12 months'
+      WHERE plan = 'PRO' AND "stripeSubscriptionId" IS NOT NULL AND "createdAt" >= NOW() - INTERVAL '12 months'
       GROUP BY 1 ORDER BY 1
     `,
-    db.user.count({ where: { plan: 'PRO' } }),
+    db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: { not: null } } }),
     db.user.count(),
   ])
 

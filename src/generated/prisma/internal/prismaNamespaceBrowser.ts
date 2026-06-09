@@ -60,8 +60,15 @@ export const ModelName = {
   Budget: 'Budget',
   IncomeSource: 'IncomeSource',
   Bill: 'Bill',
+  RecurringBill: 'RecurringBill',
   Person: 'Person',
-  PersonEntry: 'PersonEntry'
+  PersonEntryRecurring: 'PersonEntryRecurring',
+  PersonEntry: 'PersonEntry',
+  Feedback: 'Feedback',
+  DataMigration: 'DataMigration',
+  RateLimit: 'RateLimit',
+  AdminLog: 'AdminLog',
+  PluggyItem: 'PluggyItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -94,6 +101,21 @@ export const UserScalarFieldEnum = {
   passwordResetToken: 'passwordResetToken',
   passwordResetExpiry: 'passwordResetExpiry',
   whatsappPhone: 'whatsappPhone',
+  profileImage: 'profileImage',
+  bio: 'bio',
+  city: 'city',
+  occupation: 'occupation',
+  birthdate: 'birthdate',
+  notifBillReminder: 'notifBillReminder',
+  notifCategoryLimit: 'notifCategoryLimit',
+  notifMonthlyEmail: 'notifMonthlyEmail',
+  currency: 'currency',
+  dateFormat: 'dateFormat',
+  chatUsageMonth: 'chatUsageMonth',
+  chatUsageCount: 'chatUsageCount',
+  scannerUsageMonth: 'scannerUsageMonth',
+  scannerUsageCount: 'scannerUsageCount',
+  tokenVersion: 'tokenVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -197,6 +219,7 @@ export const IncomeSourceScalarFieldEnum = {
   amount: 'amount',
   isRecurring: 'isRecurring',
   dayOfMonth: 'dayOfMonth',
+  startDate: 'startDate',
   lastAutoPayMonth: 'lastAutoPayMonth',
   notes: 'notes',
   createdAt: 'createdAt',
@@ -221,6 +244,7 @@ export const BillScalarFieldEnum = {
   installmentCurrent: 'installmentCurrent',
   installmentGroupId: 'installmentGroupId',
   paidTransactionId: 'paidTransactionId',
+  recurringBillId: 'recurringBillId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId',
@@ -228,6 +252,23 @@ export const BillScalarFieldEnum = {
 } as const
 
 export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
+
+
+export const RecurringBillScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  amount: 'amount',
+  dayOfMonth: 'dayOfMonth',
+  isActive: 'isActive',
+  lastAutoMonth: 'lastAutoMonth',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  categoryId: 'categoryId'
+} as const
+
+export type RecurringBillScalarFieldEnum = (typeof RecurringBillScalarFieldEnum)[keyof typeof RecurringBillScalarFieldEnum]
 
 
 export const PersonScalarFieldEnum = {
@@ -241,6 +282,25 @@ export const PersonScalarFieldEnum = {
 } as const
 
 export type PersonScalarFieldEnum = (typeof PersonScalarFieldEnum)[keyof typeof PersonScalarFieldEnum]
+
+
+export const PersonEntryRecurringScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  description: 'description',
+  amount: 'amount',
+  dayOfMonth: 'dayOfMonth',
+  isActive: 'isActive',
+  notes: 'notes',
+  lastMonth: 'lastMonth',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  personId: 'personId',
+  userId: 'userId',
+  categoryId: 'categoryId'
+} as const
+
+export type PersonEntryRecurringScalarFieldEnum = (typeof PersonEntryRecurringScalarFieldEnum)[keyof typeof PersonEntryRecurringScalarFieldEnum]
 
 
 export const PersonEntryScalarFieldEnum = {
@@ -264,6 +324,63 @@ export const PersonEntryScalarFieldEnum = {
 } as const
 
 export type PersonEntryScalarFieldEnum = (typeof PersonEntryScalarFieldEnum)[keyof typeof PersonEntryScalarFieldEnum]
+
+
+export const FeedbackScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  title: 'title',
+  body: 'body',
+  imageData: 'imageData',
+  status: 'status',
+  createdAt: 'createdAt',
+  userId: 'userId'
+} as const
+
+export type FeedbackScalarFieldEnum = (typeof FeedbackScalarFieldEnum)[keyof typeof FeedbackScalarFieldEnum]
+
+
+export const DataMigrationScalarFieldEnum = {
+  id: 'id',
+  ranAt: 'ranAt'
+} as const
+
+export type DataMigrationScalarFieldEnum = (typeof DataMigrationScalarFieldEnum)[keyof typeof DataMigrationScalarFieldEnum]
+
+
+export const RateLimitScalarFieldEnum = {
+  id: 'id',
+  count: 'count',
+  resetAt: 'resetAt'
+} as const
+
+export type RateLimitScalarFieldEnum = (typeof RateLimitScalarFieldEnum)[keyof typeof RateLimitScalarFieldEnum]
+
+
+export const AdminLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  targetId: 'targetId',
+  details: 'details',
+  createdAt: 'createdAt'
+} as const
+
+export type AdminLogScalarFieldEnum = (typeof AdminLogScalarFieldEnum)[keyof typeof AdminLogScalarFieldEnum]
+
+
+export const PluggyItemScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  itemId: 'itemId',
+  connectorId: 'connectorId',
+  connectorName: 'connectorName',
+  status: 'status',
+  lastSyncAt: 'lastSyncAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PluggyItemScalarFieldEnum = (typeof PluggyItemScalarFieldEnum)[keyof typeof PluggyItemScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -767,10 +767,6 @@ export type PersonEntryUncheckedUpdateManyWithoutPersonNestedInput = {
   deleteMany?: Prisma.PersonEntryScalarWhereInput | Prisma.PersonEntryScalarWhereInput[]
 }
 
-export type EnumPersonEntryTypeFieldUpdateOperationsInput = {
-  set?: $Enums.PersonEntryType
-}
-
 export type PersonEntryCreateWithoutUserInput = {
   id?: string
   type: $Enums.PersonEntryType

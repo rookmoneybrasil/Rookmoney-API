@@ -51,6 +51,7 @@ export type BillMinAggregateOutputType = {
   installmentCurrent: number | null
   installmentGroupId: string | null
   paidTransactionId: string | null
+  recurringBillId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -70,6 +71,7 @@ export type BillMaxAggregateOutputType = {
   installmentCurrent: number | null
   installmentGroupId: string | null
   paidTransactionId: string | null
+  recurringBillId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -89,6 +91,7 @@ export type BillCountAggregateOutputType = {
   installmentCurrent: number
   installmentGroupId: number
   paidTransactionId: number
+  recurringBillId: number
   createdAt: number
   updatedAt: number
   userId: number
@@ -122,6 +125,7 @@ export type BillMinAggregateInputType = {
   installmentCurrent?: true
   installmentGroupId?: true
   paidTransactionId?: true
+  recurringBillId?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -141,6 +145,7 @@ export type BillMaxAggregateInputType = {
   installmentCurrent?: true
   installmentGroupId?: true
   paidTransactionId?: true
+  recurringBillId?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -160,6 +165,7 @@ export type BillCountAggregateInputType = {
   installmentCurrent?: true
   installmentGroupId?: true
   paidTransactionId?: true
+  recurringBillId?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -266,6 +272,7 @@ export type BillGroupByOutputType = {
   installmentCurrent: number | null
   installmentGroupId: string | null
   paidTransactionId: string | null
+  recurringBillId: string | null
   createdAt: Date
   updatedAt: Date
   userId: string
@@ -308,12 +315,14 @@ export type BillWhereInput = {
   installmentCurrent?: Prisma.IntNullableFilter<"Bill"> | number | null
   installmentGroupId?: Prisma.StringNullableFilter<"Bill"> | string | null
   paidTransactionId?: Prisma.StringNullableFilter<"Bill"> | string | null
+  recurringBillId?: Prisma.StringNullableFilter<"Bill"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   userId?: Prisma.StringFilter<"Bill"> | string
   categoryId?: Prisma.StringNullableFilter<"Bill"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
+  recurringBill?: Prisma.XOR<Prisma.RecurringBillNullableScalarRelationFilter, Prisma.RecurringBillWhereInput> | null
 }
 
 export type BillOrderByWithRelationInput = {
@@ -329,12 +338,14 @@ export type BillOrderByWithRelationInput = {
   installmentCurrent?: Prisma.SortOrderInput | Prisma.SortOrder
   installmentGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
   paidTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurringBillId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   category?: Prisma.CategoryOrderByWithRelationInput
+  recurringBill?: Prisma.RecurringBillOrderByWithRelationInput
 }
 
 export type BillWhereUniqueInput = Prisma.AtLeast<{
@@ -353,12 +364,14 @@ export type BillWhereUniqueInput = Prisma.AtLeast<{
   installmentCurrent?: Prisma.IntNullableFilter<"Bill"> | number | null
   installmentGroupId?: Prisma.StringNullableFilter<"Bill"> | string | null
   paidTransactionId?: Prisma.StringNullableFilter<"Bill"> | string | null
+  recurringBillId?: Prisma.StringNullableFilter<"Bill"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   userId?: Prisma.StringFilter<"Bill"> | string
   categoryId?: Prisma.StringNullableFilter<"Bill"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
+  recurringBill?: Prisma.XOR<Prisma.RecurringBillNullableScalarRelationFilter, Prisma.RecurringBillWhereInput> | null
 }, "id">
 
 export type BillOrderByWithAggregationInput = {
@@ -374,6 +387,7 @@ export type BillOrderByWithAggregationInput = {
   installmentCurrent?: Prisma.SortOrderInput | Prisma.SortOrder
   installmentGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
   paidTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurringBillId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -401,6 +415,7 @@ export type BillScalarWhereWithAggregatesInput = {
   installmentCurrent?: Prisma.IntNullableWithAggregatesFilter<"Bill"> | number | null
   installmentGroupId?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   paidTransactionId?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
+  recurringBillId?: Prisma.StringNullableWithAggregatesFilter<"Bill"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Bill"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Bill"> | Date | string
   userId?: Prisma.StringWithAggregatesFilter<"Bill"> | string
@@ -424,6 +439,7 @@ export type BillCreateInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutBillsInput
   category?: Prisma.CategoryCreateNestedOneWithoutBillsInput
+  recurringBill?: Prisma.RecurringBillCreateNestedOneWithoutBillsInput
 }
 
 export type BillUncheckedCreateInput = {
@@ -439,6 +455,7 @@ export type BillUncheckedCreateInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   paidTransactionId?: string | null
+  recurringBillId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -462,6 +479,7 @@ export type BillUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutBillsNestedInput
   category?: Prisma.CategoryUpdateOneWithoutBillsNestedInput
+  recurringBill?: Prisma.RecurringBillUpdateOneWithoutBillsNestedInput
 }
 
 export type BillUncheckedUpdateInput = {
@@ -477,6 +495,7 @@ export type BillUncheckedUpdateInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringBillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -496,6 +515,7 @@ export type BillCreateManyInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   paidTransactionId?: string | null
+  recurringBillId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -532,6 +552,7 @@ export type BillUncheckedUpdateManyInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringBillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -561,6 +582,7 @@ export type BillCountOrderByAggregateInput = {
   installmentCurrent?: Prisma.SortOrder
   installmentGroupId?: Prisma.SortOrder
   paidTransactionId?: Prisma.SortOrder
+  recurringBillId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -586,6 +608,7 @@ export type BillMaxOrderByAggregateInput = {
   installmentCurrent?: Prisma.SortOrder
   installmentGroupId?: Prisma.SortOrder
   paidTransactionId?: Prisma.SortOrder
+  recurringBillId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -605,6 +628,7 @@ export type BillMinOrderByAggregateInput = {
   installmentCurrent?: Prisma.SortOrder
   installmentGroupId?: Prisma.SortOrder
   paidTransactionId?: Prisma.SortOrder
+  recurringBillId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -701,6 +725,48 @@ export type BillUncheckedUpdateManyWithoutCategoryNestedInput = {
   deleteMany?: Prisma.BillScalarWhereInput | Prisma.BillScalarWhereInput[]
 }
 
+export type BillCreateNestedManyWithoutRecurringBillInput = {
+  create?: Prisma.XOR<Prisma.BillCreateWithoutRecurringBillInput, Prisma.BillUncheckedCreateWithoutRecurringBillInput> | Prisma.BillCreateWithoutRecurringBillInput[] | Prisma.BillUncheckedCreateWithoutRecurringBillInput[]
+  connectOrCreate?: Prisma.BillCreateOrConnectWithoutRecurringBillInput | Prisma.BillCreateOrConnectWithoutRecurringBillInput[]
+  createMany?: Prisma.BillCreateManyRecurringBillInputEnvelope
+  connect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+}
+
+export type BillUncheckedCreateNestedManyWithoutRecurringBillInput = {
+  create?: Prisma.XOR<Prisma.BillCreateWithoutRecurringBillInput, Prisma.BillUncheckedCreateWithoutRecurringBillInput> | Prisma.BillCreateWithoutRecurringBillInput[] | Prisma.BillUncheckedCreateWithoutRecurringBillInput[]
+  connectOrCreate?: Prisma.BillCreateOrConnectWithoutRecurringBillInput | Prisma.BillCreateOrConnectWithoutRecurringBillInput[]
+  createMany?: Prisma.BillCreateManyRecurringBillInputEnvelope
+  connect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+}
+
+export type BillUpdateManyWithoutRecurringBillNestedInput = {
+  create?: Prisma.XOR<Prisma.BillCreateWithoutRecurringBillInput, Prisma.BillUncheckedCreateWithoutRecurringBillInput> | Prisma.BillCreateWithoutRecurringBillInput[] | Prisma.BillUncheckedCreateWithoutRecurringBillInput[]
+  connectOrCreate?: Prisma.BillCreateOrConnectWithoutRecurringBillInput | Prisma.BillCreateOrConnectWithoutRecurringBillInput[]
+  upsert?: Prisma.BillUpsertWithWhereUniqueWithoutRecurringBillInput | Prisma.BillUpsertWithWhereUniqueWithoutRecurringBillInput[]
+  createMany?: Prisma.BillCreateManyRecurringBillInputEnvelope
+  set?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  disconnect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  delete?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  connect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  update?: Prisma.BillUpdateWithWhereUniqueWithoutRecurringBillInput | Prisma.BillUpdateWithWhereUniqueWithoutRecurringBillInput[]
+  updateMany?: Prisma.BillUpdateManyWithWhereWithoutRecurringBillInput | Prisma.BillUpdateManyWithWhereWithoutRecurringBillInput[]
+  deleteMany?: Prisma.BillScalarWhereInput | Prisma.BillScalarWhereInput[]
+}
+
+export type BillUncheckedUpdateManyWithoutRecurringBillNestedInput = {
+  create?: Prisma.XOR<Prisma.BillCreateWithoutRecurringBillInput, Prisma.BillUncheckedCreateWithoutRecurringBillInput> | Prisma.BillCreateWithoutRecurringBillInput[] | Prisma.BillUncheckedCreateWithoutRecurringBillInput[]
+  connectOrCreate?: Prisma.BillCreateOrConnectWithoutRecurringBillInput | Prisma.BillCreateOrConnectWithoutRecurringBillInput[]
+  upsert?: Prisma.BillUpsertWithWhereUniqueWithoutRecurringBillInput | Prisma.BillUpsertWithWhereUniqueWithoutRecurringBillInput[]
+  createMany?: Prisma.BillCreateManyRecurringBillInputEnvelope
+  set?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  disconnect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  delete?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  connect?: Prisma.BillWhereUniqueInput | Prisma.BillWhereUniqueInput[]
+  update?: Prisma.BillUpdateWithWhereUniqueWithoutRecurringBillInput | Prisma.BillUpdateWithWhereUniqueWithoutRecurringBillInput[]
+  updateMany?: Prisma.BillUpdateManyWithWhereWithoutRecurringBillInput | Prisma.BillUpdateManyWithWhereWithoutRecurringBillInput[]
+  deleteMany?: Prisma.BillScalarWhereInput | Prisma.BillScalarWhereInput[]
+}
+
 export type BillCreateWithoutUserInput = {
   id?: string
   name: string
@@ -717,6 +783,7 @@ export type BillCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   category?: Prisma.CategoryCreateNestedOneWithoutBillsInput
+  recurringBill?: Prisma.RecurringBillCreateNestedOneWithoutBillsInput
 }
 
 export type BillUncheckedCreateWithoutUserInput = {
@@ -732,6 +799,7 @@ export type BillUncheckedCreateWithoutUserInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   paidTransactionId?: string | null
+  recurringBillId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categoryId?: string | null
@@ -779,6 +847,7 @@ export type BillScalarWhereInput = {
   installmentCurrent?: Prisma.IntNullableFilter<"Bill"> | number | null
   installmentGroupId?: Prisma.StringNullableFilter<"Bill"> | string | null
   paidTransactionId?: Prisma.StringNullableFilter<"Bill"> | string | null
+  recurringBillId?: Prisma.StringNullableFilter<"Bill"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Bill"> | Date | string
   userId?: Prisma.StringFilter<"Bill"> | string
@@ -801,6 +870,7 @@ export type BillCreateWithoutCategoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutBillsInput
+  recurringBill?: Prisma.RecurringBillCreateNestedOneWithoutBillsInput
 }
 
 export type BillUncheckedCreateWithoutCategoryInput = {
@@ -816,6 +886,7 @@ export type BillUncheckedCreateWithoutCategoryInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   paidTransactionId?: string | null
+  recurringBillId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -847,6 +918,70 @@ export type BillUpdateManyWithWhereWithoutCategoryInput = {
   data: Prisma.XOR<Prisma.BillUpdateManyMutationInput, Prisma.BillUncheckedUpdateManyWithoutCategoryInput>
 }
 
+export type BillCreateWithoutRecurringBillInput = {
+  id?: string
+  name: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dueDate: Date | string
+  isPaid?: boolean
+  paidAt?: Date | string | null
+  isRecurring?: boolean
+  notes?: string | null
+  installmentTotal?: number | null
+  installmentCurrent?: number | null
+  installmentGroupId?: string | null
+  paidTransactionId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutBillsInput
+  category?: Prisma.CategoryCreateNestedOneWithoutBillsInput
+}
+
+export type BillUncheckedCreateWithoutRecurringBillInput = {
+  id?: string
+  name: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dueDate: Date | string
+  isPaid?: boolean
+  paidAt?: Date | string | null
+  isRecurring?: boolean
+  notes?: string | null
+  installmentTotal?: number | null
+  installmentCurrent?: number | null
+  installmentGroupId?: string | null
+  paidTransactionId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: string
+  categoryId?: string | null
+}
+
+export type BillCreateOrConnectWithoutRecurringBillInput = {
+  where: Prisma.BillWhereUniqueInput
+  create: Prisma.XOR<Prisma.BillCreateWithoutRecurringBillInput, Prisma.BillUncheckedCreateWithoutRecurringBillInput>
+}
+
+export type BillCreateManyRecurringBillInputEnvelope = {
+  data: Prisma.BillCreateManyRecurringBillInput | Prisma.BillCreateManyRecurringBillInput[]
+  skipDuplicates?: boolean
+}
+
+export type BillUpsertWithWhereUniqueWithoutRecurringBillInput = {
+  where: Prisma.BillWhereUniqueInput
+  update: Prisma.XOR<Prisma.BillUpdateWithoutRecurringBillInput, Prisma.BillUncheckedUpdateWithoutRecurringBillInput>
+  create: Prisma.XOR<Prisma.BillCreateWithoutRecurringBillInput, Prisma.BillUncheckedCreateWithoutRecurringBillInput>
+}
+
+export type BillUpdateWithWhereUniqueWithoutRecurringBillInput = {
+  where: Prisma.BillWhereUniqueInput
+  data: Prisma.XOR<Prisma.BillUpdateWithoutRecurringBillInput, Prisma.BillUncheckedUpdateWithoutRecurringBillInput>
+}
+
+export type BillUpdateManyWithWhereWithoutRecurringBillInput = {
+  where: Prisma.BillScalarWhereInput
+  data: Prisma.XOR<Prisma.BillUpdateManyMutationInput, Prisma.BillUncheckedUpdateManyWithoutRecurringBillInput>
+}
+
 export type BillCreateManyUserInput = {
   id?: string
   name: string
@@ -860,6 +995,7 @@ export type BillCreateManyUserInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   paidTransactionId?: string | null
+  recurringBillId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categoryId?: string | null
@@ -881,6 +1017,7 @@ export type BillUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneWithoutBillsNestedInput
+  recurringBill?: Prisma.RecurringBillUpdateOneWithoutBillsNestedInput
 }
 
 export type BillUncheckedUpdateWithoutUserInput = {
@@ -896,6 +1033,7 @@ export type BillUncheckedUpdateWithoutUserInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringBillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -914,6 +1052,7 @@ export type BillUncheckedUpdateManyWithoutUserInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringBillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -932,6 +1071,7 @@ export type BillCreateManyCategoryInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   paidTransactionId?: string | null
+  recurringBillId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -953,6 +1093,7 @@ export type BillUpdateWithoutCategoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutBillsNestedInput
+  recurringBill?: Prisma.RecurringBillUpdateOneWithoutBillsNestedInput
 }
 
 export type BillUncheckedUpdateWithoutCategoryInput = {
@@ -968,6 +1109,7 @@ export type BillUncheckedUpdateWithoutCategoryInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringBillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -986,9 +1128,86 @@ export type BillUncheckedUpdateManyWithoutCategoryInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringBillId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+export type BillCreateManyRecurringBillInput = {
+  id?: string
+  name: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  dueDate: Date | string
+  isPaid?: boolean
+  paidAt?: Date | string | null
+  isRecurring?: boolean
+  notes?: string | null
+  installmentTotal?: number | null
+  installmentCurrent?: number | null
+  installmentGroupId?: string | null
+  paidTransactionId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: string
+  categoryId?: string | null
+}
+
+export type BillUpdateWithoutRecurringBillInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutBillsNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutBillsNestedInput
+}
+
+export type BillUncheckedUpdateWithoutRecurringBillInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type BillUncheckedUpdateManyWithoutRecurringBillInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isRecurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1006,12 +1225,14 @@ export type BillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   installmentCurrent?: boolean
   installmentGroupId?: boolean
   paidTransactionId?: boolean
+  recurringBillId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
   categoryId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.Bill$categoryArgs<ExtArgs>
+  recurringBill?: boolean | Prisma.Bill$recurringBillArgs<ExtArgs>
 }, ExtArgs["result"]["bill"]>
 
 export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1027,12 +1248,14 @@ export type BillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   installmentCurrent?: boolean
   installmentGroupId?: boolean
   paidTransactionId?: boolean
+  recurringBillId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
   categoryId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.Bill$categoryArgs<ExtArgs>
+  recurringBill?: boolean | Prisma.Bill$recurringBillArgs<ExtArgs>
 }, ExtArgs["result"]["bill"]>
 
 export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1048,12 +1271,14 @@ export type BillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   installmentCurrent?: boolean
   installmentGroupId?: boolean
   paidTransactionId?: boolean
+  recurringBillId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
   categoryId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.Bill$categoryArgs<ExtArgs>
+  recurringBill?: boolean | Prisma.Bill$recurringBillArgs<ExtArgs>
 }, ExtArgs["result"]["bill"]>
 
 export type BillSelectScalar = {
@@ -1069,24 +1294,28 @@ export type BillSelectScalar = {
   installmentCurrent?: boolean
   installmentGroupId?: boolean
   paidTransactionId?: boolean
+  recurringBillId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
   categoryId?: boolean
 }
 
-export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "amount" | "dueDate" | "isPaid" | "paidAt" | "isRecurring" | "notes" | "installmentTotal" | "installmentCurrent" | "installmentGroupId" | "paidTransactionId" | "createdAt" | "updatedAt" | "userId" | "categoryId", ExtArgs["result"]["bill"]>
+export type BillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "amount" | "dueDate" | "isPaid" | "paidAt" | "isRecurring" | "notes" | "installmentTotal" | "installmentCurrent" | "installmentGroupId" | "paidTransactionId" | "recurringBillId" | "createdAt" | "updatedAt" | "userId" | "categoryId", ExtArgs["result"]["bill"]>
 export type BillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.Bill$categoryArgs<ExtArgs>
+  recurringBill?: boolean | Prisma.Bill$recurringBillArgs<ExtArgs>
 }
 export type BillIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.Bill$categoryArgs<ExtArgs>
+  recurringBill?: boolean | Prisma.Bill$recurringBillArgs<ExtArgs>
 }
 export type BillIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.Bill$categoryArgs<ExtArgs>
+  recurringBill?: boolean | Prisma.Bill$recurringBillArgs<ExtArgs>
 }
 
 export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1094,6 +1323,7 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     category: Prisma.$CategoryPayload<ExtArgs> | null
+    recurringBill: Prisma.$RecurringBillPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1108,6 +1338,7 @@ export type $BillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     installmentCurrent: number | null
     installmentGroupId: string | null
     paidTransactionId: string | null
+    recurringBillId: string | null
     createdAt: Date
     updatedAt: Date
     userId: string
@@ -1508,6 +1739,7 @@ export interface Prisma__BillClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   category<T extends Prisma.Bill$categoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Bill$categoryArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  recurringBill<T extends Prisma.Bill$recurringBillArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Bill$recurringBillArgs<ExtArgs>>): Prisma.Prisma__RecurringBillClient<runtime.Types.Result.GetResult<Prisma.$RecurringBillPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1549,6 +1781,7 @@ export interface BillFieldRefs {
   readonly installmentCurrent: Prisma.FieldRef<"Bill", 'Int'>
   readonly installmentGroupId: Prisma.FieldRef<"Bill", 'String'>
   readonly paidTransactionId: Prisma.FieldRef<"Bill", 'String'>
+  readonly recurringBillId: Prisma.FieldRef<"Bill", 'String'>
   readonly createdAt: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Bill", 'DateTime'>
   readonly userId: Prisma.FieldRef<"Bill", 'String'>
@@ -1970,6 +2203,25 @@ export type Bill$categoryArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   include?: Prisma.CategoryInclude<ExtArgs> | null
   where?: Prisma.CategoryWhereInput
+}
+
+/**
+ * Bill.recurringBill
+ */
+export type Bill$recurringBillArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecurringBill
+   */
+  select?: Prisma.RecurringBillSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecurringBill
+   */
+  omit?: Prisma.RecurringBillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecurringBillInclude<ExtArgs> | null
+  where?: Prisma.RecurringBillWhereInput
 }
 
 /**

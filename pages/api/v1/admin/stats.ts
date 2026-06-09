@@ -24,7 +24,7 @@ export default withBackofficeAuth(async (_req, res) => {
     recentLogs,
   ] = await Promise.all([
     db.user.count(),
-    db.user.count({ where: { plan: 'PRO' } }),
+    db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: { not: null } } }),
     db.user.count({ where: { createdAt: { gte: prevMonthStart, lte: prevMonthEnd } } }),
     db.user.count({ where: { createdAt: { gte: today } } }),
     db.user.count({ where: { createdAt: { gte: weekAgo } } }),

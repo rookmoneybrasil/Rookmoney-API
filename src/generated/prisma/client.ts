@@ -87,12 +87,47 @@ export type IncomeSource = Prisma.IncomeSourceModel
  */
 export type Bill = Prisma.BillModel
 /**
+ * Model RecurringBill
+ * 
+ */
+export type RecurringBill = Prisma.RecurringBillModel
+/**
  * Model Person
  * 
  */
 export type Person = Prisma.PersonModel
 /**
+ * Model PersonEntryRecurring
+ * 
+ */
+export type PersonEntryRecurring = Prisma.PersonEntryRecurringModel
+/**
  * Model PersonEntry
  * 
  */
 export type PersonEntry = Prisma.PersonEntryModel
+/**
+ * Model Feedback
+ * 
+ */
+export type Feedback = Prisma.FeedbackModel
+/**
+ * Model DataMigration
+ * 
+ */
+export type DataMigration = Prisma.DataMigrationModel
+/**
+ * Model RateLimit
+ * 
+ */
+export type RateLimit = Prisma.RateLimitModel
+/**
+ * Model AdminLog
+ * 
+ */
+export type AdminLog = Prisma.AdminLogModel
+/**
+ * Model PluggyItem
+ * 
+ */
+export type PluggyItem = Prisma.PluggyItemModel
