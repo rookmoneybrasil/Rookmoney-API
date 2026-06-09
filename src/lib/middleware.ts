@@ -36,6 +36,11 @@ export function withAuth(handler: AuthHandler, methods?: Methods[]) {
           session.tokenVersion < user.tokenVersion) {
         return unauthorized(res, 'Sessão expirada. Faça login novamente.')
       }
+      // Fire-and-forget: only writes if last update was > 1 min ago to avoid per-request DB writes
+      db.user.updateMany({
+        where: { id: session.userId, OR: [{ lastActiveAt: null }, { lastActiveAt: { lt: new Date(Date.now() - 60_000) } }] },
+        data: { lastActiveAt: new Date() },
+      }).catch(() => {})
       await handler(req, res, { ...session, plan: user?.plan ?? 'FREE' })
     } catch (err) {
       serverError(res, err)

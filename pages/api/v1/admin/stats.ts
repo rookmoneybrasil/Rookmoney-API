@@ -12,8 +12,11 @@ export default withBackofficeAuth(async (_req, res) => {
   const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
   const prevMonthEnd   = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
 
+  const fiveMinAgo = new Date(Date.now() - 5 * 60_000)
+
   const [
     total, pro, proManual,
+    onlineUsers,
     prevMonthNewUsers,
     newToday, newThisWeek, newThisMonth,
     totalTransactions, transactionsThisMonth, totalGoals,
@@ -26,6 +29,7 @@ export default withBackofficeAuth(async (_req, res) => {
     db.user.count(),
     db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: { not: null } } }),
     db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: null } }),
+    db.user.count({ where: { lastActiveAt: { gte: fiveMinAgo } } }),
     db.user.count({ where: { createdAt: { gte: prevMonthStart, lte: prevMonthEnd } } }),
     db.user.count({ where: { createdAt: { gte: today } } }),
     db.user.count({ where: { createdAt: { gte: weekAgo } } }),
@@ -47,7 +51,7 @@ export default withBackofficeAuth(async (_req, res) => {
   ])
 
   return ok(res, {
-    totalUsers: total, proUsers: pro, proManual, freeUsers: total - pro - proManual,
+    totalUsers: total, proUsers: pro, proManual, freeUsers: total - pro - proManual, onlineUsers,
     proRate: total > 0 ? Math.round((pro / total) * 100) : 0,
     newToday, newThisWeek, newThisMonth,
     totalTransactions, transactionsThisMonth, totalGoals,

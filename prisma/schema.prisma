@@ -41,6 +41,7 @@ model User {
   scannerUsageMonth   String?
   scannerUsageCount   Int       @default(0)
   tokenVersion        Int       @default(0)  // increment to invalidate all existing JWTs
+  lastActiveAt        DateTime?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
