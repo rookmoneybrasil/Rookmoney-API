@@ -11,7 +11,11 @@ export type ProjectionMonthResult = {
   month: string; monthStart: Date; label: string
   incomeItems: ProjectionItem[]; expenseItems: ProjectionItem[]
   totalIncome: number; totalExpense: number
-  balance: number; cumulativeBalance: number; isActual: boolean
+  actualIncome: number; actualExpense: number
+  pendingIncome: number; pendingExpense: number
+  balance: number; actualBalance: number
+  cumulativeBalance: number; actualCumulativeBalance: number
+  isActual: boolean
 }
 
 // Shared cash-flow projection engine — used by /api/v1/projection (PRO page) and
@@ -42,7 +46,7 @@ export async function getProjection(uid: string, months: number): Promise<Projec
     }),
     db.recurringBill.findMany({
       where:  { userId: uid, isActive: true },
-      select: { id: true, name: true, amount: true, dayOfMonth: true },
+      select: { id: true, name: true, amount: true, dayOfMonth: true, lastAutoMonth: true },
     }),
     db.recurringTransaction.findMany({
       where:  { userId: uid, isActive: true, frequency: 'MONTHLY' },
@@ -225,6 +229,7 @@ export async function getProjection(uid: string, months: number): Promise<Projec
 
         // Recurring person entries (PersonEntryRecurring) without an entry this month yet
         for (const r of personRecurringAll) {
+          if (r.lastMonth === curKey) continue
           const alreadyHasEntry = currentMonthPersonEntries.some(e =>
             e.personId === r.personId &&
             e.description === r.description &&
@@ -245,14 +250,17 @@ export async function getProjection(uid: string, months: number): Promise<Projec
           else                           expenseItems.push(item)
         }
 
-        // RecurringBill templates not yet generated as a Bill for this month
-        // (covers the case where /projection is viewed before processRecurringBills runs)
+        // RecurringBill templates not yet generated as a Bill for this month.
+        // lastAutoMonth === curKey means a Bill was already generated (and possibly
+        // already paid or deleted) — only fall back to the unpaid-bill check for the
+        // case where /projection is viewed before processRecurringBills runs.
         const generatedRecurringIds = new Set(
           upcomingBills
             .filter(b => b.recurringBillId && new Date(b.dueDate) >= mS && new Date(b.dueDate) <= mE)
             .map(b => b.recurringBillId)
         )
         for (const t of recurringBillTemplates) {
+          if (t.lastAutoMonth === curKey) continue
           if (generatedRecurringIds.has(t.id)) continue
           expenseItems.push({
             id:    `rbill-pending-${t.id}-${mKey}`,
@@ -413,18 +421,31 @@ export async function getProjection(uid: string, months: number): Promise<Projec
     const totalIncome  = incomeItems.reduce((s, e) => s + e.amount, 0)
     const totalExpense = expenseItems.reduce((s, e) => s + e.amount, 0)
 
+    // For past/current months, split into amounts already confirmed (actual transactions)
+    // vs amounts still pending (bills not yet paid, income not yet received, etc).
+    // Future months are pure estimates — nothing has happened yet.
+    const isPastOrCurrent = isPast || isCurrent
+    const pendingIncome  = isPastOrCurrent ? incomeItems.filter(i => i.actual === false).reduce((s, e) => s + e.amount, 0)  : totalIncome
+    const pendingExpense = isPastOrCurrent ? expenseItems.filter(i => i.actual === false).reduce((s, e) => s + e.amount, 0) : totalExpense
+    const actualIncome   = totalIncome  - pendingIncome
+    const actualExpense  = totalExpense - pendingExpense
+
     return {
       month: mKey, monthStart: mS, label,
       incomeItems, expenseItems,
       totalIncome, totalExpense,
+      actualIncome, actualExpense, pendingIncome, pendingExpense,
       balance: totalIncome - totalExpense,
-      isActual: isPast || isCurrent,
+      actualBalance: actualIncome - actualExpense,
+      isActual: isPastOrCurrent,
     }
   })
 
   let cumulative = 0
+  let actualCumulative = 0
   return projection.map((m) => {
     cumulative += m.balance
-    return { ...m, cumulativeBalance: cumulative }
+    actualCumulative += m.actualBalance
+    return { ...m, cumulativeBalance: cumulative, actualCumulativeBalance: actualCumulative }
   })
 }
