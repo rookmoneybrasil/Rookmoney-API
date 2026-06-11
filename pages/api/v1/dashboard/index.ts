@@ -1,7 +1,8 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok } from '@/lib/respond'
-import { startOfMonth, endOfMonth, subMonths, addDays, subDays, format, addMonths } from 'date-fns'
+import { startOfMonth, endOfMonth, subMonths, addDays, subDays, format } from 'date-fns'
+import { getProjection, type ProjectionItem } from '@/lib/projection'
 
 async function processAutoIncome(uid: string) {
   const now       = new Date()
@@ -80,7 +81,7 @@ export default withAuth(async (req, res, session) => {
   const yearMonth = format(now, 'yyyy-MM')
 
   // ── Single Promise.all — all dashboard data in parallel ──────────────────────
-  const [
+  const [[
     user,
     income, expense,
     prevIncome, prevExpense,
@@ -101,13 +102,12 @@ export default withAuth(async (req, res, session) => {
     upcomingPersonPayables,    // current month only — for "A Pagar" modal (consistent with KPI)
     futurePersonPayables,      // 45-day window — for "Compromissos com pessoas" section
     upcomingPeopleReceivable,
-    // Fix 1+5: projection data merged into single Promise.all
+    // Used to classify month income transactions as fixed/recurring vs avulso (name-matching)
     recurringIncomeSources,
     recurringTransactionItems,
-    pendingPersonEntries,
-    recurringBillTemplates,    // Fix 1: RecurringBill templates replace isRecurring bills
     budgets,                   // Fix 3: needed for overBudgetCount
-  ] = await Promise.all([
+  ], projResult] = await Promise.all([
+    Promise.all([
     db.user.findUnique({ where: { id: uid }, select: { name: true } }),
 
     db.transaction.aggregate({ where: { userId: uid, type: 'INCOME',  date: { gte: mS, lte: mE } }, _sum: { amount: true } }),
@@ -202,18 +202,18 @@ export default withAuth(async (req, res, session) => {
       include: { person: { select: { name: true } } },
     }),
 
-    // Fix 1+5: projection data in main Promise.all — include names for breakdown
+    // Used to classify month income transactions as fixed/recurring vs avulso (name-matching)
     db.incomeSource.findMany({ where: { userId: uid, isRecurring: true }, select: { id: true, name: true, amount: true } }),
     db.recurringTransaction.findMany({ where: { userId: uid, isActive: true, frequency: 'MONTHLY' }, select: { id: true, name: true, amount: true, type: true } }),
-    db.personEntry.findMany({
-      where:   { userId: uid, type: 'I_OWE_THEM', isSettled: false, installmentGroupId: { not: null } },
-      include: { person: { select: { name: true } } },
-    }),
-    // Fix 1: use RecurringBill templates as monthly fixed expenses (not old isRecurring bills)
-    db.recurringBill.findMany({ where: { userId: uid, isActive: true }, select: { id: true, name: true, amount: true } }),
 
     // Fix 3: budgets for overBudgetCount — merged into main Promise.all
     db.budget.findMany({ where: { userId: uid, month: yearMonth }, select: { categoryId: true, amount: true } }),
+    ]),
+
+    // "Próximos meses" widget — reuses the same engine as /api/v1/projection so the
+    // numbers stay consistent with /income, /bills and /people (installments, recurrences,
+    // PersonEntryRecurring, etc). The dashboard widget shows the 5 months AFTER the current one.
+    getProjection(uid, 6),
   ])
 
   // ── Derived values ───────────────────────────────────────────────────────────
@@ -292,82 +292,29 @@ export default withAuth(async (req, res, session) => {
   })
 
   // ── Projections (5 months ahead) ─────────────────────────────────────────────
+  // Built from the shared projection engine (same as /api/v1/projection) — keeps
+  // this widget consistent with /income, /bills and /people, including installments,
+  // recurrences and PersonEntryRecurring for each respective month.
 
-  type SrcItem  = { id: string; name: string; amount: unknown }
-  type TxItem   = { id: string; name: string; amount: unknown; type: string }
-  type PeItem   = { id: string; amount: unknown; date: unknown; description: string; installmentGroupId: string | null; person?: { name: string } }
-  type BillItem = { id: string; name: string; amount: unknown }
+  const toBreakdown = (items: ProjectionItem[], type: string, icon: string) =>
+    items.filter(it => it.type === type).map(it => ({ id: it.id, label: it.label, amount: it.amount, icon }))
 
-  const incomeSources = recurringIncomeSources  as SrcItem[]
-  const recurringTxs  = recurringTransactionItems as TxItem[]
-  const billTpls      = recurringBillTemplates   as BillItem[]
-  const personEntries = pendingPersonEntries as PeItem[]
-
-  const recurringIncome  = incomeSources.reduce((s, r) => s + Number(r.amount), 0)
-    + recurringTxs.filter(r => r.type === 'INCOME').reduce((s, r) => s + Number(r.amount), 0)
-
-  const recurringExpense = recurringTxs.filter(r => r.type === 'EXPENSE').reduce((s, r) => s + Number(r.amount), 0)
-    + billTpls.reduce((s, b) => s + Number(b.amount), 0)
-
-  // Person installment groups — one entry = one monthly obligation
-  const personGroupMap = new Map<string, PeItem>()
-  for (const e of personEntries) {
-    if (e.installmentGroupId && !personGroupMap.has(e.installmentGroupId)) {
-      personGroupMap.set(e.installmentGroupId, e)
-    }
-  }
-  const monthlyPersonObligation = Array.from(personGroupMap.values()).reduce((s, e) => s + Number(e.amount), 0)
-
-  const projIncome     = recurringIncome > 0 ? recurringIncome : totalIncome
-  const currentBalance = totalIncome - totalExpense
-
-  // Bug 2 fix: use addMonths for correct month arithmetic (avoids skipping Feb)
-  // Bug 3 fix: use startOfMonth so month key is always the 1st of the month
-  const projected = Array.from({ length: 5 }, (_, i) => {
-    const projMonth = addMonths(startOfMonth(now), i + 1)
-    const mStart    = startOfMonth(projMonth)
-    const mEnd      = endOfMonth(projMonth)
-
-    // Person entries due in this specific projected month
-    const personInMonth = personEntries.filter(e => {
-      const ed = new Date(e.date as string)
-      return ed >= mStart && ed <= mEnd
-    })
-    const personExpInMonth = personInMonth.reduce((s, e) => s + Number(e.amount), 0)
-    const monthPersonExp   = personExpInMonth > 0 ? personExpInMonth : monthlyPersonObligation
-    const monthExpense     = recurringExpense + monthPersonExp
-
-    const cumulativeIncome  = projIncome * (i + 1)
-    const cumulativeExpense = recurringExpense * (i + 1) + personEntries
-      .filter(e => { const ed = new Date(e.date as string); return ed <= mEnd && ed > mS })
-      .reduce((s, e) => s + Number(e.amount), 0)
-
-    // Bug 1 fix: populate incomeItems and expenseItems breakdown
-    const incomeItems = {
-      sources:   incomeSources.map(r => ({ id: r.id, label: r.name, amount: Number(r.amount), icon: '💰' })),
-      recurring: recurringTxs.filter(r => r.type === 'INCOME').map(r => ({ id: r.id, label: r.name, amount: Number(r.amount), icon: '↻' })),
-      people:    [] as { id: string; label: string; amount: number; icon: string }[],  // person receivables not in scope
-    }
-    const expenseItems = {
-      bills:     billTpls.map(b => ({ id: b.id, label: b.name, amount: Number(b.amount), icon: '📄' })),
-      recurring: recurringTxs.filter(r => r.type === 'EXPENSE').map(r => ({ id: r.id, label: r.name, amount: Number(r.amount), icon: '↻' })),
-      people:    personInMonth.map(e => ({
-        id:     e.id,
-        label:  e.person?.name ? `${e.person.name} · ${e.description}` : e.description,
-        amount: Number(e.amount),
-        icon:   '👤',
-      })),
-    }
-
-    return {
-      month:            mStart.toISOString(),   // always 1st of the month
-      projectedIncome:  projIncome,
-      projectedExpense: monthExpense,
-      projectedBalance: currentBalance + cumulativeIncome - cumulativeExpense,
-      incomeItems,
-      expenseItems,
-    }
-  })
+  const projected = projResult.slice(1).map(m => ({
+    month:            m.monthStart.toISOString(),
+    projectedIncome:  m.totalIncome,
+    projectedExpense: m.totalExpense,
+    projectedBalance: m.cumulativeBalance,
+    incomeItems: {
+      sources:   toBreakdown(m.incomeItems, 'income', '💰'),
+      recurring: toBreakdown(m.incomeItems, 'recurring', '↻'),
+      people:    toBreakdown(m.incomeItems, 'person', '👤'),
+    },
+    expenseItems: {
+      bills:     toBreakdown(m.expenseItems, 'bill', '📄'),
+      recurring: toBreakdown(m.expenseItems, 'recurring', '↻'),
+      people:    toBreakdown(m.expenseItems, 'person', '👤'),
+    },
+  }))
 
   // ── Rookinho insight ──────────────────────────────────────────────────────────
   const daysInMonth = endOfMonth(now).getDate()
