@@ -116,6 +116,7 @@ export const UserScalarFieldEnum = {
   scannerUsageMonth: 'scannerUsageMonth',
   scannerUsageCount: 'scannerUsageCount',
   tokenVersion: 'tokenVersion',
+  lastActiveAt: 'lastActiveAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

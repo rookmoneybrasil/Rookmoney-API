@@ -67,6 +67,7 @@ export type UserMinAggregateOutputType = {
   scannerUsageMonth: string | null
   scannerUsageCount: number | null
   tokenVersion: number | null
+  lastActiveAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -100,6 +101,7 @@ export type UserMaxAggregateOutputType = {
   scannerUsageMonth: string | null
   scannerUsageCount: number | null
   tokenVersion: number | null
+  lastActiveAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -133,6 +135,7 @@ export type UserCountAggregateOutputType = {
   scannerUsageMonth: number
   scannerUsageCount: number
   tokenVersion: number
+  lastActiveAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -180,6 +183,7 @@ export type UserMinAggregateInputType = {
   scannerUsageMonth?: true
   scannerUsageCount?: true
   tokenVersion?: true
+  lastActiveAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -213,6 +217,7 @@ export type UserMaxAggregateInputType = {
   scannerUsageMonth?: true
   scannerUsageCount?: true
   tokenVersion?: true
+  lastActiveAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -246,6 +251,7 @@ export type UserCountAggregateInputType = {
   scannerUsageMonth?: true
   scannerUsageCount?: true
   tokenVersion?: true
+  lastActiveAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -366,6 +372,7 @@ export type UserGroupByOutputType = {
   scannerUsageMonth: string | null
   scannerUsageCount: number
   tokenVersion: number
+  lastActiveAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -422,6 +429,7 @@ export type UserWhereInput = {
   scannerUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
   scannerUsageCount?: Prisma.IntFilter<"User"> | number
   tokenVersion?: Prisma.IntFilter<"User"> | number
+  lastActiveAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   transactions?: Prisma.TransactionListRelationFilter
@@ -468,6 +476,7 @@ export type UserOrderByWithRelationInput = {
   scannerUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  lastActiveAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
@@ -517,6 +526,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   scannerUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
   scannerUsageCount?: Prisma.IntFilter<"User"> | number
   tokenVersion?: Prisma.IntFilter<"User"> | number
+  lastActiveAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   transactions?: Prisma.TransactionListRelationFilter
@@ -563,6 +573,7 @@ export type UserOrderByWithAggregationInput = {
   scannerUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  lastActiveAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -604,6 +615,7 @@ export type UserScalarWhereWithAggregatesInput = {
   scannerUsageMonth?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   scannerUsageCount?: Prisma.IntWithAggregatesFilter<"User"> | number
   tokenVersion?: Prisma.IntWithAggregatesFilter<"User"> | number
+  lastActiveAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -637,6 +649,7 @@ export type UserCreateInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -683,6 +696,7 @@ export type UserUncheckedCreateInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -729,6 +743,7 @@ export type UserUpdateInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -775,6 +790,7 @@ export type UserUncheckedUpdateInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -821,6 +837,7 @@ export type UserCreateManyInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -854,6 +871,7 @@ export type UserUpdateManyMutationInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -887,6 +905,7 @@ export type UserUncheckedUpdateManyInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -920,6 +939,7 @@ export type UserCountOrderByAggregateInput = {
   scannerUsageMonth?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  lastActiveAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -959,6 +979,7 @@ export type UserMaxOrderByAggregateInput = {
   scannerUsageMonth?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  lastActiveAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -992,6 +1013,7 @@ export type UserMinOrderByAggregateInput = {
   scannerUsageMonth?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  lastActiveAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1253,6 +1275,7 @@ export type UserCreateWithoutCategoriesInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1298,6 +1321,7 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1359,6 +1383,7 @@ export type UserUpdateWithoutCategoriesInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1404,6 +1429,7 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1449,6 +1475,7 @@ export type UserCreateWithoutTransactionsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
@@ -1494,6 +1521,7 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
@@ -1555,6 +1583,7 @@ export type UserUpdateWithoutTransactionsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
@@ -1600,6 +1629,7 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
@@ -1645,6 +1675,7 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1690,6 +1721,7 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1751,6 +1783,7 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1796,6 +1829,7 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1841,6 +1875,7 @@ export type UserCreateWithoutGoalsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1886,6 +1921,7 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1947,6 +1983,7 @@ export type UserUpdateWithoutGoalsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1992,6 +2029,7 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -2037,6 +2075,7 @@ export type UserCreateWithoutBudgetsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -2082,6 +2121,7 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -2143,6 +2183,7 @@ export type UserUpdateWithoutBudgetsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -2188,6 +2229,7 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -2233,6 +2275,7 @@ export type UserCreateWithoutIncomeSourcesInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -2278,6 +2321,7 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -2339,6 +2383,7 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -2384,6 +2429,7 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -2429,6 +2475,7 @@ export type UserCreateWithoutBillsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -2474,6 +2521,7 @@ export type UserUncheckedCreateWithoutBillsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -2535,6 +2583,7 @@ export type UserUpdateWithoutBillsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -2580,6 +2629,7 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -2625,6 +2675,7 @@ export type UserCreateWithoutRecurringBillsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -2670,6 +2721,7 @@ export type UserUncheckedCreateWithoutRecurringBillsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -2731,6 +2783,7 @@ export type UserUpdateWithoutRecurringBillsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -2776,6 +2829,7 @@ export type UserUncheckedUpdateWithoutRecurringBillsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -2821,6 +2875,7 @@ export type UserCreateWithoutPeopleInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -2866,6 +2921,7 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -2927,6 +2983,7 @@ export type UserUpdateWithoutPeopleInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -2972,6 +3029,7 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -3017,6 +3075,7 @@ export type UserCreateWithoutPersonEntryRecurringInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -3062,6 +3121,7 @@ export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -3123,6 +3183,7 @@ export type UserUpdateWithoutPersonEntryRecurringInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -3168,6 +3229,7 @@ export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -3213,6 +3275,7 @@ export type UserCreateWithoutPersonEntriesInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -3258,6 +3321,7 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -3319,6 +3383,7 @@ export type UserUpdateWithoutPersonEntriesInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -3364,6 +3429,7 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -3409,6 +3475,7 @@ export type UserCreateWithoutFeedbacksInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -3454,6 +3521,7 @@ export type UserUncheckedCreateWithoutFeedbacksInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -3515,6 +3583,7 @@ export type UserUpdateWithoutFeedbacksInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -3560,6 +3629,7 @@ export type UserUncheckedUpdateWithoutFeedbacksInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -3605,6 +3675,7 @@ export type UserCreateWithoutPluggyItemsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -3650,6 +3721,7 @@ export type UserUncheckedCreateWithoutPluggyItemsInput = {
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   tokenVersion?: number
+  lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -3711,6 +3783,7 @@ export type UserUpdateWithoutPluggyItemsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -3756,6 +3829,7 @@ export type UserUncheckedUpdateWithoutPluggyItemsInput = {
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -3940,6 +4014,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
   tokenVersion?: boolean
+  lastActiveAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
@@ -3987,6 +4062,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
   tokenVersion?: boolean
+  lastActiveAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -4020,6 +4096,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
   tokenVersion?: boolean
+  lastActiveAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -4053,11 +4130,12 @@ export type UserSelectScalar = {
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
   tokenVersion?: boolean
+  lastActiveAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "profileImage" | "bio" | "city" | "occupation" | "birthdate" | "notifBillReminder" | "notifCategoryLimit" | "notifMonthlyEmail" | "currency" | "dateFormat" | "chatUsageMonth" | "chatUsageCount" | "scannerUsageMonth" | "scannerUsageCount" | "tokenVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "profileImage" | "bio" | "city" | "occupation" | "birthdate" | "notifBillReminder" | "notifCategoryLimit" | "notifMonthlyEmail" | "currency" | "dateFormat" | "chatUsageMonth" | "chatUsageCount" | "scannerUsageMonth" | "scannerUsageCount" | "tokenVersion" | "lastActiveAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
   categories?: boolean | Prisma.User$categoriesArgs<ExtArgs>
@@ -4123,6 +4201,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     scannerUsageMonth: string | null
     scannerUsageCount: number
     tokenVersion: number
+    lastActiveAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -4589,6 +4668,7 @@ export interface UserFieldRefs {
   readonly scannerUsageMonth: Prisma.FieldRef<"User", 'String'>
   readonly scannerUsageCount: Prisma.FieldRef<"User", 'Int'>
   readonly tokenVersion: Prisma.FieldRef<"User", 'Int'>
+  readonly lastActiveAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
