@@ -218,14 +218,10 @@ export default withAuth(async (req, res, session) => {
 
   // ── Derived values ───────────────────────────────────────────────────────────
 
-  // Cross-check pending income sources with actual transactions this month
-  const receivedSourceNames = new Set(
-    (incomeThisMonth as { description: string | null }[])
-      .map(t => t.description)
-      .filter((d): d is string => Boolean(d))
-  )
-  const pendingIncomeSources = (rawPendingIncomeSources as { id: string; name: string; amount: unknown; isRecurring: boolean; dayOfMonth: number | null }[])
-    .filter(s => !receivedSourceNames.has(s.name))
+  // rawPendingIncomeSources already filters via lastAutoPayMonth (set atomically in $transaction
+  // when auto-pay or manual receipt runs). A name-based cross-check breaks when two sources
+  // share the same name — one received transaction would incorrectly hide the other pending one.
+  const pendingIncomeSources = rawPendingIncomeSources as { id: string; name: string; amount: unknown; isRecurring: boolean; dayOfMonth: number | null }[]
 
   // Classify month income transactions as fixed/recurring vs avulso (one-off) by matching
   // their description against known recurring income source / recurring transaction names —
