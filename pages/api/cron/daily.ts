@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { format, addDays, startOfMonth, endOfMonth, subMonths } from 'date-fns'
 import { sendBillReminderEmail, sendMonthlySummaryEmail } from '@/lib/email'
 import { cleanupExpiredLimits } from '@/lib/rate-limit'
+import { sendPush, isValidPushToken } from '@/lib/push'
 
 async function migrateOldRecurring(userId: string) {
   const now = new Date()
@@ -163,7 +164,7 @@ async function sendNotifications() {
     },
     select: {
       id: true, name: true, email: true,
-      notifBillReminder: true, notifMonthlyEmail: true,
+      notifBillReminder: true, notifMonthlyEmail: true, pushToken: true,
     },
   })
 
@@ -185,6 +186,18 @@ async function sendNotifications() {
             amount:  Number(b.amount),
             dueDate: new Date(b.dueDate),
           }))).catch(e => console.error('[notify] bill reminder failed:', e))
+
+          if (isValidPushToken(user.pushToken)) {
+            const titles = dueSoon.map(b => b.name).slice(0, 2).join(', ')
+            const extra  = dueSoon.length > 2 ? ` +${dueSoon.length - 2}` : ''
+            await sendPush([{
+              to:    user.pushToken!,
+              title: '📅 Conta vencendo em breve',
+              body:  `${titles}${extra} vence${dueSoon.length > 1 ? 'm' : ''} nos próximos 3 dias.`,
+              data:  { screen: 'bills' },
+              sound: 'default',
+            }]).catch(e => console.error('[notify] push bill failed:', e))
+          }
         }
       }
 
@@ -206,6 +219,18 @@ async function sendNotifications() {
           balance:     totalIncome - totalExpense,
           savingsRate: totalIncome > 0 ? Math.round(((totalIncome - totalExpense) / totalIncome) * 100) : 0,
         }).catch(e => console.error('[notify] monthly summary failed:', e))
+
+        if (isValidPushToken(user.pushToken)) {
+          const bal = totalIncome - totalExpense
+          const sign = bal >= 0 ? '+' : ''
+          await sendPush([{
+            to:    user.pushToken!,
+            title: '📊 Resumo do mês',
+            body:  `${format(prevMonth, 'MMMM')}: saldo ${sign}R$ ${Math.abs(bal).toFixed(2)}`,
+            data:  { screen: 'reports' },
+            sound: 'default',
+          }]).catch(e => console.error('[notify] push monthly failed:', e))
+        }
       }
     } catch (err) {
       console.error(`[notify] user ${user.id}:`, err)
