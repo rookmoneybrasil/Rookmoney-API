@@ -3,23 +3,30 @@ import { db } from '@/lib/db'
 import { ok } from '@/lib/respond'
 import { format, addDays, startOfMonth, endOfMonth } from 'date-fns'
 
+type NotifType    = 'bill' | 'goal' | 'budget' | 'person' | 'income'
+type NotifUrgency = 'high' | 'medium' | 'low'
+interface Notification { id: string; type: NotifType; title: string; message: string; href: string; urgency: NotifUrgency }
+
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'GET') return res.status(405).end()
 
-  const uid  = session.userId
-  const now  = new Date()
-  const in3  = addDays(now, 3)
-  const in7  = addDays(now, 7)
+  const uid   = session.userId
+  const now   = new Date()
+  const in3   = addDays(now, 3)
+  const in7   = addDays(now, 7)
   const month = format(now, 'yyyy-MM')
+  const dayOfMonth = now.getDate()
 
-  const [bills, goals, budgets, txs] = await Promise.all([
+  const [bills, goals, budgets, txs, incomeSources, people] = await Promise.all([
     db.bill.findMany({ where: { userId: uid, isPaid: false, dueDate: { gte: now, lte: in3 } }, orderBy: { dueDate: 'asc' } }),
     db.goal.findMany({ where: { userId: uid, isCompleted: false, deadline: { gte: now, lte: in7 } }, orderBy: { deadline: 'asc' } }),
     db.budget.findMany({ where: { userId: uid, month }, include: { category: true } }),
     db.transaction.findMany({ where: { userId: uid, type: 'EXPENSE', date: { gte: startOfMonth(now), lte: endOfMonth(now) } } }),
+    db.incomeSource.findMany({ where: { userId: uid, isRecurring: true } }),
+    db.person.findMany({ where: { userId: uid }, include: { entries: { where: { isSettled: false } } } }),
   ])
 
-  const notifications: Array<{ id: string; type: 'bill' | 'goal' | 'budget'; title: string; message: string; href: string; urgency: 'high' | 'medium' }> = []
+  const notifications: Notification[] = []
 
   for (const b of bills) {
     const diff = Math.ceil((new Date(b.dueDate).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
@@ -40,6 +47,45 @@ export default withAuth(async (req, res, session) => {
     if (pct >= 80) {
       notifications.push({ id: `budget-${bgt.id}`, type: 'budget', title: bgt.category.name, message: `${pct}% do orçamento utilizado`, href: '/budget', urgency: pct >= 100 ? 'high' : 'medium' })
     }
+  }
+
+  // Income sources: notify when dayOfMonth is within 7 days
+  for (const src of incomeSources) {
+    if (!src.dayOfMonth) continue
+    const daysUntil = src.dayOfMonth - dayOfMonth
+    if (daysUntil < 0 || daysUntil > 7) continue
+    const when = daysUntil === 0 ? 'entra hoje' : daysUntil === 1 ? 'entra amanhã' : `entra em ${daysUntil} dias`
+    notifications.push({
+      id: `income-${src.id}`,
+      type: 'income',
+      title: src.name,
+      message: `${when} · R$ ${Number(src.amount).toFixed(2)}`,
+      href: '/income',
+      urgency: daysUntil <= 3 ? 'medium' : 'low',
+    })
+  }
+
+  // People: outstanding balances
+  for (const person of people) {
+    let theyOweMe = 0
+    let iOweThem  = 0
+    for (const e of person.entries) {
+      if (e.type === 'THEY_OWE_ME') theyOweMe += Number(e.amount)
+      else                           iOweThem  += Number(e.amount)
+    }
+    const net = theyOweMe - iOweThem
+    if (Math.abs(net) < 1) continue
+    const theyOweMeNet = net > 0
+    notifications.push({
+      id: `person-${person.id}`,
+      type: 'person',
+      title: person.name,
+      message: theyOweMeNet
+        ? `Te deve R$ ${net.toFixed(2)}`
+        : `Você deve R$ ${Math.abs(net).toFixed(2)}`,
+      href: '/people',
+      urgency: theyOweMeNet ? 'medium' : 'low',
+    })
   }
 
   return ok(res, notifications)
