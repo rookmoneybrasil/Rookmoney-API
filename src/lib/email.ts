@@ -56,6 +56,35 @@ export async function sendBillReminderEmail(
   })
 }
 
+export async function sendManualProExpiryWarningEmail(
+  to: string, name: string, expiresAt: Date, daysLeft: number,
+): Promise<void> {
+  const dateStr = expiresAt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
+  const isToday = daysLeft <= 0
+  const subject = isToday
+    ? '⚠️ Seu acesso PRO expira hoje'
+    : `⏳ Seu acesso PRO expira em ${daysLeft} dia${daysLeft > 1 ? 's' : ''}`
+
+  await resendPost({
+    from: FROM,
+    to:   [to],
+    subject,
+    html: `
+<div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#080e1d;color:#f1f5f9;padding:32px;border-radius:16px">
+  <h2 style="margin:0 0 8px;font-size:20px">Oi, ${name}! 👋</h2>
+  <p style="color:#94a3b8;margin:0 0 24px">
+    ${isToday
+      ? 'Seu acesso PRO <strong style="color:#f1f5f9">expira hoje</strong>.'
+      : `Seu acesso PRO expira em <strong style="color:#f1f5f9">${daysLeft} dia${daysLeft > 1 ? 's' : ''}</strong> (${dateStr}).`
+    }
+  </p>
+  <p style="color:#94a3b8;margin:0 0 24px">Para continuar aproveitando todos os recursos PRO — relatórios avançados, metas ilimitadas, e muito mais — considere assinar o plano PRO.</p>
+  <a href="https://app.rookmoney.com/settings/billing" style="display:inline-block;padding:12px 24px;background:#d97706;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Ver planos →</a>
+  <p style="color:#475569;font-size:12px;margin-top:24px">Você recebeu este aviso porque possui acesso PRO no Rook Money.</p>
+</div>`,
+  })
+}
+
 export async function sendMonthlySummaryEmail(
   to: string, name: string,
   summary: { month: string; income: number; expense: number; balance: number; savingsRate: number },

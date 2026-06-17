@@ -17,7 +17,7 @@ export default withBackofficeAuth(async (req, res) => {
     where: { id },
     select: { id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true, updatedAt: true,
       whatsappPhone: true, stripeCustomerId: true, stripeSubscriptionId: true,
-      proPlanExpiresAt: true, proPlanReason: true,
+      proPlanExpiresAt: true, proPlanReason: true, adminNotes: true,
       _count: { select: { transactions: true, goals: true, bills: true, budgets: true, people: true } } }
   })
   if (!user) return notFound(res)
@@ -36,11 +36,10 @@ export default withBackofficeAuth(async (req, res) => {
   }
 
   if (req.method === 'PATCH') {
-    const { plan, duration, reason, isAdmin } = req.body
+    const { plan, duration, reason, isAdmin, adminNotes } = req.body
 
     if (plan !== undefined) {
       if (plan === 'PRO') {
-        // Manual PRO: require duration and reason
         if (!duration || !['3m', '6m', '12m', 'lifetime'].includes(duration)) {
           return badRequest(res, 'duration deve ser 3m, 6m, 12m ou lifetime')
         }
@@ -53,10 +52,11 @@ export default withBackofficeAuth(async (req, res) => {
           data: { plan: 'PRO', proPlanExpiresAt: expiresAt, proPlanReason: reason.trim() },
         })
         const durationLabel = duration === 'lifetime' ? 'vitalício' : duration
-        const expiryText = expiresAt ? ` (expira ${expiresAt.toLocaleDateString('pt-BR')})` : ' (vitalício)'
+        const expiryText    = expiresAt ? ` (expira ${expiresAt.toLocaleDateString('pt-BR')})` : ' (vitalício)'
+        const verb          = user.plan === 'PRO' ? 'PRO prorrogado' : 'Plano PRO manual'
         await db.adminLog.create({ data: {
           action: 'plan_change', targetId: id,
-          details: `Plano PRO manual ${durationLabel}${expiryText} — motivo: ${reason.trim()} (${user.email})`,
+          details: `${verb} ${durationLabel}${expiryText} — motivo: ${reason.trim()} (${user.email})`,
         }})
       } else if (plan === 'FREE') {
         await db.user.update({
@@ -78,9 +78,13 @@ export default withBackofficeAuth(async (req, res) => {
       }})
     }
 
+    if (adminNotes !== undefined) {
+      await db.user.update({ where: { id }, data: { adminNotes: adminNotes || null } })
+    }
+
     const updated = await db.user.findUnique({
       where: { id },
-      select: { id: true, plan: true, isAdmin: true, proPlanExpiresAt: true, proPlanReason: true },
+      select: { id: true, plan: true, isAdmin: true, proPlanExpiresAt: true, proPlanReason: true, adminNotes: true },
     })
     return ok(res, updated)
   }

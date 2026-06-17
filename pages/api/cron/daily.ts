@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '@/lib/db'
 import { format, addDays, startOfMonth, endOfMonth, subMonths } from 'date-fns'
-import { sendBillReminderEmail, sendMonthlySummaryEmail } from '@/lib/email'
+import { sendBillReminderEmail, sendMonthlySummaryEmail, sendManualProExpiryWarningEmail } from '@/lib/email'
 import { cleanupExpiredLimits } from '@/lib/rate-limit'
 import { sendPush, isValidPushToken } from '@/lib/push'
 
@@ -149,6 +149,36 @@ async function processRecurringBills(userId: string) {
   }
 }
 
+async function warnExpiringManualPro() {
+  const now      = new Date()
+  const in3Days  = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)
+  const in4Days  = new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000)
+
+  // Warn users expiring in ~3 days (between 3d and 4d from now)
+  const expiringSoon = await db.user.findMany({
+    where: { plan: 'PRO', stripeSubscriptionId: null, proPlanExpiresAt: { gte: in3Days, lt: in4Days } },
+    select: { email: true, name: true, proPlanExpiresAt: true },
+  })
+  for (const u of expiringSoon) {
+    if (!u.proPlanExpiresAt) continue
+    const days = Math.ceil((u.proPlanExpiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    await sendManualProExpiryWarningEmail(u.email, u.name, u.proPlanExpiresAt, days)
+      .catch(e => console.error('[expire-warn] 3d email failed:', e))
+  }
+
+  // Warn users expiring today
+  const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+  const expiringToday = await db.user.findMany({
+    where: { plan: 'PRO', stripeSubscriptionId: null, proPlanExpiresAt: { gte: now, lt: tomorrow } },
+    select: { email: true, name: true, proPlanExpiresAt: true },
+  })
+  for (const u of expiringToday) {
+    if (!u.proPlanExpiresAt) continue
+    await sendManualProExpiryWarningEmail(u.email, u.name, u.proPlanExpiresAt, 0)
+      .catch(e => console.error('[expire-warn] today email failed:', e))
+  }
+}
+
 async function expireManualPro() {
   const expired = await db.user.findMany({
     where: { plan: 'PRO', stripeSubscriptionId: null, proPlanExpiresAt: { not: null, lte: new Date() } },
@@ -278,6 +308,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
 
+  await warnExpiringManualPro().catch(e => console.error('[expire-warn] fatal:', e))
   await expireManualPro().catch(e => console.error('[expire-pro] fatal:', e))
 
   // Send notifications (fire-and-forget — don't block cron response)
