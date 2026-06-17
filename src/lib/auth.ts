@@ -4,11 +4,12 @@ import type { NextApiRequest } from 'next'
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET ?? 'rook-dev-secret')
 
 export interface Session {
-  userId:       string
-  name:         string
-  email:        string
-  plan?:        string
+  userId:        string
+  name:          string
+  email:         string
+  plan?:         string
   tokenVersion?: number
+  impersonating?: boolean
 }
 
 export async function createToken(session: Session & { tokenVersion?: number }, rememberMe = true): Promise<string> {

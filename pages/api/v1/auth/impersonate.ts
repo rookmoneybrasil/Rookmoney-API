@@ -24,14 +24,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!user) return unauthorized(res, 'Usuário não encontrado.')
 
     const sessionToken = await new SignJWT({
-      userId:       user.id,
-      name:         user.name,
-      email:        user.email,
-      plan:         user.plan,
-      tokenVersion: user.tokenVersion,
+      userId:        user.id,
+      name:          user.name,
+      email:         user.email,
+      plan:          user.plan,
+      tokenVersion:  user.tokenVersion,
+      impersonating: true,
     })
       .setProtectedHeader({ alg: 'HS256' })
-      .setExpirationTime('1d')
+      .setExpirationTime('30m')
       .setIssuedAt()
       .sign(SECRET)
 
@@ -40,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       secure:   process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path:     '/',
-      maxAge:   60 * 60 * 24,
+      maxAge:   60 * 30,
     }))
 
     return res.status(200).json({
