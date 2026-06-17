@@ -1,6 +1,6 @@
 import { withBackofficeAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
-import { ok, serverError } from '@/lib/respond'
+import { ok } from '@/lib/respond'
 import { listActiveSubscriptions } from '@/lib/stripe'
 
 export default withBackofficeAuth(async (_req, res) => {
@@ -14,7 +14,9 @@ export default withBackofficeAuth(async (_req, res) => {
   const proUsers = await db.user.findMany({
     where:   { plan: 'PRO' },
     orderBy: { createdAt: 'desc' },
-    select:  { id: true, name: true, email: true, createdAt: true, stripeCustomerId: true, stripeSubscriptionId: true },
+    select:  { id: true, name: true, email: true, createdAt: true,
+      stripeCustomerId: true, stripeSubscriptionId: true,
+      proPlanExpiresAt: true, proPlanReason: true },
   })
 
   // Build a map from Stripe customerId → subscription details
@@ -31,6 +33,8 @@ export default withBackofficeAuth(async (_req, res) => {
       renewalDate:     sub ? new Date(sub.current_period_end * 1000).toISOString() : null,
       cancelAtPeriodEnd: sub?.cancel_at_period_end ?? false,
       hasStripe:       !!u.stripeSubscriptionId,
+      proPlanExpiresAt: u.proPlanExpiresAt,
+      proPlanReason:    u.proPlanReason,
     }
   })
 

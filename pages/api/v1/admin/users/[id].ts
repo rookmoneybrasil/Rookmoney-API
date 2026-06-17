@@ -1,12 +1,23 @@
 import { withBackofficeAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
-import { ok, noContent, notFound } from '@/lib/respond'
+import { ok, noContent, notFound, badRequest } from '@/lib/respond'
+
+function calcExpiresAt(duration: string): Date | null {
+  if (duration === 'lifetime') return null
+  const now = new Date()
+  if (duration === '3m')  return new Date(now.getFullYear(), now.getMonth() + 3,  now.getDate())
+  if (duration === '6m')  return new Date(now.getFullYear(), now.getMonth() + 6,  now.getDate())
+  if (duration === '12m') return new Date(now.getFullYear(), now.getMonth() + 12, now.getDate())
+  return null
+}
 
 export default withBackofficeAuth(async (req, res) => {
   const id   = req.query.id as string
   const user = await db.user.findUnique({
     where: { id },
-    select: { id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true, updatedAt: true, whatsappPhone: true, stripeCustomerId: true, stripeSubscriptionId: true,
+    select: { id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true, updatedAt: true,
+      whatsappPhone: true, stripeCustomerId: true, stripeSubscriptionId: true,
+      proPlanExpiresAt: true, proPlanReason: true,
       _count: { select: { transactions: true, goals: true, bills: true, budgets: true, people: true } } }
   })
   if (!user) return notFound(res)
@@ -25,19 +36,53 @@ export default withBackofficeAuth(async (req, res) => {
   }
 
   if (req.method === 'PATCH') {
-    const { plan, isAdmin } = req.body
-    const updated = await db.user.update({
-      where: { id },
-      data: { ...(plan !== undefined && { plan }), ...(isAdmin !== undefined && { isAdmin }) },
-    })
-    // Log the action
+    const { plan, duration, reason, isAdmin } = req.body
+
     if (plan !== undefined) {
-      await db.adminLog.create({ data: { action: 'plan_change', targetId: id, details: `Plano alterado de ${user.plan} para ${plan} (${user.email})` } })
+      if (plan === 'PRO') {
+        // Manual PRO: require duration and reason
+        if (!duration || !['3m', '6m', '12m', 'lifetime'].includes(duration)) {
+          return badRequest(res, 'duration deve ser 3m, 6m, 12m ou lifetime')
+        }
+        if (!reason || !reason.trim()) {
+          return badRequest(res, 'motivo é obrigatório ao dar PRO manual')
+        }
+        const expiresAt = calcExpiresAt(duration)
+        await db.user.update({
+          where: { id },
+          data: { plan: 'PRO', proPlanExpiresAt: expiresAt, proPlanReason: reason.trim() },
+        })
+        const durationLabel = duration === 'lifetime' ? 'vitalício' : duration
+        const expiryText = expiresAt ? ` (expira ${expiresAt.toLocaleDateString('pt-BR')})` : ' (vitalício)'
+        await db.adminLog.create({ data: {
+          action: 'plan_change', targetId: id,
+          details: `Plano PRO manual ${durationLabel}${expiryText} — motivo: ${reason.trim()} (${user.email})`,
+        }})
+      } else if (plan === 'FREE') {
+        await db.user.update({
+          where: { id },
+          data: { plan: 'FREE', proPlanExpiresAt: null, proPlanReason: null },
+        })
+        await db.adminLog.create({ data: {
+          action: 'plan_change', targetId: id,
+          details: `Plano alterado de ${user.plan} para FREE (${user.email})`,
+        }})
+      }
     }
+
     if (isAdmin !== undefined) {
-      await db.adminLog.create({ data: { action: 'toggle_admin', targetId: id, details: `Admin ${isAdmin ? 'concedido' : 'removido'} de ${user.email}` } })
+      await db.user.update({ where: { id }, data: { isAdmin } })
+      await db.adminLog.create({ data: {
+        action: 'toggle_admin', targetId: id,
+        details: `Admin ${isAdmin ? 'concedido' : 'removido'} de ${user.email}`,
+      }})
     }
-    return ok(res, { id: updated.id, plan: updated.plan, isAdmin: updated.isAdmin })
+
+    const updated = await db.user.findUnique({
+      where: { id },
+      select: { id: true, plan: true, isAdmin: true, proPlanExpiresAt: true, proPlanReason: true },
+    })
+    return ok(res, updated)
   }
 
   if (req.method === 'DELETE') {

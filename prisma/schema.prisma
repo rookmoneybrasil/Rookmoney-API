@@ -41,6 +41,8 @@ model User {
   chatUsageCount      Int       @default(0)
   scannerUsageMonth   String?
   scannerUsageCount   Int       @default(0)
+  proPlanExpiresAt    DateTime? // null = vitalício (manual PRO only)
+  proPlanReason       String?   // motivo registrado pelo admin ao dar PRO manual
   tokenVersion        Int       @default(0)  // increment to invalidate all existing JWTs
   lastActiveAt        DateTime?
   createdAt           DateTime  @default(now())

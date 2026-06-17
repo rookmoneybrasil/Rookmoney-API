@@ -149,6 +149,20 @@ async function processRecurringBills(userId: string) {
   }
 }
 
+async function expireManualPro() {
+  const expired = await db.user.findMany({
+    where: { plan: 'PRO', stripeSubscriptionId: null, proPlanExpiresAt: { not: null, lte: new Date() } },
+    select: { id: true, email: true },
+  })
+  for (const u of expired) {
+    await db.user.update({ where: { id: u.id }, data: { plan: 'FREE', proPlanExpiresAt: null, proPlanReason: null } })
+    await db.adminLog.create({ data: {
+      action: 'plan_change', targetId: u.id,
+      details: `PRO manual expirado automaticamente → FREE (${u.email})`,
+    }})
+  }
+}
+
 async function sendNotifications() {
   const now     = new Date()
   const today   = now.getDate()
@@ -263,6 +277,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       errors.push(`${user.id}: ${String(err)}`)
     }
   }
+
+  await expireManualPro().catch(e => console.error('[expire-pro] fatal:', e))
 
   // Send notifications (fire-and-forget — don't block cron response)
   sendNotifications().catch(e => console.error('[notify] fatal:', e))

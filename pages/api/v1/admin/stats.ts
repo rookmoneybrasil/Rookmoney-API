@@ -12,7 +12,8 @@ export default withBackofficeAuth(async (_req, res) => {
   const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
   const prevMonthEnd   = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
 
-  const fiveMinAgo = new Date(Date.now() - 5 * 60_000)
+  const fiveMinAgo  = new Date(Date.now() - 5 * 60_000)
+  const sevenDaysOn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
   const [
     total, pro, proManual,
@@ -25,6 +26,7 @@ export default withBackofficeAuth(async (_req, res) => {
     newProThisMonth,
     churnThisMonth,
     recentLogs,
+    manualExpiringCount,
   ] = await Promise.all([
     db.user.count(),
     db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: { not: null } } }),
@@ -48,6 +50,7 @@ export default withBackofficeAuth(async (_req, res) => {
     db.adminLog.count({ where: { action: 'plan_change', details: { contains: 'para PRO' }, createdAt: { gte: monthStart } } }),
     db.adminLog.count({ where: { action: 'plan_change', details: { contains: 'para FREE' }, createdAt: { gte: monthStart } } }),
     db.adminLog.findMany({ orderBy: { createdAt: 'desc' }, take: 5 }),
+    db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: null, proPlanExpiresAt: { not: null, lte: sevenDaysOn } } }),
   ])
 
   return ok(res, {
@@ -59,6 +62,7 @@ export default withBackofficeAuth(async (_req, res) => {
     openFeedbackCount: openFeedback,
     newProThisMonth,
     churnThisMonth,
+    manualExpiringCount,
     growthVsLastMonth: prevMonthNewUsers > 0
       ? Math.round(((newThisMonth - prevMonthNewUsers) / prevMonthNewUsers) * 100)
       : null,
