@@ -4,7 +4,7 @@ import { ok, badRequest, notFound } from '@/lib/respond'
 import { SignJWT } from 'jose'
 
 const SECRET  = new TextEncoder().encode(process.env.JWT_SECRET ?? 'rook-dev-secret')
-const WEB_URL = process.env.WEB_URL ?? 'https://app.rookmoney.com'
+const WEB_URL = process.env.WEB_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://rookmoney.com'
 
 export default withBackofficeAuth(async (req, res) => {
   const { userId } = req.body as { userId?: string }
