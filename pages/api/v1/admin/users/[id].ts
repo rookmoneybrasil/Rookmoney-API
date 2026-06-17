@@ -15,15 +15,23 @@ export default withBackofficeAuth(async (req, res) => {
   const id   = req.query.id as string
   const user = await db.user.findUnique({
     where: { id },
-    select: { id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true, updatedAt: true,
+    select: {
+      id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true, updatedAt: true,
       whatsappPhone: true, stripeCustomerId: true, stripeSubscriptionId: true,
-      proPlanExpiresAt: true, proPlanReason: true, adminNotes: true,
-      _count: { select: { transactions: true, goals: true, bills: true, budgets: true, people: true } } }
+      proPlanExpiresAt: true, proPlanReason: true, adminNotes: true, lastActiveAt: true,
+      googleId: true, hasOnboarded: true,
+      profileImage: true, bio: true, city: true, occupation: true, birthdate: true,
+      currency: true, dateFormat: true,
+      notifBillReminder: true, notifCategoryLimit: true, notifMonthlyEmail: true,
+      pushToken: true,
+      chatUsageMonth: true, chatUsageCount: true, scannerUsageMonth: true, scannerUsageCount: true,
+      _count: { select: { transactions: true, goals: true, bills: true, budgets: true, people: true, incomeSources: true, recurringBills: true } },
+    },
   })
   if (!user) return notFound(res)
 
   if (req.method === 'GET') {
-    const [recentTransactions, logs] = await Promise.all([
+    const [recentTransactions, logs, firstTx, totalIncome, totalExpense] = await Promise.all([
       db.transaction.findMany({
         where: { userId: id }, orderBy: { date: 'desc' }, take: 10,
         include: { category: { select: { name: true, icon: true, color: true } } },
@@ -31,8 +39,35 @@ export default withBackofficeAuth(async (req, res) => {
       db.adminLog.findMany({
         where: { targetId: id }, orderBy: { createdAt: 'desc' }, take: 20,
       }),
+      db.transaction.findFirst({
+        where: { userId: id }, orderBy: { date: 'asc' }, select: { date: true },
+      }),
+      db.transaction.aggregate({
+        where: { userId: id, type: 'INCOME' }, _sum: { amount: true },
+      }),
+      db.transaction.aggregate({
+        where: { userId: id, type: 'EXPENSE' }, _sum: { amount: true },
+      }),
     ])
-    return ok(res, { user, recentTransactions, logs })
+
+    const safeUser = {
+      ...user,
+      loginMethod: user.googleId ? 'google' as const : 'email' as const,
+      hasMobileApp: !!user.pushToken,
+      googleId: undefined,
+      pushToken: undefined,
+    }
+
+    return ok(res, {
+      user: safeUser,
+      recentTransactions,
+      logs,
+      financialSummary: {
+        firstTransactionDate: firstTx?.date ?? null,
+        totalIncome: Number(totalIncome._sum.amount ?? 0),
+        totalExpense: Number(totalExpense._sum.amount ?? 0),
+      },
+    })
   }
 
   if (req.method === 'PATCH') {
