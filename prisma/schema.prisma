@@ -407,6 +407,15 @@ model AdminLog {
   @@index([createdAt])
 }
 
+// ─── AppSetting ───────────────────────────────────────────────────────────────
+// Admin-configurable key-value pairs (managed from backoffice /settings page).
+
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
 // ─── PluggyItem ───────────────────────────────────────────────────────────────
 // Open Finance bank connections via Pluggy.
 

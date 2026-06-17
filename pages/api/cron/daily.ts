@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '@/lib/db'
 import { format, addDays, startOfMonth, endOfMonth, subMonths } from 'date-fns'
-import { sendBillReminderEmail, sendMonthlySummaryEmail, sendManualProExpiryWarningEmail } from '@/lib/email'
+import { sendBillReminderEmail, sendMonthlySummaryEmail, sendManualProExpiryWarningEmail, sendChurnAlertEmail } from '@/lib/email'
 import { cleanupExpiredLimits } from '@/lib/rate-limit'
 import { sendPush, isValidPushToken } from '@/lib/push'
 
@@ -193,6 +193,32 @@ async function expireManualPro() {
   }
 }
 
+async function checkChurnAlert() {
+  // Only run on the 2nd — after month rollover has been processed
+  if (new Date().getDate() !== 2) return
+
+  const prevMonth = subMonths(new Date(), 1)
+  const pS        = startOfMonth(prevMonth)
+  const pE        = endOfMonth(prevMonth)
+
+  const [churnCount, thresholdRow, emailRow] = await Promise.all([
+    db.adminLog.count({
+      where: { action: 'plan_change', details: { contains: 'para FREE' }, createdAt: { gte: pS, lte: pE } },
+    }),
+    db.appSetting.findUnique({ where: { key: 'churn_alert_threshold' } }),
+    db.appSetting.findUnique({ where: { key: 'admin_alert_email' } }),
+  ])
+
+  const threshold  = parseInt(thresholdRow?.value ?? '5')
+  const adminEmail = emailRow?.value ?? 'viniguilherme013@gmail.com'
+
+  if (churnCount >= threshold) {
+    const monthLabel = prevMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+    await sendChurnAlertEmail(adminEmail, churnCount, threshold, monthLabel)
+      .catch(e => console.error('[churn-alert] email failed:', e))
+  }
+}
+
 async function sendNotifications() {
   const now     = new Date()
   const today   = now.getDate()
@@ -310,6 +336,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   await warnExpiringManualPro().catch(e => console.error('[expire-warn] fatal:', e))
   await expireManualPro().catch(e => console.error('[expire-pro] fatal:', e))
+  await checkChurnAlert().catch(e => console.error('[churn-alert] fatal:', e))
 
   // Send notifications (fire-and-forget — don't block cron response)
   sendNotifications().catch(e => console.error('[notify] fatal:', e))

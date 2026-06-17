@@ -6,6 +6,7 @@ const PRO_PRICE = 19.9
 
 type MonthRow    = { month: Date; count: number }
 type TopUserRow  = { id: string; name: string; email: string; tx_count: number }
+type CohortRow   = { cohort_month: Date; total: number; active_30d: number }
 
 export default withBackofficeAuth(async (_req, res) => {
   const now = new Date()
@@ -52,6 +53,25 @@ export default withBackofficeAuth(async (_req, res) => {
       AND "createdAt" >= NOW() - INTERVAL '12 months'
     GROUP BY 1 ORDER BY 1
   `
+
+  // ── Retention cohort: signups in last 12 months vs active last 30 days ───────
+  const cohortRaw = await db.$queryRaw<CohortRow[]>`
+    SELECT
+      DATE_TRUNC('month', "createdAt")::date AS cohort_month,
+      COUNT(*)::int AS total,
+      COUNT(*) FILTER (WHERE "lastActiveAt" >= NOW() - INTERVAL '30 days')::int AS active_30d
+    FROM "User"
+    WHERE "createdAt" >= NOW() - INTERVAL '12 months'
+    GROUP BY 1 ORDER BY 1
+  `
+
+  // ── Onboarding funnel ─────────────────────────────────────────────────────────
+  const [totalUsers, onboardedCount, txUsersRaw, goalUsersRaw] = await Promise.all([
+    db.user.count(),
+    db.user.count({ where: { hasOnboarded: true } }),
+    db.$queryRaw<{ count: number }[]>`SELECT COUNT(DISTINCT "userId")::int AS count FROM "Transaction"`,
+    db.$queryRaw<{ count: number }[]>`SELECT COUNT(DISTINCT "userId")::int AS count FROM "Goal"`,
+  ])
 
   // ── Usage: top 10 most active users ──────────────────────────────────────────
   const [topUsersRaw, avgStats] = await Promise.all([
@@ -115,5 +135,24 @@ export default withBackofficeAuth(async (_req, res) => {
   const topUsers = topUsersRaw.map(u => ({ id: u.id, name: u.name, email: u.email, txCount: u.tx_count }))
   const avg      = avgStats[0] ?? { avg_tx: 0, avg_goals: 0 }
 
-  return ok(res, { revenue, acquisition, churn, usage: { topUsers, avgTx: Number(avg.avg_tx), avgGoals: Number(avg.avg_goals) } })
+  const cohort = cohortRaw.map(r => ({
+    cohortMonth:   new Date(r.cohort_month).toISOString().slice(0, 7),
+    total:         r.total,
+    active30d:     r.active_30d,
+    retentionRate: r.total > 0 ? Math.round((r.active_30d / r.total) * 100) : 0,
+  }))
+
+  const funnel = {
+    totalUsers,
+    onboarded:       onboardedCount,
+    hasTransactions: Number(txUsersRaw[0]?.count ?? 0),
+    hasGoals:        Number(goalUsersRaw[0]?.count ?? 0),
+  }
+
+  return ok(res, {
+    revenue, acquisition, churn,
+    usage:   { topUsers, avgTx: Number(avg.avg_tx), avgGoals: Number(avg.avg_goals) },
+    cohort,
+    funnel,
+  })
 }, ['GET'])

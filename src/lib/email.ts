@@ -121,3 +121,25 @@ export async function sendMonthlySummaryEmail(
 </div>`,
   })
 }
+
+export async function sendChurnAlertEmail(
+  to: string, churnCount: number, threshold: number, month: string,
+): Promise<void> {
+  await resendPost({
+    from:    FROM,
+    to:      [to],
+    subject: `⚠️ Alerta de churn: ${churnCount} downgrades em ${month}`,
+    html: `
+<div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#080e1d;color:#f1f5f9;padding:32px;border-radius:16px">
+  <h2 style="margin:0 0 8px;font-size:20px;color:#f43f5e">⚠️ Alerta de Churn</h2>
+  <p style="color:#94a3b8;margin:0 0 24px">O churn em <strong style="color:#f1f5f9">${month}</strong> ultrapassou o limite configurado.</p>
+  <div style="background:#0c1628;border:1px solid #3b1111;border-radius:12px;padding:20px;margin-bottom:24px">
+    <p style="margin:0 0 8px;color:#94a3b8;font-size:12px">DOWNGRADES NO MÊS</p>
+    <p style="margin:0;font-size:32px;font-weight:700;color:#f43f5e">${churnCount}</p>
+    <p style="margin:4px 0 0;font-size:12px;color:#475569">Limite configurado: ${threshold}</p>
+  </div>
+  <a href="https://rookmoney-backoffice.vercel.app/reports" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Ver relatório de churn →</a>
+  <p style="color:#475569;font-size:12px;margin-top:24px">Ajuste o limite em <a href="https://rookmoney-backoffice.vercel.app/settings" style="color:#60a5fa">Configurações</a> do backoffice.</p>
+</div>`,
+  })
+}
