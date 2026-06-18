@@ -20,6 +20,81 @@ interface Migration {
 }
 
 const MIGRATIONS: Migration[] = [
+  // ─── 2026-06-18 ─────────────────────────────────────────────────────
+  {
+    id:  '2026-06-18-backfill-achievements',
+    run: async (db) => {
+      // Grant retroactive achievements to existing users based on their current data.
+      // Only checks fast-to-verify achievements to avoid timeout on large user sets.
+      const users = await db.user.findMany({ select: { id: true, createdAt: true, profileImage: true, name: true, email: true } })
+
+      for (const user of users) {
+        const userId = user.id
+        const toInsert: string[] = []
+
+        // Welcome — everyone gets it
+        toInsert.push('welcome')
+
+        // Volume checks (fast counts)
+        const [billCount, txCount, goalCount, incomeCount, personCount, contribCount] = await Promise.all([
+          db.bill.count({ where: { userId } }),
+          db.transaction.count({ where: { userId } }),
+          db.goal.count({ where: { userId } }),
+          db.incomeSource.count({ where: { userId } }),
+          db.person.count({ where: { userId } }),
+          db.goalContribution.count({ where: { goal: { userId } } }),
+        ])
+
+        if (billCount >= 1)   toInsert.push('first-bill')
+        if (billCount >= 10)  toInsert.push('10-bills')
+        if (billCount >= 50)  toInsert.push('50-bills')
+        if (billCount >= 100) toInsert.push('100-bills')
+        if (billCount >= 500) toInsert.push('500-bills')
+
+        if (txCount >= 1)   toInsert.push('first-transaction', 'first-account')
+        if (txCount >= 50)  toInsert.push('50-transactions')
+        if (txCount >= 200) toInsert.push('200-transactions')
+        if (txCount >= 500) toInsert.push('500-transactions')
+
+        if (goalCount >= 1) toInsert.push('first-goal')
+        if (incomeCount >= 1) toInsert.push('first-income')
+        if (incomeCount >= 3) toInsert.push('multi-income')
+        if (incomeCount >= 5) toInsert.push('diversified')
+
+        if (contribCount >= 1)  toInsert.push('first-deposit')
+        if (contribCount >= 5)  toInsert.push('steady')
+        if (contribCount >= 20) toInsert.push('dedicated')
+        if (contribCount >= 50) toInsert.push('obsessive')
+
+        if (user.name && user.email && user.profileImage) toInsert.push('complete-profile')
+
+        const recurringCount = await db.recurringBill.count({ where: { userId, isActive: true } })
+        if (recurringCount >= 1)  toInsert.push('autopilot')
+        if (recurringCount >= 10) toInsert.push('full-autopilot')
+
+        const completedGoals = await db.goal.count({ where: { userId, isCompleted: true } })
+        if (completedGoals >= 1)  toInsert.push('goal-reached')
+        if (completedGoals >= 3)  toInsert.push('dream-collector')
+        if (completedGoals >= 5)  toInsert.push('achiever')
+        if (completedGoals >= 10) toInsert.push('dream-machine')
+
+        // Account age
+        const ageDays = (Date.now() - new Date(user.createdAt).getTime()) / (24 * 60 * 60 * 1000)
+        if (ageDays >= 90)  toInsert.push('veteran')
+        if (ageDays >= 180) toInsert.push('rooted')
+        if (ageDays >= 365) toInsert.push('legendary')
+        if (ageDays >= 730) toInsert.push('eternal')
+
+        const final = [...new Set(toInsert)]
+        if (final.length > 0) {
+          for (const slug of final) {
+            await db.userAchievement.create({ data: { userId, slug, seen: true } }).catch(() => {})
+          }
+        }
+      }
+    },
+  },
+
   // ─── 2026-06-02 ─────────────────────────────────────────────────────
   {
     id:  '2026-06-02-migrate-recurring-bills',

@@ -68,6 +68,8 @@ export const ModelName = {
   DataMigration: 'DataMigration',
   RateLimit: 'RateLimit',
   AdminLog: 'AdminLog',
+  AppSetting: 'AppSetting',
+  UserAchievement: 'UserAchievement',
   PluggyItem: 'PluggyItem'
 } as const
 
@@ -109,12 +111,16 @@ export const UserScalarFieldEnum = {
   notifBillReminder: 'notifBillReminder',
   notifCategoryLimit: 'notifCategoryLimit',
   notifMonthlyEmail: 'notifMonthlyEmail',
+  pushToken: 'pushToken',
   currency: 'currency',
   dateFormat: 'dateFormat',
   chatUsageMonth: 'chatUsageMonth',
   chatUsageCount: 'chatUsageCount',
   scannerUsageMonth: 'scannerUsageMonth',
   scannerUsageCount: 'scannerUsageCount',
+  proPlanExpiresAt: 'proPlanExpiresAt',
+  proPlanReason: 'proPlanReason',
+  adminNotes: 'adminNotes',
   tokenVersion: 'tokenVersion',
   lastActiveAt: 'lastActiveAt',
   createdAt: 'createdAt',
@@ -367,6 +373,26 @@ export const AdminLogScalarFieldEnum = {
 } as const
 
 export type AdminLogScalarFieldEnum = (typeof AdminLogScalarFieldEnum)[keyof typeof AdminLogScalarFieldEnum]
+
+
+export const AppSettingScalarFieldEnum = {
+  key: 'key',
+  value: 'value',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppSettingScalarFieldEnum = (typeof AppSettingScalarFieldEnum)[keyof typeof AppSettingScalarFieldEnum]
+
+
+export const UserAchievementScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  slug: 'slug',
+  unlockedAt: 'unlockedAt',
+  seen: 'seen'
+} as const
+
+export type UserAchievementScalarFieldEnum = (typeof UserAchievementScalarFieldEnum)[keyof typeof UserAchievementScalarFieldEnum]
 
 
 export const PluggyItemScalarFieldEnum = {

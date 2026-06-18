@@ -60,12 +60,16 @@ export type UserMinAggregateOutputType = {
   notifBillReminder: boolean | null
   notifCategoryLimit: boolean | null
   notifMonthlyEmail: boolean | null
+  pushToken: string | null
   currency: string | null
   dateFormat: string | null
   chatUsageMonth: string | null
   chatUsageCount: number | null
   scannerUsageMonth: string | null
   scannerUsageCount: number | null
+  proPlanExpiresAt: Date | null
+  proPlanReason: string | null
+  adminNotes: string | null
   tokenVersion: number | null
   lastActiveAt: Date | null
   createdAt: Date | null
@@ -94,12 +98,16 @@ export type UserMaxAggregateOutputType = {
   notifBillReminder: boolean | null
   notifCategoryLimit: boolean | null
   notifMonthlyEmail: boolean | null
+  pushToken: string | null
   currency: string | null
   dateFormat: string | null
   chatUsageMonth: string | null
   chatUsageCount: number | null
   scannerUsageMonth: string | null
   scannerUsageCount: number | null
+  proPlanExpiresAt: Date | null
+  proPlanReason: string | null
+  adminNotes: string | null
   tokenVersion: number | null
   lastActiveAt: Date | null
   createdAt: Date | null
@@ -128,12 +136,16 @@ export type UserCountAggregateOutputType = {
   notifBillReminder: number
   notifCategoryLimit: number
   notifMonthlyEmail: number
+  pushToken: number
   currency: number
   dateFormat: number
   chatUsageMonth: number
   chatUsageCount: number
   scannerUsageMonth: number
   scannerUsageCount: number
+  proPlanExpiresAt: number
+  proPlanReason: number
+  adminNotes: number
   tokenVersion: number
   lastActiveAt: number
   createdAt: number
@@ -176,12 +188,16 @@ export type UserMinAggregateInputType = {
   notifBillReminder?: true
   notifCategoryLimit?: true
   notifMonthlyEmail?: true
+  pushToken?: true
   currency?: true
   dateFormat?: true
   chatUsageMonth?: true
   chatUsageCount?: true
   scannerUsageMonth?: true
   scannerUsageCount?: true
+  proPlanExpiresAt?: true
+  proPlanReason?: true
+  adminNotes?: true
   tokenVersion?: true
   lastActiveAt?: true
   createdAt?: true
@@ -210,12 +226,16 @@ export type UserMaxAggregateInputType = {
   notifBillReminder?: true
   notifCategoryLimit?: true
   notifMonthlyEmail?: true
+  pushToken?: true
   currency?: true
   dateFormat?: true
   chatUsageMonth?: true
   chatUsageCount?: true
   scannerUsageMonth?: true
   scannerUsageCount?: true
+  proPlanExpiresAt?: true
+  proPlanReason?: true
+  adminNotes?: true
   tokenVersion?: true
   lastActiveAt?: true
   createdAt?: true
@@ -244,12 +264,16 @@ export type UserCountAggregateInputType = {
   notifBillReminder?: true
   notifCategoryLimit?: true
   notifMonthlyEmail?: true
+  pushToken?: true
   currency?: true
   dateFormat?: true
   chatUsageMonth?: true
   chatUsageCount?: true
   scannerUsageMonth?: true
   scannerUsageCount?: true
+  proPlanExpiresAt?: true
+  proPlanReason?: true
+  adminNotes?: true
   tokenVersion?: true
   lastActiveAt?: true
   createdAt?: true
@@ -365,12 +389,16 @@ export type UserGroupByOutputType = {
   notifBillReminder: boolean
   notifCategoryLimit: boolean
   notifMonthlyEmail: boolean
+  pushToken: string | null
   currency: string
   dateFormat: string
   chatUsageMonth: string | null
   chatUsageCount: number
   scannerUsageMonth: string | null
   scannerUsageCount: number
+  proPlanExpiresAt: Date | null
+  proPlanReason: string | null
+  adminNotes: string | null
   tokenVersion: number
   lastActiveAt: Date | null
   createdAt: Date
@@ -422,12 +450,16 @@ export type UserWhereInput = {
   notifBillReminder?: Prisma.BoolFilter<"User"> | boolean
   notifCategoryLimit?: Prisma.BoolFilter<"User"> | boolean
   notifMonthlyEmail?: Prisma.BoolFilter<"User"> | boolean
+  pushToken?: Prisma.StringNullableFilter<"User"> | string | null
   currency?: Prisma.StringFilter<"User"> | string
   dateFormat?: Prisma.StringFilter<"User"> | string
   chatUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
   chatUsageCount?: Prisma.IntFilter<"User"> | number
   scannerUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
   scannerUsageCount?: Prisma.IntFilter<"User"> | number
+  proPlanExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  proPlanReason?: Prisma.StringNullableFilter<"User"> | string | null
+  adminNotes?: Prisma.StringNullableFilter<"User"> | string | null
   tokenVersion?: Prisma.IntFilter<"User"> | number
   lastActiveAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -445,6 +477,7 @@ export type UserWhereInput = {
   feedbacks?: Prisma.FeedbackListRelationFilter
   recurringBills?: Prisma.RecurringBillListRelationFilter
   pluggyItems?: Prisma.PluggyItemListRelationFilter
+  achievements?: Prisma.UserAchievementListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -469,12 +502,16 @@ export type UserOrderByWithRelationInput = {
   notifBillReminder?: Prisma.SortOrder
   notifCategoryLimit?: Prisma.SortOrder
   notifMonthlyEmail?: Prisma.SortOrder
+  pushToken?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
   dateFormat?: Prisma.SortOrder
   chatUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   chatUsageCount?: Prisma.SortOrder
   scannerUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
+  proPlanExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  proPlanReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  adminNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -492,6 +529,7 @@ export type UserOrderByWithRelationInput = {
   feedbacks?: Prisma.FeedbackOrderByRelationAggregateInput
   recurringBills?: Prisma.RecurringBillOrderByRelationAggregateInput
   pluggyItems?: Prisma.PluggyItemOrderByRelationAggregateInput
+  achievements?: Prisma.UserAchievementOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -519,12 +557,16 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   notifBillReminder?: Prisma.BoolFilter<"User"> | boolean
   notifCategoryLimit?: Prisma.BoolFilter<"User"> | boolean
   notifMonthlyEmail?: Prisma.BoolFilter<"User"> | boolean
+  pushToken?: Prisma.StringNullableFilter<"User"> | string | null
   currency?: Prisma.StringFilter<"User"> | string
   dateFormat?: Prisma.StringFilter<"User"> | string
   chatUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
   chatUsageCount?: Prisma.IntFilter<"User"> | number
   scannerUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
   scannerUsageCount?: Prisma.IntFilter<"User"> | number
+  proPlanExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  proPlanReason?: Prisma.StringNullableFilter<"User"> | string | null
+  adminNotes?: Prisma.StringNullableFilter<"User"> | string | null
   tokenVersion?: Prisma.IntFilter<"User"> | number
   lastActiveAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -542,6 +584,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   feedbacks?: Prisma.FeedbackListRelationFilter
   recurringBills?: Prisma.RecurringBillListRelationFilter
   pluggyItems?: Prisma.PluggyItemListRelationFilter
+  achievements?: Prisma.UserAchievementListRelationFilter
 }, "id" | "email" | "googleId" | "whatsappPhone">
 
 export type UserOrderByWithAggregationInput = {
@@ -566,12 +609,16 @@ export type UserOrderByWithAggregationInput = {
   notifBillReminder?: Prisma.SortOrder
   notifCategoryLimit?: Prisma.SortOrder
   notifMonthlyEmail?: Prisma.SortOrder
+  pushToken?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
   dateFormat?: Prisma.SortOrder
   chatUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   chatUsageCount?: Prisma.SortOrder
   scannerUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
+  proPlanExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  proPlanReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  adminNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -608,12 +655,16 @@ export type UserScalarWhereWithAggregatesInput = {
   notifBillReminder?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   notifCategoryLimit?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   notifMonthlyEmail?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  pushToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   currency?: Prisma.StringWithAggregatesFilter<"User"> | string
   dateFormat?: Prisma.StringWithAggregatesFilter<"User"> | string
   chatUsageMonth?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   chatUsageCount?: Prisma.IntWithAggregatesFilter<"User"> | number
   scannerUsageMonth?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   scannerUsageCount?: Prisma.IntWithAggregatesFilter<"User"> | number
+  proPlanExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  proPlanReason?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  adminNotes?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   tokenVersion?: Prisma.IntWithAggregatesFilter<"User"> | number
   lastActiveAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -642,12 +693,16 @@ export type UserCreateInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -665,6 +720,7 @@ export type UserCreateInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -689,12 +745,16 @@ export type UserUncheckedCreateInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -712,6 +772,7 @@ export type UserUncheckedCreateInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -736,12 +797,16 @@ export type UserUpdateInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -759,6 +824,7 @@ export type UserUpdateInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -783,12 +849,16 @@ export type UserUncheckedUpdateInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -806,6 +876,7 @@ export type UserUncheckedUpdateInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -830,12 +901,16 @@ export type UserCreateManyInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -864,12 +939,16 @@ export type UserUpdateManyMutationInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -898,12 +977,16 @@ export type UserUncheckedUpdateManyInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -932,12 +1015,16 @@ export type UserCountOrderByAggregateInput = {
   notifBillReminder?: Prisma.SortOrder
   notifCategoryLimit?: Prisma.SortOrder
   notifMonthlyEmail?: Prisma.SortOrder
+  pushToken?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   dateFormat?: Prisma.SortOrder
   chatUsageMonth?: Prisma.SortOrder
   chatUsageCount?: Prisma.SortOrder
   scannerUsageMonth?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
+  proPlanExpiresAt?: Prisma.SortOrder
+  proPlanReason?: Prisma.SortOrder
+  adminNotes?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -972,12 +1059,16 @@ export type UserMaxOrderByAggregateInput = {
   notifBillReminder?: Prisma.SortOrder
   notifCategoryLimit?: Prisma.SortOrder
   notifMonthlyEmail?: Prisma.SortOrder
+  pushToken?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   dateFormat?: Prisma.SortOrder
   chatUsageMonth?: Prisma.SortOrder
   chatUsageCount?: Prisma.SortOrder
   scannerUsageMonth?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
+  proPlanExpiresAt?: Prisma.SortOrder
+  proPlanReason?: Prisma.SortOrder
+  adminNotes?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -1006,12 +1097,16 @@ export type UserMinOrderByAggregateInput = {
   notifBillReminder?: Prisma.SortOrder
   notifCategoryLimit?: Prisma.SortOrder
   notifMonthlyEmail?: Prisma.SortOrder
+  pushToken?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   dateFormat?: Prisma.SortOrder
   chatUsageMonth?: Prisma.SortOrder
   chatUsageCount?: Prisma.SortOrder
   scannerUsageMonth?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
+  proPlanExpiresAt?: Prisma.SortOrder
+  proPlanReason?: Prisma.SortOrder
+  adminNotes?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -1232,6 +1327,20 @@ export type UserUpdateOneRequiredWithoutFeedbacksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFeedbacksInput, Prisma.UserUpdateWithoutFeedbacksInput>, Prisma.UserUncheckedUpdateWithoutFeedbacksInput>
 }
 
+export type UserCreateNestedOneWithoutAchievementsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAchievementsInput, Prisma.UserUncheckedCreateWithoutAchievementsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAchievementsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAchievementsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAchievementsInput, Prisma.UserUncheckedCreateWithoutAchievementsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAchievementsInput
+  upsert?: Prisma.UserUpsertWithoutAchievementsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAchievementsInput, Prisma.UserUpdateWithoutAchievementsInput>, Prisma.UserUncheckedUpdateWithoutAchievementsInput>
+}
+
 export type UserCreateNestedOneWithoutPluggyItemsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutPluggyItemsInput, Prisma.UserUncheckedCreateWithoutPluggyItemsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutPluggyItemsInput
@@ -1268,12 +1377,16 @@ export type UserCreateWithoutCategoriesInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -1290,6 +1403,7 @@ export type UserCreateWithoutCategoriesInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCategoriesInput = {
@@ -1314,12 +1428,16 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -1336,6 +1454,7 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCategoriesInput = {
@@ -1376,12 +1495,16 @@ export type UserUpdateWithoutCategoriesInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1398,6 +1521,7 @@ export type UserUpdateWithoutCategoriesInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCategoriesInput = {
@@ -1422,12 +1546,16 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1444,6 +1572,7 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTransactionsInput = {
@@ -1468,12 +1597,16 @@ export type UserCreateWithoutTransactionsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -1490,6 +1623,7 @@ export type UserCreateWithoutTransactionsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTransactionsInput = {
@@ -1514,12 +1648,16 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -1536,6 +1674,7 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTransactionsInput = {
@@ -1576,12 +1715,16 @@ export type UserUpdateWithoutTransactionsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1598,6 +1741,7 @@ export type UserUpdateWithoutTransactionsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTransactionsInput = {
@@ -1622,12 +1766,16 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1644,6 +1792,7 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRecurringTransactionsInput = {
@@ -1668,12 +1817,16 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -1690,6 +1843,7 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
@@ -1714,12 +1868,16 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -1736,6 +1894,7 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRecurringTransactionsInput = {
@@ -1776,12 +1935,16 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1798,6 +1961,7 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
@@ -1822,12 +1986,16 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1844,6 +2012,7 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGoalsInput = {
@@ -1868,12 +2037,16 @@ export type UserCreateWithoutGoalsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -1890,6 +2063,7 @@ export type UserCreateWithoutGoalsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGoalsInput = {
@@ -1914,12 +2088,16 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -1936,6 +2114,7 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGoalsInput = {
@@ -1976,12 +2155,16 @@ export type UserUpdateWithoutGoalsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1998,6 +2181,7 @@ export type UserUpdateWithoutGoalsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGoalsInput = {
@@ -2022,12 +2206,16 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2044,6 +2232,7 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBudgetsInput = {
@@ -2068,12 +2257,16 @@ export type UserCreateWithoutBudgetsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -2090,6 +2283,7 @@ export type UserCreateWithoutBudgetsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBudgetsInput = {
@@ -2114,12 +2308,16 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -2136,6 +2334,7 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBudgetsInput = {
@@ -2176,12 +2375,16 @@ export type UserUpdateWithoutBudgetsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2198,6 +2401,7 @@ export type UserUpdateWithoutBudgetsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBudgetsInput = {
@@ -2222,12 +2426,16 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2244,6 +2452,7 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutIncomeSourcesInput = {
@@ -2268,12 +2477,16 @@ export type UserCreateWithoutIncomeSourcesInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -2290,6 +2503,7 @@ export type UserCreateWithoutIncomeSourcesInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutIncomeSourcesInput = {
@@ -2314,12 +2528,16 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -2336,6 +2554,7 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutIncomeSourcesInput = {
@@ -2376,12 +2595,16 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2398,6 +2621,7 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
@@ -2422,12 +2646,16 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2444,6 +2672,7 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBillsInput = {
@@ -2468,12 +2697,16 @@ export type UserCreateWithoutBillsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -2490,6 +2723,7 @@ export type UserCreateWithoutBillsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBillsInput = {
@@ -2514,12 +2748,16 @@ export type UserUncheckedCreateWithoutBillsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -2536,6 +2774,7 @@ export type UserUncheckedCreateWithoutBillsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBillsInput = {
@@ -2576,12 +2815,16 @@ export type UserUpdateWithoutBillsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2598,6 +2841,7 @@ export type UserUpdateWithoutBillsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBillsInput = {
@@ -2622,12 +2866,16 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2644,6 +2892,7 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRecurringBillsInput = {
@@ -2668,12 +2917,16 @@ export type UserCreateWithoutRecurringBillsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -2690,6 +2943,7 @@ export type UserCreateWithoutRecurringBillsInput = {
   personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRecurringBillsInput = {
@@ -2714,12 +2968,16 @@ export type UserUncheckedCreateWithoutRecurringBillsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -2736,6 +2994,7 @@ export type UserUncheckedCreateWithoutRecurringBillsInput = {
   personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRecurringBillsInput = {
@@ -2776,12 +3035,16 @@ export type UserUpdateWithoutRecurringBillsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2798,6 +3061,7 @@ export type UserUpdateWithoutRecurringBillsInput = {
   personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecurringBillsInput = {
@@ -2822,12 +3086,16 @@ export type UserUncheckedUpdateWithoutRecurringBillsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2844,6 +3112,7 @@ export type UserUncheckedUpdateWithoutRecurringBillsInput = {
   personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPeopleInput = {
@@ -2868,12 +3137,16 @@ export type UserCreateWithoutPeopleInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -2890,6 +3163,7 @@ export type UserCreateWithoutPeopleInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPeopleInput = {
@@ -2914,12 +3188,16 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -2936,6 +3214,7 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPeopleInput = {
@@ -2976,12 +3255,16 @@ export type UserUpdateWithoutPeopleInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2998,6 +3281,7 @@ export type UserUpdateWithoutPeopleInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPeopleInput = {
@@ -3022,12 +3306,16 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3044,6 +3332,7 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPersonEntryRecurringInput = {
@@ -3068,12 +3357,16 @@ export type UserCreateWithoutPersonEntryRecurringInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -3090,6 +3383,7 @@ export type UserCreateWithoutPersonEntryRecurringInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
@@ -3114,12 +3408,16 @@ export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -3136,6 +3434,7 @@ export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPersonEntryRecurringInput = {
@@ -3176,12 +3475,16 @@ export type UserUpdateWithoutPersonEntryRecurringInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3198,6 +3501,7 @@ export type UserUpdateWithoutPersonEntryRecurringInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
@@ -3222,12 +3526,16 @@ export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3244,6 +3552,7 @@ export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPersonEntriesInput = {
@@ -3268,12 +3577,16 @@ export type UserCreateWithoutPersonEntriesInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -3290,6 +3603,7 @@ export type UserCreateWithoutPersonEntriesInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPersonEntriesInput = {
@@ -3314,12 +3628,16 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -3336,6 +3654,7 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPersonEntriesInput = {
@@ -3376,12 +3695,16 @@ export type UserUpdateWithoutPersonEntriesInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3398,6 +3721,7 @@ export type UserUpdateWithoutPersonEntriesInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPersonEntriesInput = {
@@ -3422,12 +3746,16 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3444,6 +3772,7 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFeedbacksInput = {
@@ -3468,12 +3797,16 @@ export type UserCreateWithoutFeedbacksInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -3490,6 +3823,7 @@ export type UserCreateWithoutFeedbacksInput = {
   personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFeedbacksInput = {
@@ -3514,12 +3848,16 @@ export type UserUncheckedCreateWithoutFeedbacksInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -3536,6 +3874,7 @@ export type UserUncheckedCreateWithoutFeedbacksInput = {
   personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFeedbacksInput = {
@@ -3576,12 +3915,16 @@ export type UserUpdateWithoutFeedbacksInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3598,6 +3941,7 @@ export type UserUpdateWithoutFeedbacksInput = {
   personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFeedbacksInput = {
@@ -3622,12 +3966,16 @@ export type UserUncheckedUpdateWithoutFeedbacksInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3642,6 +3990,227 @@ export type UserUncheckedUpdateWithoutFeedbacksInput = {
   people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
   personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
   personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutAchievementsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  pushToken?: string | null
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
+  tokenVersion?: number
+  lastActiveAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutAchievementsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  pushToken?: string | null
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
+  tokenVersion?: number
+  lastActiveAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceUncheckedCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutAchievementsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAchievementsInput, Prisma.UserUncheckedCreateWithoutAchievementsInput>
+}
+
+export type UserUpsertWithoutAchievementsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAchievementsInput, Prisma.UserUncheckedUpdateWithoutAchievementsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAchievementsInput, Prisma.UserUncheckedCreateWithoutAchievementsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAchievementsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAchievementsInput, Prisma.UserUncheckedUpdateWithoutAchievementsInput>
+}
+
+export type UserUpdateWithoutAchievementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAchievementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUncheckedUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -3668,12 +4237,16 @@ export type UserCreateWithoutPluggyItemsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -3690,6 +4263,7 @@ export type UserCreateWithoutPluggyItemsInput = {
   personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPluggyItemsInput = {
@@ -3714,12 +4288,16 @@ export type UserUncheckedCreateWithoutPluggyItemsInput = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: string | null
   currency?: string
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
   tokenVersion?: number
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
@@ -3736,6 +4314,7 @@ export type UserUncheckedCreateWithoutPluggyItemsInput = {
   personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPluggyItemsInput = {
@@ -3776,12 +4355,16 @@ export type UserUpdateWithoutPluggyItemsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3798,6 +4381,7 @@ export type UserUpdateWithoutPluggyItemsInput = {
   personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPluggyItemsInput = {
@@ -3822,12 +4406,16 @@ export type UserUncheckedUpdateWithoutPluggyItemsInput = {
   notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3844,6 +4432,7 @@ export type UserUncheckedUpdateWithoutPluggyItemsInput = {
   personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -3865,6 +4454,7 @@ export type UserCountOutputType = {
   feedbacks: number
   recurringBills: number
   pluggyItems: number
+  achievements: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3881,6 +4471,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   feedbacks?: boolean | UserCountOutputTypeCountFeedbacksArgs
   recurringBills?: boolean | UserCountOutputTypeCountRecurringBillsArgs
   pluggyItems?: boolean | UserCountOutputTypeCountPluggyItemsArgs
+  achievements?: boolean | UserCountOutputTypeCountAchievementsArgs
 }
 
 /**
@@ -3984,6 +4575,13 @@ export type UserCountOutputTypeCountPluggyItemsArgs<ExtArgs extends runtime.Type
   where?: Prisma.PluggyItemWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAchievementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserAchievementWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -4007,12 +4605,16 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: boolean
   currency?: boolean
   dateFormat?: boolean
   chatUsageMonth?: boolean
   chatUsageCount?: boolean
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
+  proPlanExpiresAt?: boolean
+  proPlanReason?: boolean
+  adminNotes?: boolean
   tokenVersion?: boolean
   lastActiveAt?: boolean
   createdAt?: boolean
@@ -4030,6 +4632,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   feedbacks?: boolean | Prisma.User$feedbacksArgs<ExtArgs>
   recurringBills?: boolean | Prisma.User$recurringBillsArgs<ExtArgs>
   pluggyItems?: boolean | Prisma.User$pluggyItemsArgs<ExtArgs>
+  achievements?: boolean | Prisma.User$achievementsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -4055,12 +4658,16 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: boolean
   currency?: boolean
   dateFormat?: boolean
   chatUsageMonth?: boolean
   chatUsageCount?: boolean
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
+  proPlanExpiresAt?: boolean
+  proPlanReason?: boolean
+  adminNotes?: boolean
   tokenVersion?: boolean
   lastActiveAt?: boolean
   createdAt?: boolean
@@ -4089,12 +4696,16 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: boolean
   currency?: boolean
   dateFormat?: boolean
   chatUsageMonth?: boolean
   chatUsageCount?: boolean
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
+  proPlanExpiresAt?: boolean
+  proPlanReason?: boolean
+  adminNotes?: boolean
   tokenVersion?: boolean
   lastActiveAt?: boolean
   createdAt?: boolean
@@ -4123,19 +4734,23 @@ export type UserSelectScalar = {
   notifBillReminder?: boolean
   notifCategoryLimit?: boolean
   notifMonthlyEmail?: boolean
+  pushToken?: boolean
   currency?: boolean
   dateFormat?: boolean
   chatUsageMonth?: boolean
   chatUsageCount?: boolean
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
+  proPlanExpiresAt?: boolean
+  proPlanReason?: boolean
+  adminNotes?: boolean
   tokenVersion?: boolean
   lastActiveAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "profileImage" | "bio" | "city" | "occupation" | "birthdate" | "notifBillReminder" | "notifCategoryLimit" | "notifMonthlyEmail" | "currency" | "dateFormat" | "chatUsageMonth" | "chatUsageCount" | "scannerUsageMonth" | "scannerUsageCount" | "tokenVersion" | "lastActiveAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "profileImage" | "bio" | "city" | "occupation" | "birthdate" | "notifBillReminder" | "notifCategoryLimit" | "notifMonthlyEmail" | "pushToken" | "currency" | "dateFormat" | "chatUsageMonth" | "chatUsageCount" | "scannerUsageMonth" | "scannerUsageCount" | "proPlanExpiresAt" | "proPlanReason" | "adminNotes" | "tokenVersion" | "lastActiveAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
   categories?: boolean | Prisma.User$categoriesArgs<ExtArgs>
@@ -4150,6 +4765,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   feedbacks?: boolean | Prisma.User$feedbacksArgs<ExtArgs>
   recurringBills?: boolean | Prisma.User$recurringBillsArgs<ExtArgs>
   pluggyItems?: boolean | Prisma.User$pluggyItemsArgs<ExtArgs>
+  achievements?: boolean | Prisma.User$achievementsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -4171,6 +4787,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     feedbacks: Prisma.$FeedbackPayload<ExtArgs>[]
     recurringBills: Prisma.$RecurringBillPayload<ExtArgs>[]
     pluggyItems: Prisma.$PluggyItemPayload<ExtArgs>[]
+    achievements: Prisma.$UserAchievementPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4194,12 +4811,16 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     notifBillReminder: boolean
     notifCategoryLimit: boolean
     notifMonthlyEmail: boolean
+    pushToken: string | null
     currency: string
     dateFormat: string
     chatUsageMonth: string | null
     chatUsageCount: number
     scannerUsageMonth: string | null
     scannerUsageCount: number
+    proPlanExpiresAt: Date | null
+    proPlanReason: string | null
+    adminNotes: string | null
     tokenVersion: number
     lastActiveAt: Date | null
     createdAt: Date
@@ -4611,6 +5232,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   feedbacks<T extends Prisma.User$feedbacksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$feedbacksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recurringBills<T extends Prisma.User$recurringBillsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recurringBillsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringBillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pluggyItems<T extends Prisma.User$pluggyItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pluggyItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PluggyItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  achievements<T extends Prisma.User$achievementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$achievementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4661,12 +5283,16 @@ export interface UserFieldRefs {
   readonly notifBillReminder: Prisma.FieldRef<"User", 'Boolean'>
   readonly notifCategoryLimit: Prisma.FieldRef<"User", 'Boolean'>
   readonly notifMonthlyEmail: Prisma.FieldRef<"User", 'Boolean'>
+  readonly pushToken: Prisma.FieldRef<"User", 'String'>
   readonly currency: Prisma.FieldRef<"User", 'String'>
   readonly dateFormat: Prisma.FieldRef<"User", 'String'>
   readonly chatUsageMonth: Prisma.FieldRef<"User", 'String'>
   readonly chatUsageCount: Prisma.FieldRef<"User", 'Int'>
   readonly scannerUsageMonth: Prisma.FieldRef<"User", 'String'>
   readonly scannerUsageCount: Prisma.FieldRef<"User", 'Int'>
+  readonly proPlanExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly proPlanReason: Prisma.FieldRef<"User", 'String'>
+  readonly adminNotes: Prisma.FieldRef<"User", 'String'>
   readonly tokenVersion: Prisma.FieldRef<"User", 'Int'>
   readonly lastActiveAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
@@ -5373,6 +5999,30 @@ export type User$pluggyItemsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.PluggyItemScalarFieldEnum | Prisma.PluggyItemScalarFieldEnum[]
+}
+
+/**
+ * User.achievements
+ */
+export type User$achievementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserAchievement
+   */
+  select?: Prisma.UserAchievementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserAchievement
+   */
+  omit?: Prisma.UserAchievementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserAchievementInclude<ExtArgs> | null
+  where?: Prisma.UserAchievementWhereInput
+  orderBy?: Prisma.UserAchievementOrderByWithRelationInput | Prisma.UserAchievementOrderByWithRelationInput[]
+  cursor?: Prisma.UserAchievementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserAchievementScalarFieldEnum | Prisma.UserAchievementScalarFieldEnum[]
 }
 
 /**

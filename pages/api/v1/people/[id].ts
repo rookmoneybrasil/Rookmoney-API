@@ -1,6 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, created, notFound } from '@/lib/respond'
+import { checkAchievements } from '@/lib/achievement-checker'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -28,6 +29,7 @@ export default withAuth(async (req, res, session) => {
         data: { type, description, amount: amountNum, date: baseDate, notes: notes ?? null, categoryId: categoryId ?? null, personId: id, userId: session.userId },
         include: { category: { select: { id: true, name: true, icon: true, color: true } } },
       })
+      checkAchievements(db, session.userId, 'create-person-entry').catch(() => {})
       return created(res, entry)
     }
 

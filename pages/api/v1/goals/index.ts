@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { ok, created, badRequest, planLimit } from '@/lib/respond'
 import { parseISO } from 'date-fns'
 import { getLimits } from '@/lib/plans'
+import { checkAchievements } from '@/lib/achievement-checker'
 
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
@@ -30,6 +31,7 @@ export default withAuth(async (req, res, session) => {
     const goal = await db.goal.create({
       data: { name, targetAmount: parseFloat(targetAmount), currentAmount: parseFloat(currentAmount), deadline: deadline ? parseISO(deadline) : null, description: description ?? null, icon: icon ?? null, color: color ?? null, userId: session.userId },
     })
+    checkAchievements(db, session.userId, 'create-goal').catch(() => {})
     return created(res, goal)
   }
 

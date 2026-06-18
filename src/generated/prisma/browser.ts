@@ -103,6 +103,16 @@ export type RateLimit = Prisma.RateLimitModel
  */
 export type AdminLog = Prisma.AdminLogModel
 /**
+ * Model AppSetting
+ * 
+ */
+export type AppSetting = Prisma.AppSettingModel
+/**
+ * Model UserAchievement
+ * 
+ */
+export type UserAchievement = Prisma.UserAchievementModel
+/**
  * Model PluggyItem
  * 
  */

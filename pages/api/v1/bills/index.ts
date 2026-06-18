@@ -4,6 +4,7 @@ import { ok, created, badRequest, planLimit } from '@/lib/respond'
 import { addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { getLimits } from '@/lib/plans'
+import { checkAchievements } from '@/lib/achievement-checker'
 
 async function generateRecurringBillsThisMonth(userId: string) {
   const now       = new Date()
@@ -81,12 +82,14 @@ export default withAuth(async (req, res, session) => {
           installmentGroupId:  groupId,
         })),
       })
+      checkAchievements(db, session.userId, 'create-bill').catch(() => {})
       return created(res, { installmentGroupId: groupId, count: numToCreate })
     }
 
     const bill = await db.bill.create({
       data: { name, amount: parseFloat(amount), dueDate: baseDate, isRecurring, userId: session.userId, categoryId: categoryId ?? null, notes: notes ?? null },
     })
+    checkAchievements(db, session.userId, 'create-bill').catch(() => {})
     return created(res, bill)
   }
 

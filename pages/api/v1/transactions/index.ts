@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { ok, created, badRequest, planLimit } from '@/lib/respond'
 import { parseISO } from 'date-fns'
 import { getLimits } from '@/lib/plans'
+import { checkAchievements } from '@/lib/achievement-checker'
 
 export default withAuth(async (req, res, session) => {
   // ── GET /api/v1/transactions ──────────────────────────────────────────────
@@ -54,6 +55,7 @@ export default withAuth(async (req, res, session) => {
         })
       })
       if (!created_tx) return planLimit(res, `Limite de ${limits.transactionsPerMonth} transações por mês atingido. Faça upgrade para o plano PRO.`)
+      checkAchievements(db, session.userId, 'create-transaction').catch(() => {})
       return created(res, created_tx)
     }
 
@@ -61,6 +63,7 @@ export default withAuth(async (req, res, session) => {
       data: { amount: parseFloat(amount), type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId },
       include: { category: { select: { id: true, name: true, icon: true, color: true } } },
     })
+    checkAchievements(db, session.userId, 'create-transaction').catch(() => {})
     return created(res, tx)
   }
 

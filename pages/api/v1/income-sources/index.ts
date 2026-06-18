@@ -1,6 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, created, badRequest } from '@/lib/respond'
+import { checkAchievements } from '@/lib/achievement-checker'
 
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
@@ -27,6 +28,7 @@ export default withAuth(async (req, res, session) => {
         userId:     session.userId,
       },
     })
+    checkAchievements(db, session.userId, 'create-income').catch(() => {})
     return created(res, source)
   }
 

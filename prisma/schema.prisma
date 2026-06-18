@@ -62,6 +62,7 @@ model User {
   feedbacks             Feedback[]
   recurringBills        RecurringBill[]
   pluggyItems           PluggyItem[]
+  achievements          UserAchievement[]
 }
 
 // ─── Category ───────────────────────────────────────────────────────
@@ -414,6 +415,22 @@ model AppSetting {
   key       String   @id
   value     String
   updatedAt DateTime @updatedAt
+}
+
+// ─── UserAchievement ──────────────────────────────────────────────────────────
+// Tracks which achievements each user has unlocked.
+// Achievement definitions live in api/src/lib/achievements.ts (not in DB).
+
+model UserAchievement {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug       String   // matches ACHIEVEMENTS[].slug
+  unlockedAt DateTime @default(now())
+  seen       Boolean  @default(false) // false = show toast on next load
+
+  @@unique([userId, slug])
+  @@index([userId])
 }
 
 // ─── PluggyItem ───────────────────────────────────────────────────────────────

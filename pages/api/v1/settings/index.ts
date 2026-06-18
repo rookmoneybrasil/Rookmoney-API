@@ -2,6 +2,7 @@ import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, badRequest } from '@/lib/respond'
 import bcrypt from 'bcryptjs'
+import { checkAchievements } from '@/lib/achievement-checker'
 
 // Fix 2: profileImage SSRF protection — only allow trusted image hosts over HTTPS
 const ALLOWED_IMAGE_HOSTS = [
@@ -126,6 +127,7 @@ export default withAuth(async (req, res, session) => {
         profileImage: true, bio: true, city: true, occupation: true, birthdate: true,
       },
     })
+    checkAchievements(db, session.userId, 'update-profile').catch(() => {})
     return ok(res, updated)
   }
 

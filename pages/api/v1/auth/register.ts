@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { createToken } from '@/lib/auth'
 import { badRequest } from '@/lib/respond'
 import { rateLimit, getIp, tooManyRequests } from '@/lib/rate-limit'
+import { checkAchievements } from '@/lib/achievement-checker'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -37,6 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     path:     '/',
     maxAge:   60 * 60 * 24 * 30,
   }))
+
+  checkAchievements(db, user.id, 'register').catch(() => {})
 
   return res.status(201).json({ ok: true, data: { token, user: { id: user.id, name: user.name, email: user.email, plan: user.plan, hasOnboarded: user.hasOnboarded } } })
 }

@@ -2,6 +2,7 @@ import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, created, noContent, notFound, badRequest } from '@/lib/respond'
 import { parseISO } from 'date-fns'
+import { checkAchievements } from '@/lib/achievement-checker'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -31,6 +32,7 @@ export default withAuth(async (req, res, session) => {
       }),
       db.goalContribution.create({ data: { goalId: id, amount: amountNum, note: note ?? null } }),
     ])
+    checkAchievements(db, session.userId, 'contribute-goal').catch(() => {})
     return created(res, contrib)
   }
 
