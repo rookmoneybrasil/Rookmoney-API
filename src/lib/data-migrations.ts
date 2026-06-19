@@ -88,7 +88,7 @@ const MIGRATIONS: Migration[] = [
         const final = [...new Set(toInsert)]
         if (final.length > 0) {
           for (const slug of final) {
-            await db.userAchievement.create({ data: { userId, slug, seen: true } }).catch(() => {})
+            await db.userAchievement.create({ data: { userId, slug, seen: true } }).catch(() => { /* duplicate — already exists */ })
           }
         }
       }

@@ -8,7 +8,7 @@ const SECRET = new TextEncoder().encode(process.env.JWT_SECRET ?? 'rook-dev-secr
 function setCORS(req: NextApiRequest, res: NextApiResponse) {
   const allowed = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:3010,http://localhost:3020').split(',').map(o => o.trim())
   const origin  = req.headers.origin as string | undefined
-  const allow   = (origin && allowed.includes(origin)) ? origin : allowed[0]
+  const allow   = (origin && allowed.includes(origin)) ? origin : ''
   res.setHeader('Access-Control-Allow-Origin',      allow)
   res.setHeader('Access-Control-Allow-Methods',     'POST,OPTIONS')
   res.setHeader('Access-Control-Allow-Headers',     'Content-Type')

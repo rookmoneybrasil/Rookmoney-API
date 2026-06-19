@@ -18,6 +18,12 @@ export default withAuth(async (req, res, session) => {
   if (req.method === 'POST') {
     const { personId, type, description, amount, dayOfMonth = 1, firstDate, notes, categoryId } = req.body
     if (!personId || !type || !description || !amount) return badRequest(res, 'Campos obrigatórios faltando.')
+    if (!['THEY_OWE_ME', 'I_OWE_THEM'].includes(type)) return badRequest(res, 'Tipo inválido.')
+    const amountNum = parseFloat(amount)
+    if (!Number.isFinite(amountNum) || amountNum <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
+    const rawDay = parseInt(dayOfMonth)
+    if (!Number.isFinite(rawDay) || rawDay < 1) return badRequest(res, 'Dia do mês inválido.')
+    const parsedDay = Math.min(rawDay, 28)
 
     // Verify person belongs to user
     const person = await db.person.findFirst({ where: { id: personId, userId: uid } })
@@ -25,8 +31,6 @@ export default withAuth(async (req, res, session) => {
 
     const now        = new Date()
     const yearMonth  = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-    const parsedDay  = Math.min(Math.max(parseInt(dayOfMonth), 1), 28)
-    const amountNum  = parseFloat(amount)
 
     // Determine if we should create the first entry immediately.
     // If firstDate is provided and is today or earlier this month, generate the entry now.

@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         where: { id: userId },
         data:  { plan: 'PRO', stripeCustomerId: customerId ?? undefined, stripeSubscriptionId: subscriptionId ?? undefined },
       })
-      console.log(`[webhook] User ${userId} upgraded to PRO`)
+      // logged via Railway — no console.log with user IDs
     }
   }
 
@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const customerId = typeof sub.customer === 'string' ? sub.customer : null
     if (customerId) {
       await db.user.updateMany({ where: { stripeCustomerId: customerId }, data: { plan: 'FREE', stripeSubscriptionId: null } })
-      console.log(`[webhook] Customer ${customerId} downgraded to FREE`)
+      // logged via Railway — no console.log with customer IDs
     }
   }
 

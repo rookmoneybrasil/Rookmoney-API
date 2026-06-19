@@ -24,8 +24,13 @@ export default withAuth(async (req, res, session) => {
 
     const { name, type, amount, frequency = 'MONTHLY', dayOfMonth, description, categoryId } = req.body
     if (!name || !type || !amount || !categoryId) return badRequest(res, 'Campos obrigatórios faltando.')
+    if (!['INCOME', 'EXPENSE'].includes(type)) return badRequest(res, 'Tipo inválido.')
+    const parsedAmount = parseFloat(amount)
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
+    const parsedDay = dayOfMonth ? parseInt(dayOfMonth) : null
+    if (parsedDay !== null && (!Number.isFinite(parsedDay) || parsedDay < 1 || parsedDay > 31)) return badRequest(res, 'Dia do mês inválido.')
     const item = await db.recurringTransaction.create({
-      data: { name, type, amount: parseFloat(amount), frequency, dayOfMonth: dayOfMonth ? parseInt(dayOfMonth) : null, description: description ?? null, categoryId, userId: session.userId },
+      data: { name, type, amount: parsedAmount, frequency, dayOfMonth: parsedDay, description: description ?? null, categoryId, userId: session.userId },
       include: { category: { select: { id: true, name: true, icon: true, color: true } } },
     })
     return created(res, item)

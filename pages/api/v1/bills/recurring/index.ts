@@ -55,12 +55,16 @@ export default withAuth(async (req, res, session) => {
   if (req.method === 'POST') {
     const { name, amount, dayOfMonth, categoryId, notes, generateNow } = req.body
     if (!name || !amount || !dayOfMonth) return badRequest(res, 'Nome, valor e dia do mês são obrigatórios.')
-    const day = Math.min(Math.max(parseInt(dayOfMonth), 1), 28)
+    const parsedAmount = parseFloat(amount)
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
+    const rawDay = parseInt(dayOfMonth)
+    if (!Number.isFinite(rawDay) || rawDay < 1) return badRequest(res, 'Dia do mês inválido.')
+    const day = Math.min(rawDay, 28)
 
     const template = await db.recurringBill.create({
       data: {
         name,
-        amount:     parseFloat(amount),
+        amount:     parsedAmount,
         dayOfMonth: day,
         userId:     uid,
         categoryId: categoryId ?? null,

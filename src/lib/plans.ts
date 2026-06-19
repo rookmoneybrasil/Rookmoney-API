@@ -46,6 +46,15 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   },
 }
 
-export function getLimits(plan: string): PlanLimits {
+export function isPro(plan?: string | null) {
+  return plan === 'PRO'
+}
+
+export function getLimits(plan?: string | null): PlanLimits {
   return PLAN_LIMITS[plan as Plan] ?? PLAN_LIMITS.FREE
+}
+
+export function usagePercent(used: number, limit: number | null): number {
+  if (limit === null) return 0
+  return Math.min(Math.round((used / limit) * 100), 100)
 }

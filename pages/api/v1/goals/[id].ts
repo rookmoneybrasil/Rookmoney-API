@@ -10,9 +10,10 @@ export default withAuth(async (req, res, session) => {
   if (req.method === 'POST' && req.query.action === 'contribute') {
     const { amount, note, categoryId } = req.body
     if (!amount) return badRequest(res, 'Valor obrigatório.')
+    const amountNum = parseFloat(amount)
+    if (!Number.isFinite(amountNum) || amountNum <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
     const goal = await db.goal.findFirst({ where: { id, userId: session.userId } })
     if (!goal) return notFound(res)
-    const amountNum   = parseFloat(amount)
     const newAmount   = Number(goal.currentAmount) + amountNum
     const isCompleted = newAmount >= Number(goal.targetAmount)
 
@@ -40,20 +41,22 @@ export default withAuth(async (req, res, session) => {
   if (req.method === 'POST' && req.query.action === 'withdraw') {
     const { amount, categoryId } = req.body
     if (!amount) return badRequest(res, 'Valor obrigatório.')
+    const amountNum = parseFloat(amount)
+    if (!Number.isFinite(amountNum) || amountNum <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
     const goal = await db.goal.findFirst({ where: { id, userId: session.userId } })
     if (!goal) return notFound(res)
-    const amountNum = parseFloat(amount)
     const newAmount = Math.max(0, Number(goal.currentAmount) - amountNum)
 
     const resolvedCatId = categoryId || (await db.category.findFirst({
       where: { OR: [{ isDefault: true }, { userId: session.userId }] },
       orderBy: { isDefault: 'desc' },
     }))?.id
+    if (!resolvedCatId) return badRequest(res, 'Categoria não encontrada.')
 
     await db.$transaction([
       db.goal.update({ where: { id }, data: { currentAmount: newAmount, isCompleted: false, completedAt: null } }),
       db.transaction.create({
-        data: { amount: amountNum, type: 'INCOME', description: `Retirada — ${goal.name}`, date: new Date(), userId: session.userId, categoryId: resolvedCatId! },
+        data: { amount: amountNum, type: 'INCOME', description: `Retirada — ${goal.name}`, date: new Date(), userId: session.userId, categoryId: resolvedCatId },
       }),
       // Create negative contribution so the goals page shows withdrawals too
       db.goalContribution.create({

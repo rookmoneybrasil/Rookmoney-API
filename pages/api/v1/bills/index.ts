@@ -46,6 +46,8 @@ export default withAuth(async (req, res, session) => {
 
     const { name, amount, dueDate, isRecurring = false, categoryId, installments = 1, alreadyPaid = 0, notes } = req.body
     if (!name || !amount || !dueDate) return badRequest(res, 'Nome, valor e vencimento são obrigatórios.')
+    const parsedAmount = parseFloat(amount)
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
 
     const [_by, _bm, _bd] = (dueDate as string).split('-').map(Number)
     const baseDate          = new Date(Date.UTC(_by, _bm - 1, _bd, 12, 0, 0))
@@ -67,11 +69,11 @@ export default withAuth(async (req, res, session) => {
 
     if (numTotal > 1) {
       const groupId        = randomUUID()
-      // amount received = total of remaining installments; per installment:
-      const perInstallment = Math.round((parseFloat(amount) / numToCreate) * 100) / 100
+      const baseInstallment = Math.floor((parsedAmount / numToCreate) * 100) / 100
+      const lastInstallment = Math.round((parsedAmount - baseInstallment * (numToCreate - 1)) * 100) / 100
       await db.bill.createMany({
         data: Array.from({ length: numToCreate }, (_, i) => ({
-          name, amount: perInstallment,
+          name, amount: i === numToCreate - 1 ? lastInstallment : baseInstallment,
           dueDate:             addMonths(baseDate, i),
           userId:              session.userId,
           categoryId:          categoryId ?? null,
@@ -87,7 +89,7 @@ export default withAuth(async (req, res, session) => {
     }
 
     const bill = await db.bill.create({
-      data: { name, amount: parseFloat(amount), dueDate: baseDate, isRecurring, userId: session.userId, categoryId: categoryId ?? null, notes: notes ?? null },
+      data: { name, amount: parsedAmount, dueDate: baseDate, isRecurring, userId: session.userId, categoryId: categoryId ?? null, notes: notes ?? null },
     })
     checkAchievements(db, session.userId, 'create-bill').catch(() => {})
     return created(res, bill)

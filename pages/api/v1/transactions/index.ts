@@ -39,6 +39,8 @@ export default withAuth(async (req, res, session) => {
     const { amount, type, description, date, categoryId } = req.body
     if (!amount || !type || !date || !categoryId) return badRequest(res, 'Campos obrigatórios faltando.')
     if (!['INCOME', 'EXPENSE'].includes(type)) return badRequest(res, 'Tipo inválido.')
+    const parsedAmount = parseFloat(amount)
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
 
     const limits = getLimits(session.plan ?? 'FREE')
     if (limits.transactionsPerMonth !== null) {
@@ -50,7 +52,7 @@ export default withAuth(async (req, res, session) => {
         const count = await prisma.transaction.count({ where: { userId: session.userId, date: { gte: start, lte: end } } })
         if (count >= limits.transactionsPerMonth!) return null
         return prisma.transaction.create({
-          data: { amount: parseFloat(amount), type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId },
+          data: { amount: parsedAmount, type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId },
           include: { category: { select: { id: true, name: true, icon: true, color: true } } },
         })
       })
@@ -60,7 +62,7 @@ export default withAuth(async (req, res, session) => {
     }
 
     const tx = await db.transaction.create({
-      data: { amount: parseFloat(amount), type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId },
+      data: { amount: parsedAmount, type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId },
       include: { category: { select: { id: true, name: true, icon: true, color: true } } },
     })
     checkAchievements(db, session.userId, 'create-transaction').catch(() => {})
