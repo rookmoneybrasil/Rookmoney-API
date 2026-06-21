@@ -17,16 +17,17 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'POST') {
-    const limits = getLimits(session.plan ?? 'FREE')
-    if (limits.goals !== null) {
-      const count = await db.goal.count({ where: { userId: session.userId, isCompleted: false } })
-      if (count >= limits.goals) {
-        return planLimit(res, `Limite de ${limits.goals} metas ativas atingido. Faça upgrade para o plano PRO.`)
-      }
-    }
-
     const { name, targetAmount, currentAmount = 0, deadline, description, icon, color } = req.body
     if (!name || !targetAmount) return badRequest(res, 'Nome e valor alvo são obrigatórios.')
+
+    const limits = getLimits(session.plan ?? 'FREE')
+    if (limits.goals !== null) {
+      const allowed = await db.$transaction(async (tx) => {
+        const count = await tx.goal.count({ where: { userId: session.userId, isCompleted: false } })
+        return count < limits.goals!
+      })
+      if (!allowed) return planLimit(res, `Limite de ${limits.goals} metas ativas atingido. Faça upgrade para o plano PRO.`)
+    }
 
     const goal = await db.goal.create({
       data: { name, targetAmount: parseFloat(targetAmount), currentAmount: parseFloat(currentAmount), deadline: deadline ? parseISO(deadline) : null, description: description ?? null, icon: icon ?? null, color: color ?? null, userId: session.userId },

@@ -80,15 +80,17 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'POST') {
+    const { name, color, notes } = req.body
+
     const limits = getLimits(session.plan ?? 'FREE')
     if (limits.people !== null) {
-      const count = await db.person.count({ where: { userId: session.userId } })
-      if (count >= limits.people) {
-        return planLimit(res, `Limite de ${limits.people} pessoas atingido. Faça upgrade para o plano PRO.`)
-      }
+      const allowed = await db.$transaction(async (tx) => {
+        const count = await tx.person.count({ where: { userId: session.userId } })
+        return count < limits.people!
+      })
+      if (!allowed) return planLimit(res, `Limite de ${limits.people} pessoas atingido. Faça upgrade para o plano PRO.`)
     }
 
-    const { name, color, notes } = req.body
     const person = await db.person.create({
       data: { name, color: color ?? null, notes: notes ?? null, userId: session.userId },
     })

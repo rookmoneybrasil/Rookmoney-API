@@ -13,16 +13,18 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'POST') {
-    const limits = getLimits(session.plan ?? 'FREE')
-    if (limits.customCategories !== null) {
-      const count = await db.category.count({ where: { userId: session.userId, isDefault: false } })
-      if (count >= limits.customCategories) {
-        return planLimit(res, `Limite de ${limits.customCategories} categorias customizadas atingido. Faça upgrade para o plano PRO.`)
-      }
-    }
-
     const { name, icon, color } = req.body
     if (!name || !icon || !color) return badRequest(res, 'Nome, ícone e cor são obrigatórios.')
+
+    const limits = getLimits(session.plan ?? 'FREE')
+    if (limits.customCategories !== null) {
+      const allowed = await db.$transaction(async (tx) => {
+        const count = await tx.category.count({ where: { userId: session.userId, isDefault: false } })
+        return count < limits.customCategories!
+      })
+      if (!allowed) return planLimit(res, `Limite de ${limits.customCategories} categorias customizadas atingido. Faça upgrade para o plano PRO.`)
+    }
+
     const category = await db.category.create({ data: { name, icon, color, userId: session.userId } })
     return created(res, category)
   }
