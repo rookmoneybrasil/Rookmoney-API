@@ -34,7 +34,7 @@ export default withBackofficeAuth(async (req, res) => {
       where, skip, take: parseInt(pageSize),
       orderBy: { createdAt: 'desc' },
       select: { id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true,
-        lastActiveAt: true, stripeSubscriptionId: true,
+        lastActiveAt: true, stripeSubscriptionId: true, profileImage: true,
         _count: { select: { transactions: true, goals: true } } },
     }),
     db.user.count({ where }),
