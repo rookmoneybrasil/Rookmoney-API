@@ -563,14 +563,8 @@ async function executeTool(name: string, input: Record<string, unknown>, userId:
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') return res.status(405).end()
-
   const session = await getSessionFromRequest(req)
   if (!session) return res.status(401).json({ error: 'Não autenticado' })
-
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(503).json({ error: 'ai_unavailable', message: 'O assistente de IA está temporariamente indisponível.' })
-  }
 
   const limits   = getLimits(session.plan ?? 'FREE')
   const yearMonth = format(new Date(), 'yyyy-MM')
@@ -583,6 +577,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const currentCount = user.chatUsageMonth === yearMonth ? user.chatUsageCount : 0
   const monthLimit   = limits.chat ?? 30
+
+  if (req.method === 'GET') {
+    return res.status(200).json({ used: currentCount, limit: monthLimit, remaining: monthLimit - currentCount })
+  }
+
+  if (req.method !== 'POST') return res.status(405).end()
+
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return res.status(503).json({ error: 'ai_unavailable', message: 'O assistente de IA está temporariamente indisponível.' })
+  }
+
   if (currentCount >= monthLimit) {
     return res.status(429).json({ error: 'rate_limited', message: `Limite de ${monthLimit} mensagens/mês atingido. Renova no próximo mês.`, remaining: 0 })
   }
