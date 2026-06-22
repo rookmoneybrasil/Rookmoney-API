@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const customerId     = typeof session.customer === 'string' ? session.customer : null
     const subscriptionId = typeof session.subscription === 'string' ? session.subscription : null
     if (userId) {
-      await db.user.update({
+      const user = await db.user.update({
         where: { id: userId },
         data:  {
           plan: 'PRO',
@@ -47,7 +47,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           stripeCancelAtPeriodEnd: false,
           stripeCurrentPeriodEnd: null,
         },
+        select: { email: true },
       })
+      await db.adminLog.create({ data: {
+        action: 'stripe_upgrade', targetId: userId,
+        details: `Upgrade para PRO via Stripe (${user.email})`,
+      }})
     }
   }
 
@@ -63,6 +68,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           ...(periodEnd && { stripeCurrentPeriodEnd: new Date(periodEnd * 1000) }),
         },
       })
+      const user = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true, email: true } })
+      if (user) {
+        const action = sub.cancel_at_period_end ? 'stripe_cancel_scheduled' : 'stripe_cancel_reversed'
+        const details = sub.cancel_at_period_end
+          ? `Cancelamento agendado via Stripe — acesso até ${periodEnd ? new Date(periodEnd * 1000).toLocaleDateString('pt-BR') : '?'} (${user.email})`
+          : `Cancelamento revertido via Stripe — assinatura reativada (${user.email})`
+        await db.adminLog.create({ data: { action, targetId: user.id, details } })
+      }
     }
   }
 
@@ -70,6 +83,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const sub        = event.data.object as Stripe.Subscription
     const customerId = typeof sub.customer === 'string' ? sub.customer : null
     if (customerId) {
+      const user = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true, email: true } })
       await db.user.updateMany({
         where: { stripeCustomerId: customerId },
         data:  {
@@ -79,6 +93,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           stripeCurrentPeriodEnd: null,
         },
       })
+      if (user) {
+        await db.adminLog.create({ data: {
+          action: 'stripe_downgrade', targetId: user.id,
+          details: `Downgrade para FREE — assinatura Stripe encerrada (${user.email})`,
+        }})
+      }
     }
   }
 
@@ -93,6 +113,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (user) {
         const { sendPaymentFailedEmail } = await import('@/lib/email')
         await sendPaymentFailedEmail(user.email, user.name).catch(() => {})
+        const target = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true } })
+        if (target) {
+          await db.adminLog.create({ data: {
+            action: 'stripe_payment_failed', targetId: target.id,
+            details: `Falha no pagamento Stripe — email de aviso enviado (${user.email})`,
+          }})
+        }
       }
     }
   }
