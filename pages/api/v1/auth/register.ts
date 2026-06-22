@@ -6,6 +6,7 @@ import { createToken } from '@/lib/auth'
 import { badRequest } from '@/lib/respond'
 import { rateLimit, getIp, tooManyRequests } from '@/lib/rate-limit'
 import { checkAchievements } from '@/lib/achievement-checker'
+import { sendMetaEvent, extractMetaUserData } from '@/lib/meta-capi'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -14,7 +15,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const rl = await rateLimit(`register:${getIp(req)}`, 5, 60 * 60 * 1000)
   if (!rl.allowed) return tooManyRequests(res, rl.resetAt)
 
-  const { name, email, password } = req.body as { name: string; email: string; password: string }
+  const { name, email, password, utmSource, utmMedium, utmCampaign } = req.body as {
+    name: string; email: string; password: string
+    utmSource?: string; utmMedium?: string; utmCampaign?: string
+  }
 
   if (!name || !email || !password) return badRequest(res, 'Nome, e-mail e senha são obrigatórios.')
   if (password.length < 8)               return badRequest(res, 'Senha deve ter no mínimo 8 caracteres.')
@@ -26,7 +30,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const hashed = await bcrypt.hash(password, 12)
   const user   = await db.user.create({
-    data: { name: name.trim(), email: email.toLowerCase().trim(), password: hashed },
+    data: {
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      password: hashed,
+      ...(utmSource   && { utmSource:   utmSource.slice(0, 100) }),
+      ...(utmMedium   && { utmMedium:   utmMedium.slice(0, 100) }),
+      ...(utmCampaign && { utmCampaign: utmCampaign.slice(0, 200) }),
+    },
   })
 
   const token = await createToken({ userId: user.id, name: user.name, email: user.email })
@@ -41,5 +52,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   checkAchievements(db, user.id, 'register').catch(() => {})
 
-  return res.status(201).json({ ok: true, data: { token, user: { id: user.id, name: user.name, email: user.email, plan: user.plan, hasOnboarded: user.hasOnboarded } } })
+  const eventId = `reg_${user.id}`
+  sendMetaEvent({
+    eventName: 'CompleteRegistration',
+    eventId,
+    sourceUrl: 'https://rookmoney.com/register',
+    userData:  extractMetaUserData(req, user.email),
+  }).catch(() => {})
+
+  return res.status(201).json({ ok: true, data: { token, user: { id: user.id, name: user.name, email: user.email, plan: user.plan, hasOnboarded: user.hasOnboarded }, eventId } })
 }

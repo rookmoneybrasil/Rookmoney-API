@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import Stripe from 'stripe'
 import { db } from '@/lib/db'
+import { sendMetaEvent } from '@/lib/meta-capi'
 
 export const config = { api: { bodyParser: false } }
 
@@ -53,6 +54,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         action: 'stripe_upgrade', targetId: userId,
         details: `Upgrade para PRO via Stripe (${user.email})`,
       }})
+
+      sendMetaEvent({
+        eventName: 'Subscribe',
+        eventId:   `sub_${userId}_${Date.now()}`,
+        sourceUrl: 'https://rookmoney.com/billing',
+        userData:  { email: user.email },
+        value:     19.90,
+        currency:  'BRL',
+      }).catch(() => {})
     }
   }
 
