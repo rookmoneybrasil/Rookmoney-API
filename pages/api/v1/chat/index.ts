@@ -16,6 +16,11 @@ const TOOLS: Anthropic.Tool[] = [
     input_schema: { type: 'object' as const, properties: {}, required: [] },
   },
   {
+    name: 'analyze_finances',
+    description: 'Analise financeira completa para dar conselhos personalizados. Retorna: renda total, gastos por categoria, contas fixas, parcelas, metas, dividas com pessoas, e historico dos ultimos 3 meses. Use quando o usuario pedir ajuda com planejamento, dicas, como organizar a renda, ou analise dos gastos.',
+    input_schema: { type: 'object' as const, properties: {}, required: [] },
+  },
+  {
     name: 'get_transactions',
     description: 'Lista transações recentes do usuário. Pode filtrar por tipo (INCOME/EXPENSE) e quantidade.',
     input_schema: {
@@ -242,6 +247,98 @@ async function executeTool(name: string, input: Record<string, unknown>, userId:
         pendingBills: bills.map(b => ({ name: b.name, amount: money(b.amount), due: fmtDate(b.dueDate), overdue: b.dueDate < now })),
         budgets: budgets.map(b => ({ category: b.category.name, planned: money(b.amount) })),
         availableCategories: categories.map(c => c.name),
+      })
+    }
+
+    if (name === 'analyze_finances') {
+      const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 1)
+
+      const [incomeSources, recurringBills, pendingBills, goals, people, monthlyHistory, categoryBreakdown] = await Promise.all([
+        db.incomeSource.findMany({
+          where: { userId },
+          select: { name: true, amount: true, type: true, isRecurring: true, dayOfMonth: true },
+        }),
+        db.recurringBill.findMany({
+          where: { userId, isActive: true },
+          select: { name: true, amount: true, dayOfMonth: true, category: { select: { name: true } } },
+        }),
+        db.bill.findMany({
+          where: { userId, isPaid: false },
+          select: { name: true, amount: true, dueDate: true, installmentTotal: true, installmentCurrent: true },
+          orderBy: { dueDate: 'asc' },
+          take: 20,
+        }),
+        db.goal.findMany({
+          where: { userId, isCompleted: false },
+          select: { name: true, targetAmount: true, currentAmount: true, deadline: true },
+        }),
+        db.person.findMany({
+          where: { userId },
+          select: {
+            name: true,
+            entries: { where: { isSettled: false }, select: { type: true, amount: true } },
+          },
+        }),
+        // Monthly totals for last 3 months
+        db.$queryRawUnsafe<{ month: string; type: string; total: number }[]>(
+          `SELECT to_char(date, 'YYYY-MM') as month, type, SUM(amount)::float as total
+           FROM "Transaction" WHERE "userId" = $1 AND date >= $2
+           GROUP BY month, type ORDER BY month`,
+          userId, threeMonthsAgo
+        ).catch(() => []),
+        // Spending by category this month
+        db.$queryRawUnsafe<{ name: string; total: number }[]>(
+          `SELECT c.name, SUM(t.amount)::float as total
+           FROM "Transaction" t JOIN "Category" c ON t."categoryId" = c.id
+           WHERE t."userId" = $1 AND t.type = 'EXPENSE' AND t.date >= $2 AND t.date <= $3
+           GROUP BY c.name ORDER BY total DESC`,
+          userId, monthStart, monthEnd
+        ).catch(() => []),
+      ])
+
+      const totalMonthlyIncome = incomeSources.reduce((s, src) => s + Number(src.amount), 0)
+      const totalFixedExpenses = recurringBills.reduce((s, rb) => s + Number(rb.amount), 0)
+      const totalPendingBills = pendingBills.reduce((s, b) => s + Number(b.amount), 0)
+
+      const peopleDebts = people.filter(p => p.entries.length > 0).map(p => {
+        const theyOwe = p.entries.filter(e => e.type === 'THEY_OWE_ME').reduce((s, e) => s + Number(e.amount), 0)
+        const iOwe = p.entries.filter(e => e.type === 'I_OWE_THEM').reduce((s, e) => s + Number(e.amount), 0)
+        return { name: p.name, theyOweMe: theyOwe, iOweThem: iOwe }
+      })
+      const totalReceivable = peopleDebts.reduce((s, p) => s + p.theyOweMe, 0)
+      const totalPayable = peopleDebts.reduce((s, p) => s + p.iOweThem, 0)
+
+      return JSON.stringify({
+        rendaMensal: {
+          total: money(totalMonthlyIncome),
+          fontes: incomeSources.map(s => ({ nome: s.name, valor: money(s.amount), tipo: s.type, recorrente: s.isRecurring })),
+        },
+        gastosFixosMensais: {
+          total: money(totalFixedExpenses),
+          contas: recurringBills.map(rb => ({ nome: rb.name, valor: money(rb.amount), dia: rb.dayOfMonth, categoria: rb.category?.name ?? null })),
+        },
+        gastosPorCategoriaMesAtual: categoryBreakdown.map(c => ({ categoria: c.name, valor: money(c.total) })),
+        contasPendentes: {
+          total: money(totalPendingBills),
+          items: pendingBills.map(b => ({
+            nome: b.name, valor: money(b.amount), vencimento: fmtDate(b.dueDate),
+            parcela: b.installmentTotal ? `${b.installmentCurrent}/${b.installmentTotal}` : null,
+          })),
+        },
+        metas: goals.map(g => ({
+          nome: g.name, alvo: money(g.targetAmount), atual: money(g.currentAmount),
+          falta: money(Number(g.targetAmount) - Number(g.currentAmount)),
+          prazo: g.deadline ? fmtDate(g.deadline) : null,
+        })),
+        pessoas: peopleDebts.length > 0 ? { aReceber: money(totalReceivable), aPagar: money(totalPayable), detalhe: peopleDebts.map(p => ({ nome: p.name, meDevem: money(p.theyOweMe), euDevo: money(p.iOweThem) })) } : null,
+        historicoMensal: monthlyHistory.reduce((acc, row) => {
+          if (!acc[row.month]) acc[row.month] = { receita: 0, despesa: 0 }
+          if (row.type === 'INCOME') acc[row.month].receita = row.total
+          if (row.type === 'EXPENSE') acc[row.month].despesa = row.total
+          return acc
+        }, {} as Record<string, { receita: number; despesa: number }>),
+        sobra: money(totalMonthlyIncome - totalFixedExpenses),
+        percentualFixo: totalMonthlyIncome > 0 ? `${Math.round((totalFixedExpenses / totalMonthlyIncome) * 100)}%` : 'N/A',
       })
     }
 
@@ -519,6 +616,15 @@ COMPORTAMENTO:
 - Datas sem especificacao = hoje (${todayISO})
 - Ao registrar transacoes, deduza a categoria pelo contexto (ex: "almocei" = Alimentacao)
 - Se nao conseguir resolver via ferramentas, sugira navegar para a pagina certa
+
+ANALISE E PLANEJAMENTO FINANCEIRO:
+Quando o usuario pedir ajuda com organizacao, planejamento, dicas ou analise de gastos, use analyze_finances para puxar todos os dados. Com base nos dados reais, de conselhos PRATICOS e ESPECIFICOS:
+- Sugira percentuais ideais por categoria (ex: alimentacao ate 30% da renda, moradia ate 30%, lazer ate 10%, poupanca minimo 20%)
+- Compare o que o usuario gasta vs o ideal e aponte onde ajustar
+- Se tiver metas, calcule quanto precisa guardar por mes pra atingir no prazo
+- Se tiver contas vencidas, alerte e priorize
+- Seja especifico com valores reais, nao generico (ex: "voce pode gastar ate R$ 2.850 com moradia" e nao "gaste menos")
+Para analises mais longas, pode usar ate 5-6 frases (excecao a regra de 2-3 frases).
 
 CADASTRO GUIADO (muito importante):
 Quando o usuario quiser cadastrar algo mas nao der todas as informacoes, PERGUNTE o que falta antes de criar. Exemplos:
