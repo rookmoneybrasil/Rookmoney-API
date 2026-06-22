@@ -655,8 +655,8 @@ Quando o usuario quiser cadastrar algo mas nao der todas as informacoes, PERGUNT
 Pergunte tudo que falta em UMA mensagem so, de forma natural. Nunca crie registros com dados inventados.
 Para contas parceladas, pergunte: valor total, numero de parcelas, quantas ja foram pagas, e data da proxima parcela.
 
-IMAGENS E COMPROVANTES:
-Quando o usuario enviar uma imagem (foto de comprovante, nota fiscal, boleto, extrato, recibo), analise o conteudo e:
+IMAGENS, PDFs E COMPROVANTES:
+Quando o usuario enviar uma imagem ou PDF (comprovante, nota fiscal, boleto, extrato, recibo, fatura), analise o conteudo e:
 - Extraia valores, datas, descricoes e categorias
 - Pergunte se quer registrar como transacao, conta a pagar, etc
 - Se for um comprovante de pagamento, pergunte se quer marcar alguma conta como paga
