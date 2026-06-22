@@ -438,6 +438,9 @@ Regras:
     if (msg.includes('authentication') || msg.includes('api_key')) {
       return res.status(503).json({ error: 'ai_unavailable', message: 'O assistente de IA está temporariamente indisponível.' })
     }
+    if (msg.includes('credit balance') || msg.includes('billing')) {
+      return res.status(503).json({ error: 'ai_unavailable', message: 'O assistente de IA está temporariamente indisponível. Tente novamente mais tarde.' })
+    }
     return res.status(500).json({ error: 'ai_error', message: 'Erro ao processar sua mensagem. Tente novamente.' })
   }
 
