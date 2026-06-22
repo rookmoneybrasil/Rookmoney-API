@@ -7,6 +7,8 @@ import { randomUUID } from 'crypto'
 import { ptBR } from 'date-fns/locale'
 import { getLimits } from '@/lib/plans'
 
+export const config = { api: { bodyParser: { sizeLimit: '10mb' } } }
+
 const client = new Anthropic()
 
 const TOOLS: Anthropic.Tool[] = [
@@ -651,7 +653,15 @@ Quando o usuario quiser cadastrar algo mas nao der todas as informacoes, PERGUNT
 - "gastei no mercado" -> pergunte: quanto gastou
 - "quero cadastrar conta fixa" -> use add_recurring_bill (gera automaticamente todo mes)
 Pergunte tudo que falta em UMA mensagem so, de forma natural. Nunca crie registros com dados inventados.
-Para contas parceladas, pergunte: valor total, numero de parcelas, quantas ja foram pagas, e data da proxima parcela.`
+Para contas parceladas, pergunte: valor total, numero de parcelas, quantas ja foram pagas, e data da proxima parcela.
+
+IMAGENS E COMPROVANTES:
+Quando o usuario enviar uma imagem (foto de comprovante, nota fiscal, boleto, extrato, recibo), analise o conteudo e:
+- Extraia valores, datas, descricoes e categorias
+- Pergunte se quer registrar como transacao, conta a pagar, etc
+- Se for um comprovante de pagamento, pergunte se quer marcar alguma conta como paga
+- Se for um boleto, extraia nome, valor e vencimento e ofereca cadastrar
+- Se nao conseguir ler a imagem claramente, peca uma foto melhor`
 
   let currentMessages: Anthropic.MessageParam[] = [...safeMessages]
   let navigationSuggestion: { path: string; reason: string } | null = null
