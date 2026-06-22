@@ -1,15 +1,40 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
-import { noContent, notFound } from '@/lib/respond'
+import { ok, noContent, notFound } from '@/lib/respond'
 
 export default withAuth(async (req, res, session) => {
-  if (req.method !== 'DELETE') return res.status(405).end()
-
   const groupId = req.query.groupId as string
-  // Verify ownership
+
   const count = await db.bill.count({ where: { installmentGroupId: groupId, userId: session.userId } })
   if (count === 0) return notFound(res)
 
-  await db.bill.deleteMany({ where: { installmentGroupId: groupId, userId: session.userId } })
-  return noContent(res)
+  if (req.method === 'PATCH' || req.method === 'PUT') {
+    const { name, amount, categoryId, notes } = req.body
+    const data: Record<string, unknown> = {}
+    if (name       !== undefined) data.name       = name
+    if (amount     !== undefined) data.amount      = parseFloat(amount)
+    if (categoryId !== undefined) data.categoryId  = categoryId || null
+    if (notes      !== undefined) data.notes       = notes || null
+
+    const { count: updated } = await db.bill.updateMany({
+      where: { installmentGroupId: groupId, userId: session.userId, isPaid: false },
+      data,
+    })
+
+    if (name !== undefined) {
+      await db.bill.updateMany({
+        where: { installmentGroupId: groupId, userId: session.userId, isPaid: true },
+        data: { name },
+      })
+    }
+
+    return ok(res, { updated })
+  }
+
+  if (req.method === 'DELETE') {
+    await db.bill.deleteMany({ where: { installmentGroupId: groupId, userId: session.userId } })
+    return noContent(res)
+  }
+
+  return res.status(405).end()
 })
