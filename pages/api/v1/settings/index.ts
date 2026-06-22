@@ -36,7 +36,7 @@ export default withAuth(async (req, res, session) => {
         notifBillReminder: true, notifCategoryLimit: true, notifMonthlyEmail: true,
         currency: true, dateFormat: true,
         stripeCustomerId: true, stripeSubscriptionId: true,
-        stripeCancelAtPeriodEnd: true, stripeCurrentPeriodEnd: true,
+        stripeCancelAtPeriodEnd: true, stripeCurrentPeriodEnd: true, updatedAt: true,
       },
     })
     if (!user) return res.status(404).end()
@@ -44,7 +44,9 @@ export default withAuth(async (req, res, session) => {
     let syncedCancel = user.stripeCancelAtPeriodEnd
     let syncedPeriodEnd: Date | null = user.stripeCurrentPeriodEnd
 
-    if (user.stripeSubscriptionId) {
+    const staleMs = 5 * 60 * 1000
+    const isStale = !user.stripeCurrentPeriodEnd || (Date.now() - user.updatedAt.getTime()) > staleMs
+    if (user.stripeSubscriptionId && isStale) {
       try {
         const { getSubscription } = await import('@/lib/stripe')
         const sub = await getSubscription(user.stripeSubscriptionId)
@@ -60,7 +62,7 @@ export default withAuth(async (req, res, session) => {
       } catch (err) { console.error('[settings] Stripe sync failed:', err instanceof Error ? err.message : err) }
     }
 
-    const { googleId, ...rest } = user
+    const { googleId, updatedAt: _u, ...rest } = user
     return ok(res, { ...rest, stripeCancelAtPeriodEnd: syncedCancel, stripeCurrentPeriodEnd: syncedPeriodEnd, hasGoogle: googleId !== null })
   }
 
