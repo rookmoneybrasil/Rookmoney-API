@@ -126,6 +126,63 @@ const TOOLS: Anthropic.Tool[] = [
     },
   },
   {
+    name: 'add_income_source',
+    description: 'Cadastra uma nova fonte de renda (salário, freelance, aluguel, etc). Use quando o usuário disser que recebe de algum lugar.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        name: { type: 'string', description: 'Nome da fonte (ex: Salário Empresa X, Freelance, Aluguel)' },
+        amount: { type: 'number', description: 'Valor mensal em reais' },
+        type: { type: 'string', enum: ['EMPLOYMENT', 'FREELANCE', 'RENTAL', 'OTHER'], description: 'Tipo: EMPLOYMENT=emprego, FREELANCE=freelance, RENTAL=aluguel, OTHER=outro' },
+        isRecurring: { type: 'boolean', description: 'Se é recorrente mensal (padrão: true)' },
+        dayOfMonth: { type: 'number', description: 'Dia do mês que recebe (1-31)' },
+        categoryName: { type: 'string', description: 'Nome da categoria' },
+      },
+      required: ['name', 'amount'],
+    },
+  },
+  {
+    name: 'add_person',
+    description: 'Cadastra uma nova pessoa para controle de dívidas (quem me deve / quem eu devo). Use quando o usuário mencionar alguém novo.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        name: { type: 'string', description: 'Nome da pessoa' },
+        notes: { type: 'string', description: 'Observações opcionais' },
+      },
+      required: ['name'],
+    },
+  },
+  {
+    name: 'add_person_entry',
+    description: 'Registra uma dívida ou crédito com uma pessoa. Use quando alguém empresta ou deve dinheiro.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        personName: { type: 'string', description: 'Nome da pessoa (busca por nome parcial)' },
+        type: { type: 'string', enum: ['THEY_OWE_ME', 'I_OWE_THEM'], description: 'THEY_OWE_ME = pessoa me deve, I_OWE_THEM = eu devo pra pessoa' },
+        description: { type: 'string', description: 'Descrição (ex: almoço, empréstimo, conta de luz)' },
+        amount: { type: 'number', description: 'Valor em reais' },
+        date: { type: 'string', description: 'Data no formato YYYY-MM-DD' },
+      },
+      required: ['personName', 'type', 'description', 'amount', 'date'],
+    },
+  },
+  {
+    name: 'add_recurring_bill',
+    description: 'Cria um modelo de conta recorrente que gera contas automaticamente todo mês. Use para contas fixas mensais como aluguel, internet, streaming.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        name: { type: 'string', description: 'Nome da conta (ex: Aluguel, Netflix, Internet)' },
+        amount: { type: 'number', description: 'Valor mensal em reais' },
+        dayOfMonth: { type: 'number', description: 'Dia do vencimento (1-28)' },
+        categoryName: { type: 'string', description: 'Nome da categoria' },
+      },
+      required: ['name', 'amount', 'dayOfMonth'],
+    },
+  },
+  {
     name: 'navigate',
     description: 'Sugere navegar para uma página específica do app. Use quando a ação do usuário seria melhor realizada em uma tela específica.',
     input_schema: {
@@ -330,6 +387,45 @@ async function executeTool(name: string, input: Record<string, unknown>, userId:
       return `Contribuição de ${money(amount)} adicionada à meta "${goal.name}". Progresso: ${money(newAmount)} de ${money(goal.targetAmount)} (${Math.round((newAmount / Number(goal.targetAmount)) * 100)}%).`
     }
 
+    if (name === 'add_income_source') {
+      const { name: sName, amount, type: sType = 'OTHER', isRecurring = true, dayOfMonth, categoryName } = input as { name: string; amount: number; type?: string; isRecurring?: boolean; dayOfMonth?: number; categoryName?: string }
+      const categoryId = categoryName ? (await findCategory(userId, categoryName)) : undefined
+      await db.incomeSource.create({
+        data: { name: sName, amount: Math.abs(amount), type: sType as 'EMPLOYMENT' | 'FREELANCE' | 'RENTAL' | 'OTHER', isRecurring, dayOfMonth: dayOfMonth ?? null, userId, ...(categoryId ? { categoryId } : {}) },
+      })
+      return `Renda "${sName}" de ${money(amount)}/mês cadastrada${dayOfMonth ? ` (dia ${dayOfMonth})` : ''}.`
+    }
+
+    if (name === 'add_person') {
+      const { name: pName, notes } = input as { name: string; notes?: string }
+      const existing = await db.person.findFirst({ where: { userId, name: { contains: pName, mode: 'insensitive' } } })
+      if (existing) return `A pessoa "${existing.name}" já está cadastrada.`
+      await db.person.create({ data: { name: pName, notes: notes ?? null, userId } })
+      return `Pessoa "${pName}" cadastrada.`
+    }
+
+    if (name === 'add_person_entry') {
+      const { personName, type: eType, description: desc, amount, date } = input as { personName: string; type: string; description: string; amount: number; date: string }
+      let person = await db.person.findFirst({ where: { userId, name: { contains: personName, mode: 'insensitive' } } })
+      if (!person) {
+        person = await db.person.create({ data: { name: personName, userId } })
+      }
+      await db.personEntry.create({
+        data: { type: eType as 'THEY_OWE_ME' | 'I_OWE_THEM', description: desc, amount: Math.abs(amount), date: parseISO(date), personId: person.id, userId },
+      })
+      const label = eType === 'THEY_OWE_ME' ? `${person.name} te deve` : `Voce deve pra ${person.name}`
+      return `Registrado: ${label} ${money(amount)} (${desc}).`
+    }
+
+    if (name === 'add_recurring_bill') {
+      const { name: rbName, amount, dayOfMonth, categoryName } = input as { name: string; amount: number; dayOfMonth: number; categoryName?: string }
+      const categoryId = categoryName ? (await findCategory(userId, categoryName)) : undefined
+      await db.recurringBill.create({
+        data: { name: rbName, amount: Math.abs(amount), dayOfMonth: Math.min(Math.max(dayOfMonth, 1), 28), userId, ...(categoryId ? { categoryId } : {}) },
+      })
+      return `Conta recorrente "${rbName}" de ${money(amount)}/mês (dia ${dayOfMonth}) cadastrada. Vai gerar contas automaticamente todo mês.`
+    }
+
     if (name === 'navigate') {
       const { path, reason } = input as { path: string; reason: string }
       return JSON.stringify({ navigate: path, reason })
@@ -389,12 +485,20 @@ FORMATO DE RESPOSTA (obrigatório):
 - Quando listar itens, separe com vírgula ou ponto-e-vírgula na mesma frase
 
 COMPORTAMENTO:
-- Português brasileiro, tom amigável e direto
-- Sempre consulte os dados (get_summary, get_bills, etc) ANTES de responder sobre finanças
+- Portugues brasileiro, tom amigavel e direto
+- Sempre consulte os dados (get_summary, get_bills, etc) ANTES de responder sobre financas
 - Nunca invente dados
-- Datas sem especificação = hoje (${todayISO})
-- Ao registrar transações, deduza a categoria pelo contexto (ex: "almocei" = Alimentação)
-- Se não conseguir resolver via ferramentas, sugira navegar para a página certa`
+- Datas sem especificacao = hoje (${todayISO})
+- Ao registrar transacoes, deduza a categoria pelo contexto (ex: "almocei" = Alimentacao)
+- Se nao conseguir resolver via ferramentas, sugira navegar para a pagina certa
+
+CADASTRO GUIADO (muito importante):
+Quando o usuario quiser cadastrar algo (conta, renda, pessoa, meta, transacao) mas nao der todas as informacoes, PERGUNTE o que falta antes de criar. Exemplos:
+- "quero adicionar uma conta" -> pergunte: nome, valor e vencimento
+- "tenho uma renda nova" -> pergunte: nome, valor, dia que recebe e se e recorrente
+- "o João me deve" -> pergunte: quanto e referente a que
+- "gastei no mercado" -> pergunte: quanto gastou
+Pergunte tudo que falta em UMA mensagem so, de forma natural. Nunca crie registros com dados inventados.`
 
   let currentMessages: Anthropic.MessageParam[] = [...safeMessages]
   let navigationSuggestion: { path: string; reason: string } | null = null
