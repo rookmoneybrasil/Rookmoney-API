@@ -18,6 +18,7 @@ export default withBackofficeAuth(async (req, res) => {
     select: {
       id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true, updatedAt: true,
       whatsappPhone: true, stripeCustomerId: true, stripeSubscriptionId: true,
+      stripeCancelAtPeriodEnd: true, stripeCurrentPeriodEnd: true,
       proPlanExpiresAt: true, proPlanReason: true, adminNotes: true, lastActiveAt: true,
       googleId: true, hasOnboarded: true,
       profileImage: true, bio: true, city: true, occupation: true, birthdate: true,
