@@ -27,6 +27,7 @@ export interface StripeSub {
   status: string
   current_period_end: number
   cancel_at_period_end: boolean
+  cancel_at: number | null
   items: { data: { current_period_end?: number; price: { unit_amount: number; currency: string } }[] }
 }
 

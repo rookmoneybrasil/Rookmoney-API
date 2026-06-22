@@ -61,18 +61,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const customerId = typeof sub.customer === 'string' ? sub.customer : null
     if (customerId) {
       const periodEnd = sub.items?.data?.[0]?.current_period_end
+      const isCanceling = sub.cancel_at_period_end || (sub.cancel_at != null)
+      const cancelDate = sub.cancel_at ? new Date(sub.cancel_at * 1000) : periodEnd ? new Date(periodEnd * 1000) : null
       await db.user.updateMany({
         where: { stripeCustomerId: customerId },
         data:  {
-          stripeCancelAtPeriodEnd: sub.cancel_at_period_end,
-          ...(periodEnd && { stripeCurrentPeriodEnd: new Date(periodEnd * 1000) }),
+          stripeCancelAtPeriodEnd: isCanceling,
+          ...(cancelDate && { stripeCurrentPeriodEnd: cancelDate }),
         },
       })
       const user = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true, email: true } })
       if (user) {
-        const action = sub.cancel_at_period_end ? 'stripe_cancel_scheduled' : 'stripe_cancel_reversed'
-        const details = sub.cancel_at_period_end
-          ? `Cancelamento agendado via Stripe — acesso até ${periodEnd ? new Date(periodEnd * 1000).toLocaleDateString('pt-BR') : '?'} (${user.email})`
+        const action = isCanceling ? 'stripe_cancel_scheduled' : 'stripe_cancel_reversed'
+        const details = isCanceling
+          ? `Cancelamento agendado via Stripe — acesso até ${cancelDate ? cancelDate.toLocaleDateString('pt-BR') : '?'} (${user.email})`
           : `Cancelamento revertido via Stripe — assinatura reativada (${user.email})`
         await db.adminLog.create({ data: { action, targetId: user.id, details } })
       }

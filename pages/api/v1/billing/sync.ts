@@ -21,8 +21,8 @@ export default withAuth(async (req, res, session) => {
   }
 
   const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end
-  const cancelAtPeriodEnd = sub.cancel_at_period_end ?? false
-  const currentPeriodEnd = periodEnd ? new Date(periodEnd * 1000) : null
+  const cancelAtPeriodEnd = sub.cancel_at_period_end || sub.cancel_at !== null
+  const currentPeriodEnd = sub.cancel_at ? new Date(sub.cancel_at * 1000) : periodEnd ? new Date(periodEnd * 1000) : null
 
   await db.user.update({
     where: { id: session.userId },
