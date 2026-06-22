@@ -19,7 +19,7 @@ export default withAuth(async (req, res, session) => {
     const { name, amount, dayOfMonth, categoryId, notes, isActive } = req.body
     if (dayOfMonth !== undefined) {
       const day = parseInt(dayOfMonth)
-      if (isNaN(day) || day < 1 || day > 28) return badRequest(res, 'Dia do mês deve ser entre 1 e 28.')
+      if (isNaN(day) || day < 1 || day > 31) return badRequest(res, 'Dia do mês deve ser entre 1 e 31.')
     }
     const updated = await db.recurringBill.update({
       where: { id },

@@ -23,7 +23,7 @@ export default withAuth(async (req, res, session) => {
     if (!Number.isFinite(amountNum) || amountNum <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
     const rawDay = parseInt(dayOfMonth)
     if (!Number.isFinite(rawDay) || rawDay < 1) return badRequest(res, 'Dia do mês inválido.')
-    const parsedDay = Math.min(rawDay, 28)
+    const parsedDay = Math.min(rawDay, 31)
 
     // Verify person belongs to user
     const person = await db.person.findFirst({ where: { id: personId, userId: uid } })

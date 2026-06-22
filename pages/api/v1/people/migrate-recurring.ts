@@ -41,7 +41,7 @@ export default withAuth(async (req, res, session) => {
 
     if (!existing) {
       // Create the recurring template
-      const dayOfMonth = Math.min(new Date(first.date).getDate(), 28)
+      const dayOfMonth = Math.min(new Date(first.date).getDate(), 31)
       await db.personEntryRecurring.create({
         data: {
           userId:      uid,

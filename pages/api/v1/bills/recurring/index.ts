@@ -59,7 +59,7 @@ export default withAuth(async (req, res, session) => {
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
     const rawDay = parseInt(dayOfMonth)
     if (!Number.isFinite(rawDay) || rawDay < 1) return badRequest(res, 'Dia do mês inválido.')
-    const day = Math.min(rawDay, 28)
+    const day = Math.min(rawDay, 31)
 
     const template = await db.recurringBill.create({
       data: {

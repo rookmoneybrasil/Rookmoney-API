@@ -117,7 +117,7 @@ const MIGRATIONS: Migration[] = [
 
       for (const [, group] of byUserName.entries()) {
         const latest = group[0]
-        const day    = Math.min(new Date(latest.dueDate).getUTCDate(), 28)
+        const day    = Math.min(new Date(latest.dueDate).getUTCDate(), 31)
 
         const template = await db.recurringBill.create({
           data: {

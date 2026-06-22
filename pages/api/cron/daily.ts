@@ -29,7 +29,7 @@ async function migrateOldRecurring(userId: string) {
         data: {
           userId, personId: first.personId, type: first.type,
           description: first.description, amount: first.amount,
-          dayOfMonth: Math.min(new Date(first.date).getDate(), 28),
+          dayOfMonth: Math.min(new Date(first.date).getDate(), 31),
           notes: first.notes, categoryId: first.categoryId,
           lastMonth: format(now, 'yyyy-MM'),
         },

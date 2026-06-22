@@ -18,7 +18,7 @@ export default withAuth(async (req, res, session) => {
         ...(isActive    !== undefined && { isActive:    Boolean(isActive) }),
         ...(description !== undefined && { description }),
         ...(amount      !== undefined && { amount:      parseFloat(amount) }),
-        ...(dayOfMonth  !== undefined && { dayOfMonth:  Math.min(Math.max(parseInt(dayOfMonth), 1), 28) }),
+        ...(dayOfMonth  !== undefined && { dayOfMonth:  Math.min(Math.max(parseInt(dayOfMonth), 1), 31) }),
         ...(categoryId  !== undefined && { categoryId:  categoryId || null }),
         ...(notes       !== undefined && { notes:       notes || null }),
       },

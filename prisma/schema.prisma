@@ -269,7 +269,7 @@ model RecurringBill {
   id            String   @id @default(cuid())
   name          String
   amount        Decimal  @db.Decimal(12, 2)
-  dayOfMonth    Int      // 1-28: day to generate bill each month
+  dayOfMonth    Int      // 1-31: day to generate bill each month (clamped to month length)
   isActive      Boolean  @default(true)
   lastAutoMonth String?  // "YYYY-MM": last month a Bill was generated
   notes         String?
