@@ -27,7 +27,7 @@ export interface StripeSub {
   status: string
   current_period_end: number
   cancel_at_period_end: boolean
-  items: { data: { price: { unit_amount: number; currency: string } }[] }
+  items: { data: { current_period_end?: number; price: { unit_amount: number; currency: string } }[] }
 }
 
 export async function listActiveSubscriptions(): Promise<StripeSub[]> {
@@ -64,6 +64,15 @@ async function stripePost(path: string, body: Record<string, string>) {
     throw new Error(data?.error?.message ?? 'Stripe error')
   }
   return data
+}
+
+export async function getSubscription(subscriptionId: string): Promise<StripeSub | null> {
+  try {
+    const data = await stripeGet(`/v1/subscriptions/${subscriptionId}`)
+    return data as unknown as StripeSub
+  } catch {
+    return null
+  }
 }
 
 export async function createCheckoutSession(
