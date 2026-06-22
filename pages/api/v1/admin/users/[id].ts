@@ -37,13 +37,12 @@ export default withBackofficeAuth(async (req, res) => {
       const sub = await getSubscription(user.stripeSubscriptionId)
       if (sub) {
         const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end
-        const cancelAtPeriodEnd = sub.cancel_at_period_end ?? false
-        const currentPeriodEnd = periodEnd ? new Date(periodEnd * 1000) : null
-        if (cancelAtPeriodEnd !== user.stripeCancelAtPeriodEnd || currentPeriodEnd?.getTime() !== user.stripeCurrentPeriodEnd?.getTime()) {
-          await db.user.update({ where: { id }, data: { stripeCancelAtPeriodEnd: cancelAtPeriodEnd, stripeCurrentPeriodEnd: currentPeriodEnd } })
-          user.stripeCancelAtPeriodEnd = cancelAtPeriodEnd
-          user.stripeCurrentPeriodEnd = currentPeriodEnd
-        }
+        user.stripeCancelAtPeriodEnd = sub.cancel_at_period_end ?? false
+        user.stripeCurrentPeriodEnd = periodEnd ? new Date(periodEnd * 1000) : null
+        await db.user.update({
+          where: { id },
+          data: { stripeCancelAtPeriodEnd: user.stripeCancelAtPeriodEnd, stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd },
+        }).catch(() => {})
       }
     } catch { /* Stripe unavailable — use cached data */ }
   }

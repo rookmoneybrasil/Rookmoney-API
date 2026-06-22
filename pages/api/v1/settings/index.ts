@@ -41,29 +41,27 @@ export default withAuth(async (req, res, session) => {
     })
     if (!user) return res.status(404).end()
 
-    // Sync Stripe subscription state on every settings read
+    let syncedCancel = user.stripeCancelAtPeriodEnd
+    let syncedPeriodEnd: Date | null = user.stripeCurrentPeriodEnd
+
     if (user.stripeSubscriptionId) {
       try {
         const { getSubscription } = await import('@/lib/stripe')
         const sub = await getSubscription(user.stripeSubscriptionId)
         if (sub) {
           const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end
-          const cancelAtPeriodEnd = sub.cancel_at_period_end ?? false
-          const currentPeriodEnd = periodEnd ? new Date(periodEnd * 1000) : null
-          if (cancelAtPeriodEnd !== user.stripeCancelAtPeriodEnd || currentPeriodEnd?.getTime() !== user.stripeCurrentPeriodEnd?.getTime()) {
-            await db.user.update({
-              where: { id: session.userId },
-              data: { stripeCancelAtPeriodEnd: cancelAtPeriodEnd, stripeCurrentPeriodEnd: currentPeriodEnd },
-            })
-            user.stripeCancelAtPeriodEnd = cancelAtPeriodEnd
-            user.stripeCurrentPeriodEnd = currentPeriodEnd
-          }
+          syncedCancel = sub.cancel_at_period_end ?? false
+          syncedPeriodEnd = periodEnd ? new Date(periodEnd * 1000) : null
+          await db.user.update({
+            where: { id: session.userId },
+            data: { stripeCancelAtPeriodEnd: syncedCancel, stripeCurrentPeriodEnd: syncedPeriodEnd },
+          }).catch(() => {})
         }
       } catch { /* Stripe unavailable — use cached data */ }
     }
 
     const { googleId, ...rest } = user
-    return ok(res, { ...rest, hasGoogle: googleId !== null })
+    return ok(res, { ...rest, stripeCancelAtPeriodEnd: syncedCancel, stripeCurrentPeriodEnd: syncedPeriodEnd, hasGoogle: googleId !== null })
   }
 
   if (req.method === 'PATCH') {
