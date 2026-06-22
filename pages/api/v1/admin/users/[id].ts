@@ -42,6 +42,7 @@ export default withBackofficeAuth(async (req, res) => {
         const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end
         syncedCancel = sub.cancel_at_period_end ?? false
         syncedPeriodEnd = periodEnd ? new Date(periodEnd * 1000) : null
+        console.log('[admin] Stripe sync:', { cancel: syncedCancel, periodEnd: syncedPeriodEnd, rawCancel: sub.cancel_at_period_end, rawPeriod: sub.current_period_end })
         await db.user.update({
           where: { id },
           data: { stripeCancelAtPeriodEnd: syncedCancel, stripeCurrentPeriodEnd: syncedPeriodEnd },
