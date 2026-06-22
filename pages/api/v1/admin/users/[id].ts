@@ -44,7 +44,7 @@ export default withBackofficeAuth(async (req, res) => {
           data: { stripeCancelAtPeriodEnd: user.stripeCancelAtPeriodEnd, stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd },
         }).catch(() => {})
       }
-    } catch { /* Stripe unavailable — use cached data */ }
+    } catch (err) { console.error('[admin] Stripe sync failed:', err instanceof Error ? err.message : err) }
   }
 
   if (req.method === 'GET') {

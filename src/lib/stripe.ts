@@ -70,7 +70,8 @@ export async function getSubscription(subscriptionId: string): Promise<StripeSub
   try {
     const data = await stripeGet(`/v1/subscriptions/${subscriptionId}`)
     return data as unknown as StripeSub
-  } catch {
+  } catch (err) {
+    console.error('[stripe] getSubscription failed:', subscriptionId, err instanceof Error ? err.message : err)
     return null
   }
 }

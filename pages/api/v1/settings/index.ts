@@ -57,7 +57,7 @@ export default withAuth(async (req, res, session) => {
             data: { stripeCancelAtPeriodEnd: syncedCancel, stripeCurrentPeriodEnd: syncedPeriodEnd },
           }).catch(() => {})
         }
-      } catch { /* Stripe unavailable — use cached data */ }
+      } catch (err) { console.error('[settings] Stripe sync failed:', err instanceof Error ? err.message : err) }
     }
 
     const { googleId, ...rest } = user
