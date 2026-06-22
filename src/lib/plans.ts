@@ -1,4 +1,4 @@
-export type Plan = 'FREE' | 'PRO'
+export type Plan = 'FREE' | 'PRO' | 'PRO_PLUS'
 
 export interface PlanLimits {
   transactionsPerMonth: number | null  // null = unlimited
@@ -12,6 +12,8 @@ export interface PlanLimits {
   projection:           boolean
   import:               boolean
   chat:                 number | null  // msgs/month, null = unlimited
+  chatFiles:            number | null  // file uploads in chat/month
+  chatAnalysis:         number | null  // analyze_finances calls/month
   scanner:              number | null  // scans/month
 }
 
@@ -28,7 +30,9 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     projection:           false,
     import:               false,
     chat:                 null,  // blocked entirely
-    scanner:              null,  // blocked entirely
+    chatFiles:            null,
+    chatAnalysis:         null,
+    scanner:              null,
   },
   PRO: {
     transactionsPerMonth: null,
@@ -42,12 +46,34 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     projection:           true,
     import:               true,
     chat:                 30,
+    chatFiles:            10,
+    chatAnalysis:         4,
     scanner:              20,
+  },
+  PRO_PLUS: {
+    transactionsPerMonth: null,
+    bills:                null,
+    goals:                null,
+    people:               null,
+    customCategories:     null,
+    recurring:            null,
+    budget:               true,
+    reports:              true,
+    projection:           true,
+    import:               true,
+    chat:                 null,  // unlimited
+    chatFiles:            null,  // unlimited
+    chatAnalysis:         null,  // unlimited
+    scanner:              null,  // unlimited
   },
 }
 
 export function isPro(plan?: string | null) {
-  return plan === 'PRO'
+  return plan === 'PRO' || plan === 'PRO_PLUS'
+}
+
+export function isProPlus(plan?: string | null) {
+  return plan === 'PRO_PLUS'
 }
 
 export function getLimits(plan?: string | null): PlanLimits {

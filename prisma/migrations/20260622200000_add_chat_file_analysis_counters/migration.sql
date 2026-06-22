@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN "chatFileMonth" TEXT;
+ALTER TABLE "User" ADD COLUMN "chatFileCount" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "User" ADD COLUMN "chatAnalysisMonth" TEXT;
+ALTER TABLE "User" ADD COLUMN "chatAnalysisCount" INTEGER NOT NULL DEFAULT 0;

@@ -28,12 +28,16 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   chatUsageCount: number | null
+  chatFileCount: number | null
+  chatAnalysisCount: number | null
   scannerUsageCount: number | null
   tokenVersion: number | null
 }
 
 export type UserSumAggregateOutputType = {
   chatUsageCount: number | null
+  chatFileCount: number | null
+  chatAnalysisCount: number | null
   scannerUsageCount: number | null
   tokenVersion: number | null
 }
@@ -65,6 +69,10 @@ export type UserMinAggregateOutputType = {
   dateFormat: string | null
   chatUsageMonth: string | null
   chatUsageCount: number | null
+  chatFileMonth: string | null
+  chatFileCount: number | null
+  chatAnalysisMonth: string | null
+  chatAnalysisCount: number | null
   scannerUsageMonth: string | null
   scannerUsageCount: number | null
   stripeCancelAtPeriodEnd: boolean | null
@@ -73,6 +81,9 @@ export type UserMinAggregateOutputType = {
   proPlanReason: string | null
   adminNotes: string | null
   tokenVersion: number | null
+  utmSource: string | null
+  utmMedium: string | null
+  utmCampaign: string | null
   lastActiveAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -105,6 +116,10 @@ export type UserMaxAggregateOutputType = {
   dateFormat: string | null
   chatUsageMonth: string | null
   chatUsageCount: number | null
+  chatFileMonth: string | null
+  chatFileCount: number | null
+  chatAnalysisMonth: string | null
+  chatAnalysisCount: number | null
   scannerUsageMonth: string | null
   scannerUsageCount: number | null
   stripeCancelAtPeriodEnd: boolean | null
@@ -113,6 +128,9 @@ export type UserMaxAggregateOutputType = {
   proPlanReason: string | null
   adminNotes: string | null
   tokenVersion: number | null
+  utmSource: string | null
+  utmMedium: string | null
+  utmCampaign: string | null
   lastActiveAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -145,6 +163,10 @@ export type UserCountAggregateOutputType = {
   dateFormat: number
   chatUsageMonth: number
   chatUsageCount: number
+  chatFileMonth: number
+  chatFileCount: number
+  chatAnalysisMonth: number
+  chatAnalysisCount: number
   scannerUsageMonth: number
   scannerUsageCount: number
   stripeCancelAtPeriodEnd: number
@@ -153,6 +175,9 @@ export type UserCountAggregateOutputType = {
   proPlanReason: number
   adminNotes: number
   tokenVersion: number
+  utmSource: number
+  utmMedium: number
+  utmCampaign: number
   lastActiveAt: number
   createdAt: number
   updatedAt: number
@@ -162,12 +187,16 @@ export type UserCountAggregateOutputType = {
 
 export type UserAvgAggregateInputType = {
   chatUsageCount?: true
+  chatFileCount?: true
+  chatAnalysisCount?: true
   scannerUsageCount?: true
   tokenVersion?: true
 }
 
 export type UserSumAggregateInputType = {
   chatUsageCount?: true
+  chatFileCount?: true
+  chatAnalysisCount?: true
   scannerUsageCount?: true
   tokenVersion?: true
 }
@@ -199,6 +228,10 @@ export type UserMinAggregateInputType = {
   dateFormat?: true
   chatUsageMonth?: true
   chatUsageCount?: true
+  chatFileMonth?: true
+  chatFileCount?: true
+  chatAnalysisMonth?: true
+  chatAnalysisCount?: true
   scannerUsageMonth?: true
   scannerUsageCount?: true
   stripeCancelAtPeriodEnd?: true
@@ -207,6 +240,9 @@ export type UserMinAggregateInputType = {
   proPlanReason?: true
   adminNotes?: true
   tokenVersion?: true
+  utmSource?: true
+  utmMedium?: true
+  utmCampaign?: true
   lastActiveAt?: true
   createdAt?: true
   updatedAt?: true
@@ -239,6 +275,10 @@ export type UserMaxAggregateInputType = {
   dateFormat?: true
   chatUsageMonth?: true
   chatUsageCount?: true
+  chatFileMonth?: true
+  chatFileCount?: true
+  chatAnalysisMonth?: true
+  chatAnalysisCount?: true
   scannerUsageMonth?: true
   scannerUsageCount?: true
   stripeCancelAtPeriodEnd?: true
@@ -247,6 +287,9 @@ export type UserMaxAggregateInputType = {
   proPlanReason?: true
   adminNotes?: true
   tokenVersion?: true
+  utmSource?: true
+  utmMedium?: true
+  utmCampaign?: true
   lastActiveAt?: true
   createdAt?: true
   updatedAt?: true
@@ -279,6 +322,10 @@ export type UserCountAggregateInputType = {
   dateFormat?: true
   chatUsageMonth?: true
   chatUsageCount?: true
+  chatFileMonth?: true
+  chatFileCount?: true
+  chatAnalysisMonth?: true
+  chatAnalysisCount?: true
   scannerUsageMonth?: true
   scannerUsageCount?: true
   stripeCancelAtPeriodEnd?: true
@@ -287,6 +334,9 @@ export type UserCountAggregateInputType = {
   proPlanReason?: true
   adminNotes?: true
   tokenVersion?: true
+  utmSource?: true
+  utmMedium?: true
+  utmCampaign?: true
   lastActiveAt?: true
   createdAt?: true
   updatedAt?: true
@@ -406,6 +456,10 @@ export type UserGroupByOutputType = {
   dateFormat: string
   chatUsageMonth: string | null
   chatUsageCount: number
+  chatFileMonth: string | null
+  chatFileCount: number
+  chatAnalysisMonth: string | null
+  chatAnalysisCount: number
   scannerUsageMonth: string | null
   scannerUsageCount: number
   stripeCancelAtPeriodEnd: boolean
@@ -414,6 +468,9 @@ export type UserGroupByOutputType = {
   proPlanReason: string | null
   adminNotes: string | null
   tokenVersion: number
+  utmSource: string | null
+  utmMedium: string | null
+  utmCampaign: string | null
   lastActiveAt: Date | null
   createdAt: Date
   updatedAt: Date
@@ -469,6 +526,10 @@ export type UserWhereInput = {
   dateFormat?: Prisma.StringFilter<"User"> | string
   chatUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
   chatUsageCount?: Prisma.IntFilter<"User"> | number
+  chatFileMonth?: Prisma.StringNullableFilter<"User"> | string | null
+  chatFileCount?: Prisma.IntFilter<"User"> | number
+  chatAnalysisMonth?: Prisma.StringNullableFilter<"User"> | string | null
+  chatAnalysisCount?: Prisma.IntFilter<"User"> | number
   scannerUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
   scannerUsageCount?: Prisma.IntFilter<"User"> | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFilter<"User"> | boolean
@@ -477,6 +538,9 @@ export type UserWhereInput = {
   proPlanReason?: Prisma.StringNullableFilter<"User"> | string | null
   adminNotes?: Prisma.StringNullableFilter<"User"> | string | null
   tokenVersion?: Prisma.IntFilter<"User"> | number
+  utmSource?: Prisma.StringNullableFilter<"User"> | string | null
+  utmMedium?: Prisma.StringNullableFilter<"User"> | string | null
+  utmCampaign?: Prisma.StringNullableFilter<"User"> | string | null
   lastActiveAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -523,6 +587,10 @@ export type UserOrderByWithRelationInput = {
   dateFormat?: Prisma.SortOrder
   chatUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   chatUsageCount?: Prisma.SortOrder
+  chatFileMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  chatFileCount?: Prisma.SortOrder
+  chatAnalysisMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  chatAnalysisCount?: Prisma.SortOrder
   scannerUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   stripeCancelAtPeriodEnd?: Prisma.SortOrder
@@ -531,6 +599,9 @@ export type UserOrderByWithRelationInput = {
   proPlanReason?: Prisma.SortOrderInput | Prisma.SortOrder
   adminNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  utmSource?: Prisma.SortOrderInput | Prisma.SortOrder
+  utmMedium?: Prisma.SortOrderInput | Prisma.SortOrder
+  utmCampaign?: Prisma.SortOrderInput | Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -580,6 +651,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   dateFormat?: Prisma.StringFilter<"User"> | string
   chatUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
   chatUsageCount?: Prisma.IntFilter<"User"> | number
+  chatFileMonth?: Prisma.StringNullableFilter<"User"> | string | null
+  chatFileCount?: Prisma.IntFilter<"User"> | number
+  chatAnalysisMonth?: Prisma.StringNullableFilter<"User"> | string | null
+  chatAnalysisCount?: Prisma.IntFilter<"User"> | number
   scannerUsageMonth?: Prisma.StringNullableFilter<"User"> | string | null
   scannerUsageCount?: Prisma.IntFilter<"User"> | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFilter<"User"> | boolean
@@ -588,6 +663,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   proPlanReason?: Prisma.StringNullableFilter<"User"> | string | null
   adminNotes?: Prisma.StringNullableFilter<"User"> | string | null
   tokenVersion?: Prisma.IntFilter<"User"> | number
+  utmSource?: Prisma.StringNullableFilter<"User"> | string | null
+  utmMedium?: Prisma.StringNullableFilter<"User"> | string | null
+  utmCampaign?: Prisma.StringNullableFilter<"User"> | string | null
   lastActiveAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -634,6 +712,10 @@ export type UserOrderByWithAggregationInput = {
   dateFormat?: Prisma.SortOrder
   chatUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   chatUsageCount?: Prisma.SortOrder
+  chatFileMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  chatFileCount?: Prisma.SortOrder
+  chatAnalysisMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  chatAnalysisCount?: Prisma.SortOrder
   scannerUsageMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   stripeCancelAtPeriodEnd?: Prisma.SortOrder
@@ -642,6 +724,9 @@ export type UserOrderByWithAggregationInput = {
   proPlanReason?: Prisma.SortOrderInput | Prisma.SortOrder
   adminNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  utmSource?: Prisma.SortOrderInput | Prisma.SortOrder
+  utmMedium?: Prisma.SortOrderInput | Prisma.SortOrder
+  utmCampaign?: Prisma.SortOrderInput | Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -682,6 +767,10 @@ export type UserScalarWhereWithAggregatesInput = {
   dateFormat?: Prisma.StringWithAggregatesFilter<"User"> | string
   chatUsageMonth?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   chatUsageCount?: Prisma.IntWithAggregatesFilter<"User"> | number
+  chatFileMonth?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  chatFileCount?: Prisma.IntWithAggregatesFilter<"User"> | number
+  chatAnalysisMonth?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  chatAnalysisCount?: Prisma.IntWithAggregatesFilter<"User"> | number
   scannerUsageMonth?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   scannerUsageCount?: Prisma.IntWithAggregatesFilter<"User"> | number
   stripeCancelAtPeriodEnd?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
@@ -690,6 +779,9 @@ export type UserScalarWhereWithAggregatesInput = {
   proPlanReason?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   adminNotes?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   tokenVersion?: Prisma.IntWithAggregatesFilter<"User"> | number
+  utmSource?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  utmMedium?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  utmCampaign?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   lastActiveAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -722,6 +814,10 @@ export type UserCreateInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -730,6 +826,9 @@ export type UserCreateInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -776,6 +875,10 @@ export type UserUncheckedCreateInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -784,6 +887,9 @@ export type UserUncheckedCreateInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -830,6 +936,10 @@ export type UserUpdateInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -838,6 +948,9 @@ export type UserUpdateInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -884,6 +997,10 @@ export type UserUncheckedUpdateInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -892,6 +1009,9 @@ export type UserUncheckedUpdateInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -938,6 +1058,10 @@ export type UserCreateManyInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -946,6 +1070,9 @@ export type UserCreateManyInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -978,6 +1105,10 @@ export type UserUpdateManyMutationInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -986,6 +1117,9 @@ export type UserUpdateManyMutationInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1018,6 +1152,10 @@ export type UserUncheckedUpdateManyInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1026,6 +1164,9 @@ export type UserUncheckedUpdateManyInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1058,6 +1199,10 @@ export type UserCountOrderByAggregateInput = {
   dateFormat?: Prisma.SortOrder
   chatUsageMonth?: Prisma.SortOrder
   chatUsageCount?: Prisma.SortOrder
+  chatFileMonth?: Prisma.SortOrder
+  chatFileCount?: Prisma.SortOrder
+  chatAnalysisMonth?: Prisma.SortOrder
+  chatAnalysisCount?: Prisma.SortOrder
   scannerUsageMonth?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   stripeCancelAtPeriodEnd?: Prisma.SortOrder
@@ -1066,6 +1211,9 @@ export type UserCountOrderByAggregateInput = {
   proPlanReason?: Prisma.SortOrder
   adminNotes?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  utmSource?: Prisma.SortOrder
+  utmMedium?: Prisma.SortOrder
+  utmCampaign?: Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -1073,6 +1221,8 @@ export type UserCountOrderByAggregateInput = {
 
 export type UserAvgOrderByAggregateInput = {
   chatUsageCount?: Prisma.SortOrder
+  chatFileCount?: Prisma.SortOrder
+  chatAnalysisCount?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
 }
@@ -1104,6 +1254,10 @@ export type UserMaxOrderByAggregateInput = {
   dateFormat?: Prisma.SortOrder
   chatUsageMonth?: Prisma.SortOrder
   chatUsageCount?: Prisma.SortOrder
+  chatFileMonth?: Prisma.SortOrder
+  chatFileCount?: Prisma.SortOrder
+  chatAnalysisMonth?: Prisma.SortOrder
+  chatAnalysisCount?: Prisma.SortOrder
   scannerUsageMonth?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   stripeCancelAtPeriodEnd?: Prisma.SortOrder
@@ -1112,6 +1266,9 @@ export type UserMaxOrderByAggregateInput = {
   proPlanReason?: Prisma.SortOrder
   adminNotes?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  utmSource?: Prisma.SortOrder
+  utmMedium?: Prisma.SortOrder
+  utmCampaign?: Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -1144,6 +1301,10 @@ export type UserMinOrderByAggregateInput = {
   dateFormat?: Prisma.SortOrder
   chatUsageMonth?: Prisma.SortOrder
   chatUsageCount?: Prisma.SortOrder
+  chatFileMonth?: Prisma.SortOrder
+  chatFileCount?: Prisma.SortOrder
+  chatAnalysisMonth?: Prisma.SortOrder
+  chatAnalysisCount?: Prisma.SortOrder
   scannerUsageMonth?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   stripeCancelAtPeriodEnd?: Prisma.SortOrder
@@ -1152,6 +1313,9 @@ export type UserMinOrderByAggregateInput = {
   proPlanReason?: Prisma.SortOrder
   adminNotes?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  utmSource?: Prisma.SortOrder
+  utmMedium?: Prisma.SortOrder
+  utmCampaign?: Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -1159,6 +1323,8 @@ export type UserMinOrderByAggregateInput = {
 
 export type UserSumOrderByAggregateInput = {
   chatUsageCount?: Prisma.SortOrder
+  chatFileCount?: Prisma.SortOrder
+  chatAnalysisCount?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
 }
@@ -1426,6 +1592,10 @@ export type UserCreateWithoutCategoriesInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -1434,6 +1604,9 @@ export type UserCreateWithoutCategoriesInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1479,6 +1652,10 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -1487,6 +1664,9 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1548,6 +1728,10 @@ export type UserUpdateWithoutCategoriesInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1556,6 +1740,9 @@ export type UserUpdateWithoutCategoriesInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1601,6 +1788,10 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1609,6 +1800,9 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1654,6 +1848,10 @@ export type UserCreateWithoutTransactionsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -1662,6 +1860,9 @@ export type UserCreateWithoutTransactionsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1707,6 +1908,10 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -1715,6 +1920,9 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1776,6 +1984,10 @@ export type UserUpdateWithoutTransactionsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1784,6 +1996,9 @@ export type UserUpdateWithoutTransactionsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1829,6 +2044,10 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1837,6 +2056,9 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1882,6 +2104,10 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -1890,6 +2116,9 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1935,6 +2164,10 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -1943,6 +2176,9 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2004,6 +2240,10 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2012,6 +2252,9 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2057,6 +2300,10 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2065,6 +2312,9 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2110,6 +2360,10 @@ export type UserCreateWithoutGoalsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -2118,6 +2372,9 @@ export type UserCreateWithoutGoalsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2163,6 +2420,10 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -2171,6 +2432,9 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2232,6 +2496,10 @@ export type UserUpdateWithoutGoalsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2240,6 +2508,9 @@ export type UserUpdateWithoutGoalsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2285,6 +2556,10 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2293,6 +2568,9 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2338,6 +2616,10 @@ export type UserCreateWithoutBudgetsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -2346,6 +2628,9 @@ export type UserCreateWithoutBudgetsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2391,6 +2676,10 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -2399,6 +2688,9 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2460,6 +2752,10 @@ export type UserUpdateWithoutBudgetsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2468,6 +2764,9 @@ export type UserUpdateWithoutBudgetsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2513,6 +2812,10 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2521,6 +2824,9 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2566,6 +2872,10 @@ export type UserCreateWithoutIncomeSourcesInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -2574,6 +2884,9 @@ export type UserCreateWithoutIncomeSourcesInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2619,6 +2932,10 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -2627,6 +2944,9 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2688,6 +3008,10 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2696,6 +3020,9 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2741,6 +3068,10 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2749,6 +3080,9 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2794,6 +3128,10 @@ export type UserCreateWithoutBillsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -2802,6 +3140,9 @@ export type UserCreateWithoutBillsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2847,6 +3188,10 @@ export type UserUncheckedCreateWithoutBillsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -2855,6 +3200,9 @@ export type UserUncheckedCreateWithoutBillsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2916,6 +3264,10 @@ export type UserUpdateWithoutBillsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2924,6 +3276,9 @@ export type UserUpdateWithoutBillsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2969,6 +3324,10 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2977,6 +3336,9 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3022,6 +3384,10 @@ export type UserCreateWithoutRecurringBillsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -3030,6 +3396,9 @@ export type UserCreateWithoutRecurringBillsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3075,6 +3444,10 @@ export type UserUncheckedCreateWithoutRecurringBillsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -3083,6 +3456,9 @@ export type UserUncheckedCreateWithoutRecurringBillsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3144,6 +3520,10 @@ export type UserUpdateWithoutRecurringBillsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3152,6 +3532,9 @@ export type UserUpdateWithoutRecurringBillsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3197,6 +3580,10 @@ export type UserUncheckedUpdateWithoutRecurringBillsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3205,6 +3592,9 @@ export type UserUncheckedUpdateWithoutRecurringBillsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3250,6 +3640,10 @@ export type UserCreateWithoutPeopleInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -3258,6 +3652,9 @@ export type UserCreateWithoutPeopleInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3303,6 +3700,10 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -3311,6 +3712,9 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3372,6 +3776,10 @@ export type UserUpdateWithoutPeopleInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3380,6 +3788,9 @@ export type UserUpdateWithoutPeopleInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3425,6 +3836,10 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3433,6 +3848,9 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3478,6 +3896,10 @@ export type UserCreateWithoutPersonEntryRecurringInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -3486,6 +3908,9 @@ export type UserCreateWithoutPersonEntryRecurringInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3531,6 +3956,10 @@ export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -3539,6 +3968,9 @@ export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3600,6 +4032,10 @@ export type UserUpdateWithoutPersonEntryRecurringInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3608,6 +4044,9 @@ export type UserUpdateWithoutPersonEntryRecurringInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3653,6 +4092,10 @@ export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3661,6 +4104,9 @@ export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3706,6 +4152,10 @@ export type UserCreateWithoutPersonEntriesInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -3714,6 +4164,9 @@ export type UserCreateWithoutPersonEntriesInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3759,6 +4212,10 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -3767,6 +4224,9 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3828,6 +4288,10 @@ export type UserUpdateWithoutPersonEntriesInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3836,6 +4300,9 @@ export type UserUpdateWithoutPersonEntriesInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3881,6 +4348,10 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3889,6 +4360,9 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3934,6 +4408,10 @@ export type UserCreateWithoutFeedbacksInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -3942,6 +4420,9 @@ export type UserCreateWithoutFeedbacksInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3987,6 +4468,10 @@ export type UserUncheckedCreateWithoutFeedbacksInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -3995,6 +4480,9 @@ export type UserUncheckedCreateWithoutFeedbacksInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4056,6 +4544,10 @@ export type UserUpdateWithoutFeedbacksInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4064,6 +4556,9 @@ export type UserUpdateWithoutFeedbacksInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4109,6 +4604,10 @@ export type UserUncheckedUpdateWithoutFeedbacksInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4117,6 +4616,9 @@ export type UserUncheckedUpdateWithoutFeedbacksInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4162,6 +4664,10 @@ export type UserCreateWithoutAchievementsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -4170,6 +4676,9 @@ export type UserCreateWithoutAchievementsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4215,6 +4724,10 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -4223,6 +4736,9 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4284,6 +4800,10 @@ export type UserUpdateWithoutAchievementsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4292,6 +4812,9 @@ export type UserUpdateWithoutAchievementsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4337,6 +4860,10 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4345,6 +4872,9 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4390,6 +4920,10 @@ export type UserCreateWithoutPluggyItemsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -4398,6 +4932,9 @@ export type UserCreateWithoutPluggyItemsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4443,6 +4980,10 @@ export type UserUncheckedCreateWithoutPluggyItemsInput = {
   dateFormat?: string
   chatUsageMonth?: string | null
   chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
   scannerUsageMonth?: string | null
   scannerUsageCount?: number
   stripeCancelAtPeriodEnd?: boolean
@@ -4451,6 +4992,9 @@ export type UserUncheckedCreateWithoutPluggyItemsInput = {
   proPlanReason?: string | null
   adminNotes?: string | null
   tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
   lastActiveAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -4512,6 +5056,10 @@ export type UserUpdateWithoutPluggyItemsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4520,6 +5068,9 @@ export type UserUpdateWithoutPluggyItemsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4565,6 +5116,10 @@ export type UserUncheckedUpdateWithoutPluggyItemsInput = {
   dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
   chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
   scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
   stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4573,6 +5128,9 @@ export type UserUncheckedUpdateWithoutPluggyItemsInput = {
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -4766,6 +5324,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   dateFormat?: boolean
   chatUsageMonth?: boolean
   chatUsageCount?: boolean
+  chatFileMonth?: boolean
+  chatFileCount?: boolean
+  chatAnalysisMonth?: boolean
+  chatAnalysisCount?: boolean
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
   stripeCancelAtPeriodEnd?: boolean
@@ -4774,6 +5336,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   proPlanReason?: boolean
   adminNotes?: boolean
   tokenVersion?: boolean
+  utmSource?: boolean
+  utmMedium?: boolean
+  utmCampaign?: boolean
   lastActiveAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -4821,6 +5386,10 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   dateFormat?: boolean
   chatUsageMonth?: boolean
   chatUsageCount?: boolean
+  chatFileMonth?: boolean
+  chatFileCount?: boolean
+  chatAnalysisMonth?: boolean
+  chatAnalysisCount?: boolean
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
   stripeCancelAtPeriodEnd?: boolean
@@ -4829,6 +5398,9 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   proPlanReason?: boolean
   adminNotes?: boolean
   tokenVersion?: boolean
+  utmSource?: boolean
+  utmMedium?: boolean
+  utmCampaign?: boolean
   lastActiveAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -4861,6 +5433,10 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   dateFormat?: boolean
   chatUsageMonth?: boolean
   chatUsageCount?: boolean
+  chatFileMonth?: boolean
+  chatFileCount?: boolean
+  chatAnalysisMonth?: boolean
+  chatAnalysisCount?: boolean
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
   stripeCancelAtPeriodEnd?: boolean
@@ -4869,6 +5445,9 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   proPlanReason?: boolean
   adminNotes?: boolean
   tokenVersion?: boolean
+  utmSource?: boolean
+  utmMedium?: boolean
+  utmCampaign?: boolean
   lastActiveAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -4901,6 +5480,10 @@ export type UserSelectScalar = {
   dateFormat?: boolean
   chatUsageMonth?: boolean
   chatUsageCount?: boolean
+  chatFileMonth?: boolean
+  chatFileCount?: boolean
+  chatAnalysisMonth?: boolean
+  chatAnalysisCount?: boolean
   scannerUsageMonth?: boolean
   scannerUsageCount?: boolean
   stripeCancelAtPeriodEnd?: boolean
@@ -4909,12 +5492,15 @@ export type UserSelectScalar = {
   proPlanReason?: boolean
   adminNotes?: boolean
   tokenVersion?: boolean
+  utmSource?: boolean
+  utmMedium?: boolean
+  utmCampaign?: boolean
   lastActiveAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "profileImage" | "bio" | "city" | "occupation" | "birthdate" | "notifBillReminder" | "notifCategoryLimit" | "notifMonthlyEmail" | "pushToken" | "currency" | "dateFormat" | "chatUsageMonth" | "chatUsageCount" | "scannerUsageMonth" | "scannerUsageCount" | "stripeCancelAtPeriodEnd" | "stripeCurrentPeriodEnd" | "proPlanExpiresAt" | "proPlanReason" | "adminNotes" | "tokenVersion" | "lastActiveAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "profileImage" | "bio" | "city" | "occupation" | "birthdate" | "notifBillReminder" | "notifCategoryLimit" | "notifMonthlyEmail" | "pushToken" | "currency" | "dateFormat" | "chatUsageMonth" | "chatUsageCount" | "chatFileMonth" | "chatFileCount" | "chatAnalysisMonth" | "chatAnalysisCount" | "scannerUsageMonth" | "scannerUsageCount" | "stripeCancelAtPeriodEnd" | "stripeCurrentPeriodEnd" | "proPlanExpiresAt" | "proPlanReason" | "adminNotes" | "tokenVersion" | "utmSource" | "utmMedium" | "utmCampaign" | "lastActiveAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
   categories?: boolean | Prisma.User$categoriesArgs<ExtArgs>
@@ -4980,6 +5566,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     dateFormat: string
     chatUsageMonth: string | null
     chatUsageCount: number
+    chatFileMonth: string | null
+    chatFileCount: number
+    chatAnalysisMonth: string | null
+    chatAnalysisCount: number
     scannerUsageMonth: string | null
     scannerUsageCount: number
     stripeCancelAtPeriodEnd: boolean
@@ -4988,6 +5578,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     proPlanReason: string | null
     adminNotes: string | null
     tokenVersion: number
+    utmSource: string | null
+    utmMedium: string | null
+    utmCampaign: string | null
     lastActiveAt: Date | null
     createdAt: Date
     updatedAt: Date
@@ -5454,6 +6047,10 @@ export interface UserFieldRefs {
   readonly dateFormat: Prisma.FieldRef<"User", 'String'>
   readonly chatUsageMonth: Prisma.FieldRef<"User", 'String'>
   readonly chatUsageCount: Prisma.FieldRef<"User", 'Int'>
+  readonly chatFileMonth: Prisma.FieldRef<"User", 'String'>
+  readonly chatFileCount: Prisma.FieldRef<"User", 'Int'>
+  readonly chatAnalysisMonth: Prisma.FieldRef<"User", 'String'>
+  readonly chatAnalysisCount: Prisma.FieldRef<"User", 'Int'>
   readonly scannerUsageMonth: Prisma.FieldRef<"User", 'String'>
   readonly scannerUsageCount: Prisma.FieldRef<"User", 'Int'>
   readonly stripeCancelAtPeriodEnd: Prisma.FieldRef<"User", 'Boolean'>
@@ -5462,6 +6059,9 @@ export interface UserFieldRefs {
   readonly proPlanReason: Prisma.FieldRef<"User", 'String'>
   readonly adminNotes: Prisma.FieldRef<"User", 'String'>
   readonly tokenVersion: Prisma.FieldRef<"User", 'Int'>
+  readonly utmSource: Prisma.FieldRef<"User", 'String'>
+  readonly utmMedium: Prisma.FieldRef<"User", 'String'>
+  readonly utmCampaign: Prisma.FieldRef<"User", 'String'>
   readonly lastActiveAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
