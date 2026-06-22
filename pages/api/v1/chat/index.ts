@@ -2,7 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import Anthropic from '@anthropic-ai/sdk'
 import { getSessionFromRequest } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { parseISO, format, startOfMonth, endOfMonth } from 'date-fns'
+import { parseISO, format, startOfMonth, endOfMonth, addMonths } from 'date-fns'
+import { randomUUID } from 'crypto'
 import { ptBR } from 'date-fns/locale'
 import { getLimits } from '@/lib/plans'
 
@@ -89,14 +90,16 @@ const TOOLS: Anthropic.Tool[] = [
   },
   {
     name: 'add_bill',
-    description: 'Cadastra uma conta a pagar.',
+    description: 'Cadastra uma conta a pagar. Suporta conta unica, parcelada ou recorrente. Para parcelada, informe installments (numero de parcelas) e alreadyPaid (parcelas ja pagas). O valor total e dividido igualmente entre as parcelas.',
     input_schema: {
       type: 'object' as const,
       properties: {
         name: { type: 'string' },
-        amount: { type: 'number', description: 'Valor em reais' },
-        dueDate: { type: 'string', description: 'Vencimento no formato YYYY-MM-DD' },
-        isRecurring: { type: 'boolean', description: 'Se é uma conta recorrente mensal' },
+        amount: { type: 'number', description: 'Valor TOTAL em reais (sera dividido pelas parcelas se parcelado)' },
+        dueDate: { type: 'string', description: 'Vencimento da primeira parcela no formato YYYY-MM-DD' },
+        installments: { type: 'number', description: 'Numero de parcelas (1 = conta unica, 2+ = parcelado)' },
+        alreadyPaid: { type: 'number', description: 'Parcelas ja pagas (ex: se esta na 3a de 12, alreadyPaid=2)' },
+        isRecurring: { type: 'boolean', description: 'Se e uma conta recorrente mensal (nao usar junto com parcelas)' },
         categoryName: { type: 'string', description: 'Nome da categoria' },
       },
       required: ['name', 'amount', 'dueDate'],
@@ -356,10 +359,35 @@ async function executeTool(name: string, input: Record<string, unknown>, userId:
     }
 
     if (name === 'add_bill') {
-      const { name: bName, amount, dueDate, isRecurring = false, categoryName } = input as { name: string; amount: number; dueDate: string; isRecurring?: boolean; categoryName?: string }
+      const { name: bName, amount, dueDate, installments = 1, alreadyPaid = 0, isRecurring = false, categoryName } = input as { name: string; amount: number; dueDate: string; installments?: number; alreadyPaid?: number; isRecurring?: boolean; categoryName?: string }
       const categoryId = categoryName ? (await findCategory(userId, categoryName)) : undefined
-      await db.bill.create({ data: { name: bName, amount, dueDate: parseISO(dueDate), isRecurring, userId, ...(categoryId ? { categoryId } : {}) } })
-      return `Conta "${bName}" de ${money(amount)} cadastrada para ${format(parseISO(dueDate), 'dd/MM/yyyy')}.`
+      const baseDate = parseISO(dueDate)
+      const numTotal = Math.max(1, Math.round(installments))
+      const numAlreadyPaid = Math.max(0, Math.min(Math.round(alreadyPaid), numTotal - 1))
+      const numToCreate = numTotal > 1 ? numTotal - numAlreadyPaid : 1
+
+      if (numTotal > 1) {
+        const groupId = randomUUID()
+        const baseInstallment = Math.floor((amount / numToCreate) * 100) / 100
+        const lastInstallment = Math.round((amount - baseInstallment * (numToCreate - 1)) * 100) / 100
+        await db.bill.createMany({
+          data: Array.from({ length: numToCreate }, (_, i) => ({
+            name: bName,
+            amount: i === numToCreate - 1 ? lastInstallment : baseInstallment,
+            dueDate: addMonths(baseDate, i),
+            userId,
+            categoryId: categoryId ?? null,
+            isRecurring: false,
+            installmentTotal: numTotal,
+            installmentCurrent: numAlreadyPaid + i + 1,
+            installmentGroupId: groupId,
+          })),
+        })
+        return `Conta "${bName}" parcelada em ${numTotal}x de ${money(amount / numToCreate)} cadastrada${numAlreadyPaid > 0 ? ` (${numAlreadyPaid} parcelas ja pagas, ${numToCreate} restantes)` : ''}. Primeira parcela em ${fmtDate(baseDate)}.`
+      }
+
+      await db.bill.create({ data: { name: bName, amount, dueDate: baseDate, isRecurring, userId, ...(categoryId ? { categoryId } : {}) } })
+      return `Conta "${bName}" de ${money(amount)} cadastrada para ${fmtDate(baseDate)}.`
     }
 
     if (name === 'pay_bill') {
@@ -493,12 +521,15 @@ COMPORTAMENTO:
 - Se nao conseguir resolver via ferramentas, sugira navegar para a pagina certa
 
 CADASTRO GUIADO (muito importante):
-Quando o usuario quiser cadastrar algo (conta, renda, pessoa, meta, transacao) mas nao der todas as informacoes, PERGUNTE o que falta antes de criar. Exemplos:
-- "quero adicionar uma conta" -> pergunte: nome, valor e vencimento
+Quando o usuario quiser cadastrar algo mas nao der todas as informacoes, PERGUNTE o que falta antes de criar. Exemplos:
+- "quero adicionar uma conta" -> pergunte: nome, valor, vencimento, e se e parcelada (quantas parcelas)
+- "comprei um celular parcelado" -> pergunte: valor total, quantas parcelas, ja pagou alguma, vencimento da proxima
 - "tenho uma renda nova" -> pergunte: nome, valor, dia que recebe e se e recorrente
-- "o João me deve" -> pergunte: quanto e referente a que
+- "o Joao me deve" -> pergunte: quanto e referente a que
 - "gastei no mercado" -> pergunte: quanto gastou
-Pergunte tudo que falta em UMA mensagem so, de forma natural. Nunca crie registros com dados inventados.`
+- "quero cadastrar conta fixa" -> use add_recurring_bill (gera automaticamente todo mes)
+Pergunte tudo que falta em UMA mensagem so, de forma natural. Nunca crie registros com dados inventados.
+Para contas parceladas, pergunte: valor total, numero de parcelas, quantas ja foram pagas, e data da proxima parcela.`
 
   let currentMessages: Anthropic.MessageParam[] = [...safeMessages]
   let navigationSuggestion: { path: string; reason: string } | null = null
