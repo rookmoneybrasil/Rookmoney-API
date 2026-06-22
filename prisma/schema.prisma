@@ -41,6 +41,8 @@ model User {
   chatUsageCount      Int       @default(0)
   scannerUsageMonth   String?
   scannerUsageCount   Int       @default(0)
+  stripeCancelAtPeriodEnd Boolean  @default(false)
+  stripeCurrentPeriodEnd DateTime?
   proPlanExpiresAt    DateTime? // null = vitalício (manual PRO only)
   proPlanReason       String?   // motivo registrado pelo admin ao dar PRO manual
   adminNotes          String?   // notas internas do backoffice (não visível ao usuário)

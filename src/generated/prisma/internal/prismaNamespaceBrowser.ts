@@ -118,6 +118,8 @@ export const UserScalarFieldEnum = {
   chatUsageCount: 'chatUsageCount',
   scannerUsageMonth: 'scannerUsageMonth',
   scannerUsageCount: 'scannerUsageCount',
+  stripeCancelAtPeriodEnd: 'stripeCancelAtPeriodEnd',
+  stripeCurrentPeriodEnd: 'stripeCurrentPeriodEnd',
   proPlanExpiresAt: 'proPlanExpiresAt',
   proPlanReason: 'proPlanReason',
   adminNotes: 'adminNotes',

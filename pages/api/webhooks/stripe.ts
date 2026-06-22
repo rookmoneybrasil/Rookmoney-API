@@ -33,16 +33,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session      = event.data.object as Stripe.Checkout.Session
-    const userId       = session.metadata?.['userId']
-    const customerId   = typeof session.customer === 'string' ? session.customer : null
+    const session        = event.data.object as Stripe.Checkout.Session
+    const userId         = session.metadata?.['userId']
+    const customerId     = typeof session.customer === 'string' ? session.customer : null
     const subscriptionId = typeof session.subscription === 'string' ? session.subscription : null
     if (userId) {
       await db.user.update({
         where: { id: userId },
-        data:  { plan: 'PRO', stripeCustomerId: customerId ?? undefined, stripeSubscriptionId: subscriptionId ?? undefined },
+        data:  {
+          plan: 'PRO',
+          stripeCustomerId: customerId ?? undefined,
+          stripeSubscriptionId: subscriptionId ?? undefined,
+          stripeCancelAtPeriodEnd: false,
+          stripeCurrentPeriodEnd: null,
+        },
       })
-      // logged via Railway — no console.log with user IDs
+    }
+  }
+
+  if (event.type === 'customer.subscription.updated') {
+    const sub        = event.data.object as Stripe.Subscription
+    const customerId = typeof sub.customer === 'string' ? sub.customer : null
+    if (customerId) {
+      const periodEnd = sub.items?.data?.[0]?.current_period_end
+      await db.user.updateMany({
+        where: { stripeCustomerId: customerId },
+        data:  {
+          stripeCancelAtPeriodEnd: sub.cancel_at_period_end,
+          ...(periodEnd && { stripeCurrentPeriodEnd: new Date(periodEnd * 1000) }),
+        },
+      })
     }
   }
 
@@ -50,8 +70,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const sub        = event.data.object as Stripe.Subscription
     const customerId = typeof sub.customer === 'string' ? sub.customer : null
     if (customerId) {
-      await db.user.updateMany({ where: { stripeCustomerId: customerId }, data: { plan: 'FREE', stripeSubscriptionId: null } })
-      // logged via Railway — no console.log with customer IDs
+      await db.user.updateMany({
+        where: { stripeCustomerId: customerId },
+        data:  {
+          plan: 'FREE',
+          stripeSubscriptionId: null,
+          stripeCancelAtPeriodEnd: false,
+          stripeCurrentPeriodEnd: null,
+        },
+      })
+    }
+  }
+
+  if (event.type === 'invoice.payment_failed') {
+    const invoice    = event.data.object as Stripe.Invoice
+    const customerId = typeof invoice.customer === 'string' ? invoice.customer : null
+    if (customerId) {
+      const user = await db.user.findFirst({
+        where:  { stripeCustomerId: customerId },
+        select: { email: true, name: true },
+      })
+      if (user) {
+        const { sendPaymentFailedEmail } = await import('@/lib/email')
+        await sendPaymentFailedEmail(user.email, user.name).catch(() => {})
+      }
     }
   }
 

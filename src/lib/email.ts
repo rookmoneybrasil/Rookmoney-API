@@ -122,6 +122,23 @@ export async function sendMonthlySummaryEmail(
   })
 }
 
+export async function sendPaymentFailedEmail(
+  to: string, name: string,
+): Promise<void> {
+  await resendPost({
+    from:    FROM,
+    to:      [to],
+    subject: '⚠️ Problema com o pagamento da sua assinatura PRO',
+    html: `
+<div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#080e1d;color:#f1f5f9;padding:32px;border-radius:16px">
+  <h2 style="margin:0 0 8px;font-size:20px">Oi, ${name}! 👋</h2>
+  <p style="color:#94a3b8;margin:0 0 24px">Houve um problema ao processar o pagamento da sua assinatura PRO. Atualize sua forma de pagamento para evitar a perda do acesso.</p>
+  <a href="https://app.rookmoney.com/billing" style="display:inline-block;padding:12px 24px;background:#d97706;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Atualizar pagamento →</a>
+  <p style="color:#475569;font-size:12px;margin-top:24px">Se você já resolveu, pode ignorar este e-mail.</p>
+</div>`,
+  })
+}
+
 export async function sendChurnAlertEmail(
   to: string, churnCount: number, threshold: number, month: string,
 ): Promise<void> {
