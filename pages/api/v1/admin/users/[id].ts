@@ -31,17 +31,20 @@ export default withBackofficeAuth(async (req, res) => {
   })
   if (!user) return notFound(res)
 
+  let syncedCancel = user.stripeCancelAtPeriodEnd
+  let syncedPeriodEnd: Date | null = user.stripeCurrentPeriodEnd
+
   if (user.stripeSubscriptionId) {
     try {
       const { getSubscription } = await import('@/lib/stripe')
       const sub = await getSubscription(user.stripeSubscriptionId)
       if (sub) {
         const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end
-        user.stripeCancelAtPeriodEnd = sub.cancel_at_period_end ?? false
-        user.stripeCurrentPeriodEnd = periodEnd ? new Date(periodEnd * 1000) : null
+        syncedCancel = sub.cancel_at_period_end ?? false
+        syncedPeriodEnd = periodEnd ? new Date(periodEnd * 1000) : null
         await db.user.update({
           where: { id },
-          data: { stripeCancelAtPeriodEnd: user.stripeCancelAtPeriodEnd, stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd },
+          data: { stripeCancelAtPeriodEnd: syncedCancel, stripeCurrentPeriodEnd: syncedPeriodEnd },
         }).catch(() => {})
       }
     } catch (err) { console.error('[admin] Stripe sync failed:', err instanceof Error ? err.message : err) }
@@ -69,6 +72,8 @@ export default withBackofficeAuth(async (req, res) => {
 
     const safeUser = {
       ...user,
+      stripeCancelAtPeriodEnd: syncedCancel,
+      stripeCurrentPeriodEnd: syncedPeriodEnd,
       loginMethod: user.googleId ? 'google' as const : 'email' as const,
       hasMobileApp: !!user.pushToken,
       googleId: undefined,
