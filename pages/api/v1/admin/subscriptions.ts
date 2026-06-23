@@ -12,9 +12,9 @@ export default withBackofficeAuth(async (_req, res) => {
   }
 
   const proUsers = await db.user.findMany({
-    where:   { plan: 'PRO' },
+    where:   { plan: { in: ['PRO', 'PRO_PLUS'] } },
     orderBy: { createdAt: 'desc' },
-    select:  { id: true, name: true, email: true, createdAt: true,
+    select:  { id: true, name: true, email: true, plan: true, createdAt: true,
       stripeCustomerId: true, stripeSubscriptionId: true,
       proPlanExpiresAt: true, proPlanReason: true },
   })
@@ -28,6 +28,7 @@ export default withBackofficeAuth(async (_req, res) => {
       id:              u.id,
       name:            u.name,
       email:           u.email,
+      plan:            u.plan,
       createdAt:       u.createdAt,
       stripeSubId:     u.stripeSubscriptionId,
       renewalDate:     sub ? new Date(sub.current_period_end * 1000).toISOString() : null,

@@ -7,12 +7,16 @@ export default withBackofficeAuth(async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end()
 
   const { title, body, audience = 'all', screen } = req.body as {
-    title: string; body: string; audience?: 'all' | 'pro'; screen?: string
+    title: string; body: string; audience?: 'all' | 'pro' | 'pro_plus'; screen?: string
   }
 
   if (!title?.trim() || !body?.trim()) return badRequest(res, 'title e body são obrigatórios')
 
-  const where = audience === 'pro' ? { plan: 'PRO', pushToken: { not: null } } : { pushToken: { not: null } }
+  const where = audience === 'pro'
+    ? { plan: { in: ['PRO', 'PRO_PLUS'] }, pushToken: { not: null } }
+    : audience === 'pro_plus'
+    ? { plan: 'PRO_PLUS' as const, pushToken: { not: null } }
+    : { pushToken: { not: null } }
 
   const users = await db.user.findMany({
     where,
