@@ -55,6 +55,9 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'DELETE') {
+    await db.transaction.deleteMany({
+      where: { userId: session.userId, description: item.name, type: item.type },
+    })
     await db.recurringTransaction.deleteMany({ where: { id, userId: session.userId } })
     return noContent(res)
   }
