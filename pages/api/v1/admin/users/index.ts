@@ -10,8 +10,10 @@ export default withBackofficeAuth(async (req, res) => {
 
   const where: Record<string, unknown> = {}
 
-  if (plan === 'PRO_MANUAL') { where.plan = 'PRO'; where.stripeSubscriptionId = null }
-  else if (plan === 'PRO' || plan === 'FREE') where.plan = plan
+  if (plan === 'PRO_MANUAL') { where.plan = { in: ['PRO', 'PRO_PLUS'] }; where.stripeSubscriptionId = null }
+  else if (plan === 'PRO') where.plan = 'PRO'
+  else if (plan === 'PRO_PLUS') where.plan = 'PRO_PLUS'
+  else if (plan === 'FREE') where.plan = 'FREE'
 
   if (inactive) {
     const days = parseInt(inactive)

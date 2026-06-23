@@ -16,7 +16,7 @@ export default withBackofficeAuth(async (_req, res) => {
   const sevenDaysOn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
   const [
-    total, pro, proManual,
+    total, proStripe, proPlusStripe, proManual, proPlusManual,
     onlineUsers,
     prevMonthNewUsers,
     newToday, newThisWeek, newThisMonth,
@@ -30,7 +30,9 @@ export default withBackofficeAuth(async (_req, res) => {
   ] = await Promise.all([
     db.user.count(),
     db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: { not: null } } }),
+    db.user.count({ where: { plan: 'PRO_PLUS', stripeSubscriptionId: { not: null } } }),
     db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: null } }),
+    db.user.count({ where: { plan: 'PRO_PLUS', stripeSubscriptionId: null } }),
     db.user.count({ where: { lastActiveAt: { gte: fiveMinAgo } } }),
     db.user.count({ where: { createdAt: { gte: prevMonthStart, lte: prevMonthEnd } } }),
     db.user.count({ where: { createdAt: { gte: today } } }),
@@ -50,15 +52,26 @@ export default withBackofficeAuth(async (_req, res) => {
     db.adminLog.count({ where: { action: 'plan_change', details: { contains: 'para PRO' }, createdAt: { gte: monthStart } } }),
     db.adminLog.count({ where: { action: 'plan_change', details: { contains: 'para FREE' }, createdAt: { gte: monthStart } } }),
     db.adminLog.findMany({ orderBy: { createdAt: 'desc' }, take: 5 }),
-    db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: null, proPlanExpiresAt: { not: null, lte: sevenDaysOn } } }),
+    db.user.count({ where: { plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, proPlanExpiresAt: { not: null, lte: sevenDaysOn } } }),
   ])
 
+  const totalPro = proStripe + proManual
+  const totalProPlus = proPlusStripe + proPlusManual
+  const totalPaid = totalPro + totalProPlus
+  const totalFree = total - totalPaid
+  const mrr = totalPro * 19.90 + totalProPlus * 34.90
+
   return ok(res, {
-    totalUsers: total, proUsers: pro, proManual, freeUsers: total - pro - proManual, onlineUsers,
-    proRate: total > 0 ? Math.round((pro / total) * 100) : 0,
+    totalUsers: total,
+    proUsers: totalPaid,
+    proPlusUsers: totalProPlus,
+    proManual: proManual + proPlusManual,
+    freeUsers: totalFree,
+    onlineUsers,
+    proRate: total > 0 ? Math.round((totalPaid / total) * 100) : 0,
     newToday, newThisWeek, newThisMonth,
     totalTransactions, transactionsThisMonth, totalGoals,
-    mrr: pro * 19.90, arr: pro * 19.90 * 12,
+    mrr, arr: mrr * 12,
     openFeedbackCount: openFeedback,
     newProThisMonth,
     churnThisMonth,

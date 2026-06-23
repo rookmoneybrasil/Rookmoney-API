@@ -96,21 +96,22 @@ export default withBackofficeAuth(async (req, res) => {
     const { plan, duration, reason, isAdmin, adminNotes } = req.body
 
     if (plan !== undefined) {
-      if (plan === 'PRO') {
+      if (plan === 'PRO' || plan === 'PRO_PLUS') {
         if (!duration || !['3m', '6m', '12m', 'lifetime'].includes(duration)) {
           return badRequest(res, 'duration deve ser 3m, 6m, 12m ou lifetime')
         }
         if (!reason || !reason.trim()) {
           return badRequest(res, 'motivo é obrigatório ao dar PRO manual')
         }
+        const planLabel = plan === 'PRO_PLUS' ? 'PRO+' : 'PRO'
         const expiresAt = calcExpiresAt(duration)
         await db.user.update({
           where: { id },
-          data: { plan: 'PRO', proPlanExpiresAt: expiresAt, proPlanReason: reason.trim() },
+          data: { plan, proPlanExpiresAt: expiresAt, proPlanReason: reason.trim() },
         })
         const durationLabel = duration === 'lifetime' ? 'vitalício' : duration
         const expiryText    = expiresAt ? ` (expira ${expiresAt.toLocaleDateString('pt-BR')})` : ' (vitalício)'
-        const verb          = user.plan === 'PRO' ? 'PRO prorrogado' : 'Plano PRO manual'
+        const verb          = user.plan === plan ? `${planLabel} prorrogado` : `Plano ${planLabel} manual`
         await db.adminLog.create({ data: {
           action: 'plan_change', targetId: id,
           details: `${verb} ${durationLabel}${expiryText} — motivo: ${reason.trim()} (${user.email})`,
