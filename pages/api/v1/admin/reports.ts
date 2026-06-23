@@ -2,7 +2,8 @@ import { withBackofficeAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok } from '@/lib/respond'
 
-const PRO_PRICE = 19.9
+const PRO_PRICE      = 19.9
+const PRO_PLUS_PRICE = 34.9
 
 type MonthRow    = { month: Date; count: number }
 type TopUserRow  = { id: string; name: string; email: string; tx_count: number }
@@ -11,8 +12,8 @@ type CohortRow   = { cohort_month: Date; total: number; active_30d: number }
 export default withBackofficeAuth(async (_req, res) => {
   const now = new Date()
 
-  // ── Revenue: MRR history (Stripe PRO + manual PRO) last 12 months ────────────
-  const [revenueStrikeRaw, revenueManualRaw] = await Promise.all([
+  // ── Revenue: MRR history (Stripe PRO/PRO_PLUS + manual PRO/PRO_PLUS) last 12 months ────────────
+  const [revenueStrikeRaw, revenueManualRaw, revenueStripePlusRaw, revenueManualPlusRaw] = await Promise.all([
     db.$queryRaw<MonthRow[]>`
       SELECT DATE_TRUNC('month', "createdAt")::date AS month, COUNT(*)::int AS count
       FROM "User"
@@ -24,6 +25,20 @@ export default withBackofficeAuth(async (_req, res) => {
       SELECT DATE_TRUNC('month', "createdAt")::date AS month, COUNT(*)::int AS count
       FROM "User"
       WHERE plan = 'PRO' AND "stripeSubscriptionId" IS NULL
+        AND "createdAt" >= NOW() - INTERVAL '12 months'
+      GROUP BY 1 ORDER BY 1
+    `,
+    db.$queryRaw<MonthRow[]>`
+      SELECT DATE_TRUNC('month', "createdAt")::date AS month, COUNT(*)::int AS count
+      FROM "User"
+      WHERE plan = 'PRO_PLUS' AND "stripeSubscriptionId" IS NOT NULL
+        AND "createdAt" >= NOW() - INTERVAL '12 months'
+      GROUP BY 1 ORDER BY 1
+    `,
+    db.$queryRaw<MonthRow[]>`
+      SELECT DATE_TRUNC('month', "createdAt")::date AS month, COUNT(*)::int AS count
+      FROM "User"
+      WHERE plan = 'PRO_PLUS' AND "stripeSubscriptionId" IS NULL
         AND "createdAt" >= NOW() - INTERVAL '12 months'
       GROUP BY 1 ORDER BY 1
     `,
@@ -40,7 +55,7 @@ export default withBackofficeAuth(async (_req, res) => {
     db.$queryRaw<MonthRow[]>`
       SELECT DATE_TRUNC('month', "createdAt")::date AS month, COUNT(*)::int AS count
       FROM "User"
-      WHERE plan = 'PRO' AND "createdAt" >= NOW() - INTERVAL '12 months'
+      WHERE plan IN ('PRO', 'PRO_PLUS') AND "createdAt" >= NOW() - INTERVAL '12 months'
       GROUP BY 1 ORDER BY 1
     `,
   ])
@@ -113,16 +128,24 @@ export default withBackofficeAuth(async (_req, res) => {
     })
   }
 
-  const revenueStripe = fill(revenueStrikeRaw)
-  const revenueManual = fill(revenueManualRaw)
-  const revenue = months.map((m, i) => ({
-    month:      m,
-    stripeNew:  revenueStripe[i].count,
-    manualNew:  revenueManual[i].count,
-    mrrStripe:  revenueStripe[i].count * PRO_PRICE,
-    mrrManual:  revenueManual[i].count * PRO_PRICE,
-    mrr:        (revenueStripe[i].count + revenueManual[i].count) * PRO_PRICE,
-  }))
+  const revenueStripe     = fill(revenueStrikeRaw)
+  const revenueManual     = fill(revenueManualRaw)
+  const revenueStripePlus = fill(revenueStripePlusRaw)
+  const revenueManualPlus = fill(revenueManualPlusRaw)
+  const revenue = months.map((m, i) => {
+    const proStripe  = revenueStripe[i].count
+    const proManual  = revenueManual[i].count
+    const plusStripe  = revenueStripePlus[i].count
+    const plusManual  = revenueManualPlus[i].count
+    return {
+      month:      m,
+      stripeNew:  proStripe + plusStripe,
+      manualNew:  proManual + plusManual,
+      mrrStripe:  proStripe * PRO_PRICE + plusStripe * PRO_PLUS_PRICE,
+      mrrManual:  proManual * PRO_PRICE + plusManual * PRO_PLUS_PRICE,
+      mrr:        (proStripe + proManual) * PRO_PRICE + (plusStripe + plusManual) * PRO_PLUS_PRICE,
+    }
+  })
 
   const acquisition = months.map((m, i) => {
     const signups = fill(signupsRaw)[i].count

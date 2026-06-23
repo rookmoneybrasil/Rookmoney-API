@@ -579,7 +579,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const limits        = getLimits(user.plan)
   const chatCount     = user.chatUsageMonth === yearMonth ? user.chatUsageCount : 0
   const fileCount     = user.chatFileMonth === yearMonth ? user.chatFileCount : 0
-  const analysisCount = user.chatAnalysisMonth === yearMonth ? user.chatAnalysisCount : 0
+  let   analysisCount = user.chatAnalysisMonth === yearMonth ? user.chatAnalysisCount : 0
   const chatLimit     = limits.chat
   const fileLimit     = limits.chatFiles
   const analysisLimit = limits.chatAnalysis
@@ -724,7 +724,8 @@ Quando o usuario enviar uma imagem ou PDF (comprovante, nota fiscal, boleto, ext
           const result = await executeTool(block.name, block.input as Record<string, unknown>, session.userId)
           if (block.name === 'navigate') { try { navigationSuggestion = JSON.parse(result) } catch { /* */ } }
           if (block.name === 'analyze_finances') {
-            await db.user.update({ where: { id: session.userId }, data: { chatAnalysisMonth: yearMonth, chatAnalysisCount: analysisCount + 1 } })
+            analysisCount++
+            await db.user.update({ where: { id: session.userId }, data: { chatAnalysisMonth: yearMonth, chatAnalysisCount: analysisCount } })
           }
           toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: result })
         }
