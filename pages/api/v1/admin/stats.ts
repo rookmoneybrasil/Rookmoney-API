@@ -72,6 +72,7 @@ export default withBackofficeAuth(async (_req, res) => {
     newToday, newThisWeek, newThisMonth,
     totalTransactions, transactionsThisMonth, totalGoals,
     mrr, arr: mrr * 12,
+    proStripe, proPlusStripe,
     openFeedbackCount: openFeedback,
     newProThisMonth,
     churnThisMonth,
