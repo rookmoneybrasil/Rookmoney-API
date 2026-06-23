@@ -90,7 +90,7 @@ export default withAuth(async (req, res, session) => {
     pendingBillsCount,
     overdueCount,
     peopleEntriesReceivable,
-    recurringPeopleReceivable,
+    allRecurringTemplates,
     rawPendingIncomeSources,
     incomeThisMonth,
     monthIncomeTx,             // all INCOME transactions this month — for "Receitas do mês" modal
@@ -106,6 +106,7 @@ export default withAuth(async (req, res, session) => {
     recurringIncomeSources,
     recurringTransactionItems,
     budgets,                   // Fix 3: needed for overBudgetCount
+    currentMonthPersonEntries, // for recurring duplicate detection (description-match)
   ], projResult] = await Promise.all([
     Promise.all([
     db.user.findUnique({ where: { id: uid }, select: { name: true } }),
@@ -133,8 +134,8 @@ export default withAuth(async (req, res, session) => {
 
     // PersonEntry: all unsettled THEY_OWE_ME entries (no date filter — old debts still count)
     db.personEntry.aggregate({ where: { userId: uid, type: 'THEY_OWE_ME', isSettled: false }, _sum: { amount: true } }),
-    // PersonEntryRecurring: only templates NOT yet processed this month (avoid double-count with entries above)
-    db.personEntryRecurring.aggregate({ where: { userId: uid, isActive: true, type: 'THEY_OWE_ME', OR: [{ lastMonth: null }, { lastMonth: { not: yearMonth } }] }, _sum: { amount: true } }),
+    // All active recurring person templates — computed in JS using description-match (same as /api/v1/people)
+    db.personEntryRecurring.findMany({ where: { userId: uid, isActive: true }, include: { person: { select: { name: true } } } }),
 
     db.incomeSource.findMany({
       where: {
@@ -208,6 +209,8 @@ export default withAuth(async (req, res, session) => {
 
     // Fix 3: budgets for overBudgetCount — merged into main Promise.all
     db.budget.findMany({ where: { userId: uid, month: yearMonth }, select: { categoryId: true, amount: true } }),
+    // Current-month person entries — for recurring template duplicate detection
+    db.personEntry.findMany({ where: { userId: uid, date: { gte: mS, lte: mE }, installmentGroupId: null }, select: { type: true, description: true } }),
     ]),
 
     // "Próximos meses" widget — reuses the same engine as /api/v1/projection so the
@@ -240,8 +243,19 @@ export default withAuth(async (req, res, session) => {
     date: settledAt,
   }))
 
-  const totalPeopleReceivable = Number(peopleEntriesReceivable._sum.amount ?? 0) + Number(recurringPeopleReceivable._sum.amount ?? 0)
+  // Recurring templates without a matching PersonEntry this month (same logic as /api/v1/people)
+  const monthEntries = currentMonthPersonEntries as { type: string; description: string | null }[]
+  const templates = allRecurringTemplates as { id: string; type: string; description: string | null; amount: unknown; dayOfMonth: number; person: { name: string } }[]
+  const unprocessedTemplates = templates.filter(r =>
+    !monthEntries.some(e => e.description === r.description && e.type === r.type)
+  )
+  const unprocessedReceivable = unprocessedTemplates.filter(r => r.type === 'THEY_OWE_ME')
+  const unprocessedPayable    = unprocessedTemplates.filter(r => r.type === 'I_OWE_THEM')
+
+  const totalPeopleReceivable = Number(peopleEntriesReceivable._sum.amount ?? 0)
+    + unprocessedReceivable.reduce((s, r) => s + Number(r.amount), 0)
   const totalIncomeReceivable = pendingIncomeSources.reduce((sum: number, src) => sum + Number(src.amount), 0)
+  const recurringPayableAmount = unprocessedPayable.reduce((s, r) => s + Number(r.amount), 0)
 
   const totalIncome     = Number(income._sum.amount  ?? 0)
   const totalExpense    = Number(expense._sum.amount ?? 0)
@@ -352,12 +366,18 @@ export default withAuth(async (req, res, session) => {
     monthPeopleReceived,
     goals,
     upcomingBills,
-    upcomingPersonPayables,   // current month — A Pagar modal
+    upcomingPersonPayables: [
+      ...(upcomingPersonPayables as any[]),
+      ...unprocessedPayable.map(r => ({ id: r.id, description: r.description, amount: Number(r.amount), date: new Date().toISOString(), person: r.person, isRecurring: true })),
+    ],
     futurePersonPayables,     // 45-day — Compromissos section
-    upcomingPeopleReceivable,
+    upcomingPeopleReceivable: [
+      ...(upcomingPeopleReceivable as any[]),
+      ...unprocessedReceivable.map(r => ({ id: r.id, description: r.description, amount: Number(r.amount), date: new Date().toISOString(), person: r.person, isRecurring: true })),
+    ],
     pendingBillsCount,
     pendingBillsAmount:    Number(pendingBillsAgg._sum.amount ?? 0),
-    personPayablesAmount:  Number(personPayables._sum.amount ?? 0),
+    personPayablesAmount:  Number(personPayables._sum.amount ?? 0) + recurringPayableAmount,
     overdueCount:          overdueCountNum,
     overBudgetCount,       // Fix 3: computed inline, no extra query
     projections:           projected,
