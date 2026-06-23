@@ -32,6 +32,14 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'DELETE') {
+    const paidBills = await db.bill.findMany({
+      where: { installmentGroupId: groupId, userId: session.userId, paidTransactionId: { not: null } },
+      select: { paidTransactionId: true },
+    })
+    const txIds = paidBills.map(b => b.paidTransactionId!).filter(Boolean)
+    if (txIds.length > 0) {
+      await db.transaction.deleteMany({ where: { id: { in: txIds }, userId: session.userId } })
+    }
     await db.bill.deleteMany({ where: { installmentGroupId: groupId, userId: session.userId } })
     return noContent(res)
   }

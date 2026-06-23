@@ -30,6 +30,10 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'DELETE') {
+    await db.bill.updateMany({
+      where: { paidTransactionId: id, userId: session.userId },
+      data:  { isPaid: false, paidAt: null, paidTransactionId: null },
+    })
     await db.transaction.deleteMany({ where: { id, userId: session.userId } })
     return noContent(res)
   }

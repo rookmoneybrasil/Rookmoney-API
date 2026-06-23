@@ -71,6 +71,9 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'DELETE') {
+    if (bill.paidTransactionId) {
+      await db.transaction.deleteMany({ where: { id: bill.paidTransactionId, userId: session.userId } })
+    }
     await db.bill.deleteMany({ where: { id, userId: session.userId } })
 
     // Fix 3: if this bill was generated from a RecurringBill template, mark
