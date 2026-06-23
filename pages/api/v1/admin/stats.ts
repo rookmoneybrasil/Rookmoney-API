@@ -59,7 +59,7 @@ export default withBackofficeAuth(async (_req, res) => {
   const totalProPlus = proPlusStripe + proPlusManual
   const totalPaid = totalPro + totalProPlus
   const totalFree = total - totalPaid
-  const mrr = totalPro * 19.90 + totalProPlus * 34.90
+  const mrr = proStripe * 19.90 + proPlusStripe * 34.90
 
   return ok(res, {
     totalUsers: total,
