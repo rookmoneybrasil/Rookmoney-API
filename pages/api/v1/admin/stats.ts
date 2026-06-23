@@ -23,8 +23,7 @@ export default withBackofficeAuth(async (_req, res) => {
     totalTransactions, transactionsThisMonth, totalGoals,
     recentUsers, openFeedback,
     recentFeedback,
-    newProThisMonth,
-    churnThisMonth,
+    convProRaw, convProPlusRaw, churnProRaw, churnProPlusRaw,
     recentLogs,
     manualExpiringCount,
   ] = await Promise.all([
@@ -49,33 +48,78 @@ export default withBackofficeAuth(async (_req, res) => {
       take: 3,
       select: { id: true, type: true, title: true, createdAt: true, user: { select: { name: true } } },
     }),
-    db.adminLog.count({ where: { action: 'plan_change', details: { contains: 'para PRO' }, createdAt: { gte: monthStart } } }),
-    db.adminLog.count({ where: { action: 'plan_change', details: { contains: 'para FREE' }, createdAt: { gte: monthStart } } }),
+    // Conversões PRO (Stripe upgrade to PRO + manual PRO activation)
+    db.$queryRaw<[{ count: number }]>`
+      SELECT COUNT(*)::int AS count FROM "AdminLog"
+      WHERE "createdAt" >= ${monthStart}
+      AND (
+        (action = 'stripe_upgrade' AND details NOT LIKE '%PRO_PLUS%')
+        OR (action = 'plan_change' AND (details LIKE 'Plano PRO manual%' OR details LIKE 'PRO prorrogado%'))
+      )
+    `,
+    // Conversões PRO+
+    db.$queryRaw<[{ count: number }]>`
+      SELECT COUNT(*)::int AS count FROM "AdminLog"
+      WHERE "createdAt" >= ${monthStart}
+      AND (
+        (action = 'stripe_upgrade' AND details LIKE '%PRO_PLUS%')
+        OR (action = 'plan_change' AND (details LIKE 'Plano PRO+ manual%' OR details LIKE 'PRO+ prorrogado%'))
+      )
+    `,
+    // Churn PRO
+    db.$queryRaw<[{ count: number }]>`
+      SELECT COUNT(*)::int AS count FROM "AdminLog"
+      WHERE "createdAt" >= ${monthStart}
+      AND (
+        (action = 'stripe_downgrade' AND details NOT LIKE '%PRO_PLUS%')
+        OR (action = 'plan_change' AND details LIKE '%de PRO para FREE%')
+        OR (action = 'plan_change' AND details LIKE 'PRO manual expirado%')
+      )
+    `,
+    // Churn PRO+
+    db.$queryRaw<[{ count: number }]>`
+      SELECT COUNT(*)::int AS count FROM "AdminLog"
+      WHERE "createdAt" >= ${monthStart}
+      AND (
+        (action = 'stripe_downgrade' AND details LIKE '%PRO_PLUS%')
+        OR (action = 'plan_change' AND details LIKE '%de PRO_PLUS para FREE%')
+        OR (action = 'plan_change' AND details LIKE 'PRO+ manual expirado%')
+      )
+    `,
     db.adminLog.findMany({ orderBy: { createdAt: 'desc' }, take: 5 }),
     db.user.count({ where: { plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, proPlanExpiresAt: { not: null, lte: sevenDaysOn } } }),
   ])
 
-  const totalPro = proStripe + proManual
-  const totalProPlus = proPlusStripe + proPlusManual
-  const totalPaid = totalPro + totalProPlus
-  const totalFree = total - totalPaid
-  const mrr = proStripe * 19.90 + proPlusStripe * 34.90
+  const totalPro      = proStripe + proManual
+  const totalProPlus  = proPlusStripe + proPlusManual
+  const totalPaid     = totalPro + totalProPlus
+  const totalFree     = total - totalPaid
+  const mrrPro        = proStripe * 19.90
+  const mrrProPlus    = proPlusStripe * 34.90
+  const mrr           = mrrPro + mrrProPlus
+
+  const convPro       = convProRaw[0]?.count ?? 0
+  const convProPlus   = convProPlusRaw[0]?.count ?? 0
+  const churnPro      = churnProRaw[0]?.count ?? 0
+  const churnProPlus  = churnProPlusRaw[0]?.count ?? 0
 
   return ok(res, {
     totalUsers: total,
     proUsers: totalPaid,
-    proPlusUsers: totalProPlus,
-    proManual: proManual + proPlusManual,
     freeUsers: totalFree,
     onlineUsers,
     proRate: total > 0 ? Math.round((totalPaid / total) * 100) : 0,
     newToday, newThisWeek, newThisMonth,
     totalTransactions, transactionsThisMonth, totalGoals,
+    // PRO breakdown
+    proTotal: totalPro, proStripe, proManual,
+    mrrPro, convPro, churnPro,
+    // PRO+ breakdown
+    proPlusTotal: totalProPlus, proPlusStripe, proPlusManual,
+    mrrProPlus, convProPlus, churnProPlus,
+    // Totals
     mrr, arr: mrr * 12,
-    proStripe, proPlusStripe,
     openFeedbackCount: openFeedback,
-    newProThisMonth,
-    churnThisMonth,
     manualExpiringCount,
     growthVsLastMonth: prevMonthNewUsers > 0
       ? Math.round(((newThisMonth - prevMonthNewUsers) / prevMonthNewUsers) * 100)
