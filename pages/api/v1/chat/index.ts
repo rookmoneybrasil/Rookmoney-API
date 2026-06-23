@@ -568,7 +568,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const session = await getSessionFromRequest(req)
   if (!session) return res.status(401).json({ error: 'Não autenticado' })
 
-  const limits   = getLimits(session.plan ?? 'FREE')
   const yearMonth = format(new Date(), 'yyyy-MM')
 
   const user = await db.user.findUnique({
@@ -577,6 +576,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   })
   if (!user || !isPro(user.plan)) return res.status(403).json({ error: 'pro_required', message: 'O assistente Rook é exclusivo do plano Pro.' })
 
+  const limits        = getLimits(user.plan)
   const chatCount     = user.chatUsageMonth === yearMonth ? user.chatUsageCount : 0
   const fileCount     = user.chatFileMonth === yearMonth ? user.chatFileCount : 0
   const analysisCount = user.chatAnalysisMonth === yearMonth ? user.chatAnalysisCount : 0
