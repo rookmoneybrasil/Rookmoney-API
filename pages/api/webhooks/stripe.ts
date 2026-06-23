@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import Stripe from 'stripe'
 import { db } from '@/lib/db'
 import { sendMetaEvent } from '@/lib/meta-capi'
+import { planFromPriceId } from '@/lib/stripe'
 
 export const config = { api: { bodyParser: false } }
 
@@ -39,10 +40,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const customerId     = typeof session.customer === 'string' ? session.customer : null
     const subscriptionId = typeof session.subscription === 'string' ? session.subscription : null
     if (userId) {
+      // Detect plan from the subscription's price ID
+      let detectedPlan: 'PRO' | 'PRO_PLUS' = 'PRO'
+      if (subscriptionId) {
+        try {
+          const subData = await stripe.subscriptions.retrieve(subscriptionId)
+          const priceId = subData.items?.data?.[0]?.price?.id
+          if (priceId) detectedPlan = planFromPriceId(priceId)
+        } catch { /* fallback to PRO */ }
+      }
+
+      const value = detectedPlan === 'PRO_PLUS' ? 34.90 : 19.90
       const user = await db.user.update({
         where: { id: userId },
         data:  {
-          plan: 'PRO',
+          plan: detectedPlan,
           stripeCustomerId: customerId ?? undefined,
           stripeSubscriptionId: subscriptionId ?? undefined,
           stripeCancelAtPeriodEnd: false,
@@ -52,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
       await db.adminLog.create({ data: {
         action: 'stripe_upgrade', targetId: userId,
-        details: `Upgrade para PRO via Stripe (${user.email})`,
+        details: `Upgrade para ${detectedPlan} via Stripe (${user.email})`,
       }})
 
       sendMetaEvent({
@@ -60,7 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         eventId:   `sub_${userId}_${Date.now()}`,
         sourceUrl: 'https://rookmoney.com/billing',
         userData:  { email: user.email },
-        value:     19.90,
+        value,
         currency:  'BRL',
       }).catch(() => {})
     }

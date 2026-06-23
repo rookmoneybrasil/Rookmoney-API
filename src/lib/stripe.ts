@@ -77,16 +77,36 @@ export async function getSubscription(subscriptionId: string): Promise<StripeSub
   }
 }
 
+export function getPriceId(plan: 'PRO' | 'PRO_PLUS', annual = false): string {
+  if (plan === 'PRO_PLUS') {
+    const id = annual
+      ? (process.env.STRIPE_PRO_PLUS_ANNUAL_PRICE_ID ?? process.env.STRIPE_PRO_PLUS_PRICE_ID)
+      : process.env.STRIPE_PRO_PLUS_PRICE_ID
+    if (!id) throw new Error('STRIPE_PRO_PLUS_PRICE_ID not configured')
+    return id
+  }
+  const id = annual
+    ? (process.env.STRIPE_ANNUAL_PRICE_ID ?? process.env.STRIPE_PRICE_ID)
+    : process.env.STRIPE_PRICE_ID
+  if (!id) throw new Error('STRIPE_PRICE_ID not configured')
+  return id
+}
+
+export function planFromPriceId(priceId: string): 'PRO' | 'PRO_PLUS' {
+  const proPlus = process.env.STRIPE_PRO_PLUS_PRICE_ID
+  const proPlusAnnual = process.env.STRIPE_PRO_PLUS_ANNUAL_PRICE_ID
+  if (priceId === proPlus || priceId === proPlusAnnual) return 'PRO_PLUS'
+  return 'PRO'
+}
+
 export async function createCheckoutSession(
   userId: string,
   email: string,
   returnUrl: string,
+  plan: 'PRO' | 'PRO_PLUS' = 'PRO',
   annual = false,
 ): Promise<{ url: string }> {
-  const priceId = annual
-    ? (process.env.STRIPE_ANNUAL_PRICE_ID ?? process.env.STRIPE_PRICE_ID)
-    : process.env.STRIPE_PRICE_ID
-  if (!priceId) throw new Error('STRIPE_PRICE_ID not configured')
+  const priceId = getPriceId(plan, annual)
 
   const data = await stripePost('/v1/checkout/sessions', {
     'payment_method_types[0]':         'card',
