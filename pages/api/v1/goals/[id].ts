@@ -39,7 +39,7 @@ export default withAuth(async (req, res, session) => {
 
   // ── Withdraw / cancel contribution ────────────────────────────────────────
   if (req.method === 'POST' && req.query.action === 'withdraw') {
-    const { amount, categoryId } = req.body
+    const { amount } = req.body
     if (!amount) return badRequest(res, 'Valor obrigatório.')
     const amountNum = parseFloat(amount)
     if (!Number.isFinite(amountNum) || amountNum <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
@@ -47,18 +47,36 @@ export default withAuth(async (req, res, session) => {
     if (!goal) return notFound(res)
     const newAmount = Math.max(0, Number(goal.currentAmount) - amountNum)
 
-    const resolvedCatId = categoryId || (await db.category.findFirst({
-      where: { OR: [{ isDefault: true }, { userId: session.userId }] },
-      orderBy: { isDefault: 'desc' },
-    }))?.id
-    if (!resolvedCatId) return badRequest(res, 'Categoria não encontrada.')
+    const aporteDesc = `Aporte — ${goal.name}`
+    const aportes = await db.transaction.findMany({
+      where: { userId: session.userId, type: 'EXPENSE', description: aporteDesc },
+      orderBy: { date: 'desc' },
+    })
+
+    let remaining = amountNum
+    const toDelete: string[] = []
+    let toShrink: { id: string; newAmount: number } | null = null
+
+    for (const tx of aportes) {
+      if (remaining <= 0) break
+      const txAmt = Number(tx.amount)
+      if (txAmt <= remaining) {
+        toDelete.push(tx.id)
+        remaining -= txAmt
+      } else {
+        toShrink = { id: tx.id, newAmount: txAmt - remaining }
+        remaining = 0
+      }
+    }
 
     await db.$transaction([
       db.goal.update({ where: { id }, data: { currentAmount: newAmount, isCompleted: false, completedAt: null } }),
-      db.transaction.create({
-        data: { amount: amountNum, type: 'INCOME', description: `Retirada — ${goal.name}`, date: new Date(), userId: session.userId, categoryId: resolvedCatId },
-      }),
-      // Create negative contribution so the goals page shows withdrawals too
+      ...(toDelete.length > 0
+        ? [db.transaction.deleteMany({ where: { id: { in: toDelete } } })]
+        : []),
+      ...(toShrink
+        ? [db.transaction.update({ where: { id: toShrink.id }, data: { amount: toShrink.newAmount } })]
+        : []),
       db.goalContribution.create({
         data: { goalId: id, amount: -amountNum, note: 'Retirada' },
       }),
