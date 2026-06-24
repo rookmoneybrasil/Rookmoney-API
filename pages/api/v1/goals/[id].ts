@@ -89,6 +89,12 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'DELETE') {
+    await db.transaction.deleteMany({
+      where: {
+        userId: session.userId,
+        description: { in: [`Aporte — ${goal.name}`, `Retirada — ${goal.name}`] },
+      },
+    })
     await db.goal.deleteMany({ where: { id, userId: session.userId } })
     return noContent(res)
   }
