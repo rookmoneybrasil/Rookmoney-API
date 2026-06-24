@@ -205,6 +205,22 @@ const MIGRATIONS: Migration[] = [
     },
   },
 
+  // ─── 2026-06-24 ─────────────────────────────────────────────────────
+  {
+    id:  '2026-06-24-cleanup-phantom-withdraw-income',
+    run: async (db) => {
+      const deleted = await db.transaction.deleteMany({
+        where: {
+          type: 'INCOME',
+          description: { startsWith: 'Retirada — ' },
+        },
+      })
+      if (deleted.count > 0) {
+        console.log(`[data-migration] cleaned ${deleted.count} phantom withdrawal INCOME transactions`)
+      }
+    },
+  },
+
   // ─── 2026-06-05 ─────────────────────────────────────────────────────
   {
     id:  '2026-06-05-revert-future-startdate-income',
