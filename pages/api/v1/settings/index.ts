@@ -36,7 +36,8 @@ export default withAuth(async (req, res, session) => {
         notifBillReminder: true, notifCategoryLimit: true, notifMonthlyEmail: true,
         currency: true, dateFormat: true,
         stripeCustomerId: true, stripeSubscriptionId: true,
-        stripeCancelAtPeriodEnd: true, stripeCurrentPeriodEnd: true, updatedAt: true,
+        stripeCancelAtPeriodEnd: true, stripeCurrentPeriodEnd: true,
+        subscriptionSource: true, updatedAt: true,
       },
     })
     if (!user) return res.status(404).end()

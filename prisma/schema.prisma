@@ -47,6 +47,9 @@ model User {
   scannerUsageCount   Int       @default(0)
   stripeCancelAtPeriodEnd Boolean  @default(false)
   stripeCurrentPeriodEnd DateTime?
+  googlePlayToken     String?   // purchase token for server-side verification
+  googlePlayOrderId   String?
+  subscriptionSource  String?   // 'stripe' | 'google_play' | null (legacy)
   proPlanExpiresAt    DateTime? // null = vitalício (manual PRO only)
   proPlanReason       String?   // motivo registrado pelo admin ao dar PRO manual
   adminNotes          String?   // notas internas do backoffice (não visível ao usuário)
@@ -54,6 +57,7 @@ model User {
   utmSource           String?
   utmMedium           String?
   utmCampaign         String?
+  platform            String?   // 'android' | 'ios' | null (web-only)
   lastActiveAt        DateTime?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt

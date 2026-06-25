@@ -1977,6 +1977,9 @@ export const UserScalarFieldEnum = {
   scannerUsageCount: 'scannerUsageCount',
   stripeCancelAtPeriodEnd: 'stripeCancelAtPeriodEnd',
   stripeCurrentPeriodEnd: 'stripeCurrentPeriodEnd',
+  googlePlayToken: 'googlePlayToken',
+  googlePlayOrderId: 'googlePlayOrderId',
+  subscriptionSource: 'subscriptionSource',
   proPlanExpiresAt: 'proPlanExpiresAt',
   proPlanReason: 'proPlanReason',
   adminNotes: 'adminNotes',
@@ -1984,6 +1987,7 @@ export const UserScalarFieldEnum = {
   utmSource: 'utmSource',
   utmMedium: 'utmMedium',
   utmCampaign: 'utmCampaign',
+  platform: 'platform',
   lastActiveAt: 'lastActiveAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

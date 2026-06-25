@@ -26,6 +26,8 @@ export default withBackofficeAuth(async (_req, res) => {
     convProRaw, convProPlusRaw, churnProRaw, churnProPlusRaw,
     recentLogs,
     manualExpiringCount,
+    androidUsers,
+    iosUsers,
   ] = await Promise.all([
     db.user.count(),
     db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: { not: null } } }),
@@ -88,6 +90,8 @@ export default withBackofficeAuth(async (_req, res) => {
     `,
     db.adminLog.findMany({ orderBy: { createdAt: 'desc' }, take: 5 }),
     db.user.count({ where: { plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, proPlanExpiresAt: { not: null, lte: sevenDaysOn } } }),
+    db.user.count({ where: { platform: 'android' } }),
+    db.user.count({ where: { platform: 'ios' } }),
   ])
 
   const totalPro      = proStripe + proManual
@@ -127,5 +131,8 @@ export default withBackofficeAuth(async (_req, res) => {
     recentFeedback,
     recentLogs,
     recentUsers,
+    androidUsers,
+    iosUsers,
+    webOnlyUsers: total - androidUsers - iosUsers,
   })
 })

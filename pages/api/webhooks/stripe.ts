@@ -59,6 +59,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           stripeSubscriptionId: subscriptionId ?? undefined,
           stripeCancelAtPeriodEnd: false,
           stripeCurrentPeriodEnd: null,
+          subscriptionSource: 'stripe',
+          googlePlayToken: null,
+          googlePlayOrderId: null,
         },
         select: { email: true },
       })
@@ -115,6 +118,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           stripeSubscriptionId: null,
           stripeCancelAtPeriodEnd: false,
           stripeCurrentPeriodEnd: null,
+          subscriptionSource: null,
         },
       })
       if (user) {
