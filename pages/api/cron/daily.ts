@@ -219,10 +219,11 @@ async function checkChurnAlert() {
   }
 }
 
-async function sendNotifications() {
+async function sendNotifications(): Promise<number> {
   const now     = new Date()
   const today   = now.getDate()
   const in3Days = addDays(now, 3)
+  let sentCount = 0
 
   const users = await db.user.findMany({
     where: { pushToken: { not: null } },
@@ -474,10 +475,12 @@ async function sendNotifications() {
         data:  { screen: p.screen },
         sound: 'default',
       }]).catch(e => console.error('[notify] push failed:', e))
+      sentCount++
     } catch (err) {
       console.error(`[notify] user ${user.id}:`, err)
     }
   }
+  return sentCount
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -510,9 +513,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await expireManualPro().catch(e => console.error('[expire-pro] fatal:', e))
   await checkChurnAlert().catch(e => console.error('[churn-alert] fatal:', e))
 
-  // Send notifications (fire-and-forget — don't block cron response)
-  sendNotifications().catch(e => console.error('[notify] fatal:', e))
+  // Send notifications — await so we can report count
+  let pushSent = 0
+  try {
+    pushSent = await sendNotifications()
+  } catch (e) {
+    console.error('[notify] fatal:', e)
+  }
   cleanupExpiredLimits().catch(e => console.error('[rate-limit] cleanup failed:', e))
 
-  return res.status(200).json({ ok: true, processed, errors })
+  return res.status(200).json({ ok: true, processed, pushSent, errors })
 }
