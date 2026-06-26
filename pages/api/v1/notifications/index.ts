@@ -90,6 +90,23 @@ export default withAuth(async (req, res, session) => {
     })
   }
 
+  // ── PushLogs (cron + broadcast, last 7 days, max 10) ──────────────
+  const pushLogs = await db.pushLog.findMany({
+    where: { userId: uid, createdAt: { gte: addDays(now, -7) } },
+    orderBy: { createdAt: 'desc' },
+    take: 10,
+  })
+  for (const log of pushLogs) {
+    notifications.push({
+      id:      `push-${log.id}`,
+      type:    'rookinho',
+      title:   log.title,
+      message: log.body,
+      href:    log.screen ? `/${log.screen}` : '/',
+      urgency: 'low',
+    })
+  }
+
   // ── Rookinho daily message ────────────────────────────────────────
   const firstName = (user?.name ?? '').split(' ')[0] || 'aí'
   const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24))

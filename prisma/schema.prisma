@@ -76,6 +76,7 @@ model User {
   recurringBills        RecurringBill[]
   pluggyItems           PluggyItem[]
   achievements          UserAchievement[]
+  pushLogs              PushLog[]
 }
 
 // ─── Category ───────────────────────────────────────────────────────
@@ -444,6 +445,22 @@ model UserAchievement {
 
   @@unique([userId, slug])
   @@index([userId])
+}
+
+// ─── PushLog ─────────────────────────────────────────────────────────────────
+// Persists push notifications sent to users (cron + broadcast) so they appear in the bell.
+
+model PushLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  screen    String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }
 
 // ─── PluggyItem ───────────────────────────────────────────────────────────────

@@ -481,6 +481,8 @@ async function sendNotifications(): Promise<number> {
           data:  { screen: p.screen },
           sound: 'default',
         }]).catch(e => console.error('[notify] push failed:', e))
+        await db.pushLog.create({ data: { userId: user.id, title: p.title, body: p.body, screen: p.screen } })
+          .catch(e => console.error('[pushlog] save failed:', e))
       }
       sentCount++
     } catch (err) {
