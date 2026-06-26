@@ -222,6 +222,8 @@ async function checkChurnAlert() {
 async function sendNotifications(): Promise<number> {
   const now     = new Date()
   const today   = now.getDate()
+  const hour    = now.getHours()
+  const slot    = today * 10 + hour
   const in3Days = addDays(now, 3)
   let sentCount = 0
 
@@ -259,7 +261,7 @@ async function sendNotifications(): Promise<number> {
             { title: '🐦 Rookinho aqui, ó', body: `Conta de ${titles}${extra} tá chegando. Paga logo antes que eu fique nervoso!` },
             { title: `🐦 ${firstName}! Conta batendo na porta`, body: `${titles}${extra} vence${dueSoon.length > 1 ? 'm' : ''} nos próximos dias. Bora resolver isso?` },
           ]
-          pushes.push({ ...billMsgs[today % billMsgs.length], screen: 'bills' })
+          pushes.push({ ...billMsgs[slot % billMsgs.length], screen: 'bills' })
         }
       }
 
@@ -295,7 +297,7 @@ async function sendNotifications(): Promise<number> {
               { title: `🐦 ${firstName}, calma aí`, body: `${cat} já passou de 80% do limite. Segura a mão!` },
               { title: '🐦 Alerta do Rookinho', body: `Orçamento de ${cat} no limite. Quer ficar no vermelho? Acho que não né.` },
             ]
-            pushes.push({ ...budgetMsgs[today % budgetMsgs.length], screen: 'budget' })
+            pushes.push({ ...budgetMsgs[slot % budgetMsgs.length], screen: 'budget' })
           }
         }
       }
@@ -313,7 +315,7 @@ async function sendNotifications(): Promise<number> {
           { title: '🐦 Cadê o dinheiro da meta?', body: `"${g.name}" tá em ${pct}% e faltam ${days} dia${days !== 1 ? 's' : ''}. Bora, ${firstName}!` },
           { title: `🐦 ${firstName}, a meta tá chorando`, body: `"${g.name}" precisa de atenção — ${pct}% com ${days} dia${days !== 1 ? 's' : ''} restantes.` },
         ]
-        pushes.push({ ...goalMsgs[today % goalMsgs.length], screen: 'goals' })
+        pushes.push({ ...goalMsgs[slot % goalMsgs.length], screen: 'goals' })
       }
 
       // ── 4. Daily spending summary (yesterday) ──────────────────────────
@@ -335,7 +337,7 @@ async function sendNotifications(): Promise<number> {
               { title: '🐦 Resuminho de ontem', body: `Gastou R$ ${spent.toFixed(2)} ontem. Tá controlado, ${firstName}? Eu tô de olho!` },
               { title: '🐦 Boa, controlado!', body: `R$ ${spent.toFixed(2)} ontem. Nada mal! Continua assim que o Rookinho aprova.` },
             ]
-        pushes.push({ ...spendMsgs[today % spendMsgs.length], screen: 'transactions' })
+        pushes.push({ ...spendMsgs[slot % spendMsgs.length], screen: 'transactions' })
       }
 
       // ── 5. Reengagement (inactive — escalates with days) ───────────────
@@ -411,7 +413,7 @@ async function sendNotifications(): Promise<number> {
             { title: '🐦 Faz as contas', body: `R$19,90 por mês = R$0,66 por dia. ${firstName}, isso é menos que um café. E muda sua vida financeira.`, screen: 'settings' },
             { title: `🐦 ${firstName}, última chance?`, body: 'Brincadeira, não é última chance. Mas e se fosse? Ia continuar no grátis? Bora de PRO!', screen: 'settings' },
           ]
-          const idx = (today + now.getMonth()) % proPool.length
+          const idx = (slot + now.getMonth()) % proPool.length
           pushes.push(proPool[idx])
         }
       }
@@ -463,7 +465,7 @@ async function sendNotifications(): Promise<number> {
           { title: '🐦 Dica de ouro', body: `${firstName}, paga as contas assim que cair o salário. Futuro-você vai agradecer!`, screen: 'bills' },
           { title: `🐦 ${firstName}!`, body: 'Já olhou quanto gastou por categoria esse mês? Às vezes a gente se assusta, mas é bom saber!', screen: 'reports' },
         ]
-        pushes.push(tips[dayOfYear % tips.length])
+        pushes.push(tips[(dayOfYear + hour) % tips.length])
       }
 
       // ── Send up to 2 pushes: highest-priority + a second if different type ──
