@@ -466,15 +466,20 @@ async function sendNotifications(): Promise<number> {
         pushes.push(tips[dayOfYear % tips.length])
       }
 
-      // ── Send the highest-priority push (first in array) ────────────────
-      const p = pushes[0]
-      await sendPush([{
-        to:    user.pushToken!,
-        title: p.title,
-        body:  p.body,
-        data:  { screen: p.screen },
-        sound: 'default',
-      }]).catch(e => console.error('[notify] push failed:', e))
+      // ── Send up to 2 pushes: highest-priority + a second if different type ──
+      const toSend = [pushes[0]]
+      if (pushes.length > 1 && pushes[1].title !== pushes[0].title) {
+        toSend.push(pushes[1])
+      }
+      for (const p of toSend) {
+        await sendPush([{
+          to:    user.pushToken!,
+          title: p.title,
+          body:  p.body,
+          data:  { screen: p.screen },
+          sound: 'default',
+        }]).catch(e => console.error('[notify] push failed:', e))
+      }
       sentCount++
     } catch (err) {
       console.error(`[notify] user ${user.id}:`, err)
