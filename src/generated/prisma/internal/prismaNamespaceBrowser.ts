@@ -70,6 +70,8 @@ export const ModelName = {
   AdminLog: 'AdminLog',
   AppSetting: 'AppSetting',
   UserAchievement: 'UserAchievement',
+  PushLog: 'PushLog',
+  BlogPost: 'BlogPost',
   PluggyItem: 'PluggyItem'
 } as const
 
@@ -406,6 +408,38 @@ export const UserAchievementScalarFieldEnum = {
 } as const
 
 export type UserAchievementScalarFieldEnum = (typeof UserAchievementScalarFieldEnum)[keyof typeof UserAchievementScalarFieldEnum]
+
+
+export const PushLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  body: 'body',
+  screen: 'screen',
+  read: 'read',
+  createdAt: 'createdAt'
+} as const
+
+export type PushLogScalarFieldEnum = (typeof PushLogScalarFieldEnum)[keyof typeof PushLogScalarFieldEnum]
+
+
+export const BlogPostScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  title: 'title',
+  excerpt: 'excerpt',
+  content: 'content',
+  category: 'category',
+  image: 'image',
+  imageAlt: 'imageAlt',
+  author: 'author',
+  published: 'published',
+  source: 'source',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BlogPostScalarFieldEnum = (typeof BlogPostScalarFieldEnum)[keyof typeof BlogPostScalarFieldEnum]
 
 
 export const PluggyItemScalarFieldEnum = {

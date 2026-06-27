@@ -590,6 +590,7 @@ export type UserWhereInput = {
   recurringBills?: Prisma.RecurringBillListRelationFilter
   pluggyItems?: Prisma.PluggyItemListRelationFilter
   achievements?: Prisma.UserAchievementListRelationFilter
+  pushLogs?: Prisma.PushLogListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -655,6 +656,7 @@ export type UserOrderByWithRelationInput = {
   recurringBills?: Prisma.RecurringBillOrderByRelationAggregateInput
   pluggyItems?: Prisma.PluggyItemOrderByRelationAggregateInput
   achievements?: Prisma.UserAchievementOrderByRelationAggregateInput
+  pushLogs?: Prisma.PushLogOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -723,6 +725,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   recurringBills?: Prisma.RecurringBillListRelationFilter
   pluggyItems?: Prisma.PluggyItemListRelationFilter
   achievements?: Prisma.UserAchievementListRelationFilter
+  pushLogs?: Prisma.PushLogListRelationFilter
 }, "id" | "email" | "googleId" | "whatsappPhone">
 
 export type UserOrderByWithAggregationInput = {
@@ -898,6 +901,7 @@ export type UserCreateInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -963,6 +967,7 @@ export type UserUncheckedCreateInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -1028,6 +1033,7 @@ export type UserUpdateInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -1093,6 +1099,7 @@ export type UserUncheckedUpdateInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1639,6 +1646,20 @@ export type UserUpdateOneRequiredWithoutAchievementsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAchievementsInput, Prisma.UserUpdateWithoutAchievementsInput>, Prisma.UserUncheckedUpdateWithoutAchievementsInput>
 }
 
+export type UserCreateNestedOneWithoutPushLogsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPushLogsInput, Prisma.UserUncheckedCreateWithoutPushLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPushLogsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPushLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPushLogsInput, Prisma.UserUncheckedCreateWithoutPushLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPushLogsInput
+  upsert?: Prisma.UserUpsertWithoutPushLogsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPushLogsInput, Prisma.UserUpdateWithoutPushLogsInput>, Prisma.UserUncheckedUpdateWithoutPushLogsInput>
+}
+
 export type UserCreateNestedOneWithoutPluggyItemsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutPluggyItemsInput, Prisma.UserUncheckedCreateWithoutPluggyItemsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutPluggyItemsInput
@@ -1715,6 +1736,7 @@ export type UserCreateWithoutCategoriesInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCategoriesInput = {
@@ -1779,6 +1801,7 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCategoriesInput = {
@@ -1859,6 +1882,7 @@ export type UserUpdateWithoutCategoriesInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCategoriesInput = {
@@ -1923,6 +1947,7 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTransactionsInput = {
@@ -1987,6 +2012,7 @@ export type UserCreateWithoutTransactionsInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTransactionsInput = {
@@ -2051,6 +2077,7 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTransactionsInput = {
@@ -2131,6 +2158,7 @@ export type UserUpdateWithoutTransactionsInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTransactionsInput = {
@@ -2195,6 +2223,7 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRecurringTransactionsInput = {
@@ -2259,6 +2288,7 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
@@ -2323,6 +2353,7 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRecurringTransactionsInput = {
@@ -2403,6 +2434,7 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
@@ -2467,6 +2499,7 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGoalsInput = {
@@ -2531,6 +2564,7 @@ export type UserCreateWithoutGoalsInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGoalsInput = {
@@ -2595,6 +2629,7 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGoalsInput = {
@@ -2675,6 +2710,7 @@ export type UserUpdateWithoutGoalsInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGoalsInput = {
@@ -2739,6 +2775,7 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBudgetsInput = {
@@ -2803,6 +2840,7 @@ export type UserCreateWithoutBudgetsInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBudgetsInput = {
@@ -2867,6 +2905,7 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBudgetsInput = {
@@ -2947,6 +2986,7 @@ export type UserUpdateWithoutBudgetsInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBudgetsInput = {
@@ -3011,6 +3051,7 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutIncomeSourcesInput = {
@@ -3075,6 +3116,7 @@ export type UserCreateWithoutIncomeSourcesInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutIncomeSourcesInput = {
@@ -3139,6 +3181,7 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutIncomeSourcesInput = {
@@ -3219,6 +3262,7 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
@@ -3283,6 +3327,7 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBillsInput = {
@@ -3347,6 +3392,7 @@ export type UserCreateWithoutBillsInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBillsInput = {
@@ -3411,6 +3457,7 @@ export type UserUncheckedCreateWithoutBillsInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBillsInput = {
@@ -3491,6 +3538,7 @@ export type UserUpdateWithoutBillsInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBillsInput = {
@@ -3555,6 +3603,7 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRecurringBillsInput = {
@@ -3619,6 +3668,7 @@ export type UserCreateWithoutRecurringBillsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRecurringBillsInput = {
@@ -3683,6 +3733,7 @@ export type UserUncheckedCreateWithoutRecurringBillsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRecurringBillsInput = {
@@ -3763,6 +3814,7 @@ export type UserUpdateWithoutRecurringBillsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecurringBillsInput = {
@@ -3827,6 +3879,7 @@ export type UserUncheckedUpdateWithoutRecurringBillsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPeopleInput = {
@@ -3891,6 +3944,7 @@ export type UserCreateWithoutPeopleInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPeopleInput = {
@@ -3955,6 +4009,7 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPeopleInput = {
@@ -4035,6 +4090,7 @@ export type UserUpdateWithoutPeopleInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPeopleInput = {
@@ -4099,6 +4155,7 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPersonEntryRecurringInput = {
@@ -4163,6 +4220,7 @@ export type UserCreateWithoutPersonEntryRecurringInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
@@ -4227,6 +4285,7 @@ export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPersonEntryRecurringInput = {
@@ -4307,6 +4366,7 @@ export type UserUpdateWithoutPersonEntryRecurringInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
@@ -4371,6 +4431,7 @@ export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPersonEntriesInput = {
@@ -4435,6 +4496,7 @@ export type UserCreateWithoutPersonEntriesInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPersonEntriesInput = {
@@ -4499,6 +4561,7 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPersonEntriesInput = {
@@ -4579,6 +4642,7 @@ export type UserUpdateWithoutPersonEntriesInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPersonEntriesInput = {
@@ -4643,6 +4707,7 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFeedbacksInput = {
@@ -4707,6 +4772,7 @@ export type UserCreateWithoutFeedbacksInput = {
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFeedbacksInput = {
@@ -4771,6 +4837,7 @@ export type UserUncheckedCreateWithoutFeedbacksInput = {
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFeedbacksInput = {
@@ -4851,6 +4918,7 @@ export type UserUpdateWithoutFeedbacksInput = {
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFeedbacksInput = {
@@ -4915,6 +4983,7 @@ export type UserUncheckedUpdateWithoutFeedbacksInput = {
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAchievementsInput = {
@@ -4979,6 +5048,7 @@ export type UserCreateWithoutAchievementsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAchievementsInput = {
@@ -5043,6 +5113,7 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAchievementsInput = {
@@ -5123,6 +5194,7 @@ export type UserUpdateWithoutAchievementsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAchievementsInput = {
@@ -5187,6 +5259,283 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPushLogsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  pushToken?: string | null
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  stripeCancelAtPeriodEnd?: boolean
+  stripeCurrentPeriodEnd?: Date | string | null
+  googlePlayToken?: string | null
+  googlePlayOrderId?: string | null
+  subscriptionSource?: string | null
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
+  tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  platform?: string | null
+  lastActiveAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPushLogsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  pushToken?: string | null
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  stripeCancelAtPeriodEnd?: boolean
+  stripeCurrentPeriodEnd?: Date | string | null
+  googlePlayToken?: string | null
+  googlePlayOrderId?: string | null
+  subscriptionSource?: string | null
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
+  tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  platform?: string | null
+  lastActiveAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceUncheckedCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPushLogsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPushLogsInput, Prisma.UserUncheckedCreateWithoutPushLogsInput>
+}
+
+export type UserUpsertWithoutPushLogsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPushLogsInput, Prisma.UserUncheckedUpdateWithoutPushLogsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPushLogsInput, Prisma.UserUncheckedCreateWithoutPushLogsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPushLogsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPushLogsInput, Prisma.UserUncheckedUpdateWithoutPushLogsInput>
+}
+
+export type UserUpdateWithoutPushLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPushLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUncheckedUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPluggyItemsInput = {
@@ -5251,6 +5600,7 @@ export type UserCreateWithoutPluggyItemsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPluggyItemsInput = {
@@ -5315,6 +5665,7 @@ export type UserUncheckedCreateWithoutPluggyItemsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
   recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPluggyItemsInput = {
@@ -5395,6 +5746,7 @@ export type UserUpdateWithoutPluggyItemsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPluggyItemsInput = {
@@ -5459,6 +5811,7 @@ export type UserUncheckedUpdateWithoutPluggyItemsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
   recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -5481,6 +5834,7 @@ export type UserCountOutputType = {
   recurringBills: number
   pluggyItems: number
   achievements: number
+  pushLogs: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -5498,6 +5852,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   recurringBills?: boolean | UserCountOutputTypeCountRecurringBillsArgs
   pluggyItems?: boolean | UserCountOutputTypeCountPluggyItemsArgs
   achievements?: boolean | UserCountOutputTypeCountAchievementsArgs
+  pushLogs?: boolean | UserCountOutputTypeCountPushLogsArgs
 }
 
 /**
@@ -5608,6 +5963,13 @@ export type UserCountOutputTypeCountAchievementsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.UserAchievementWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPushLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PushLogWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -5672,6 +6034,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   recurringBills?: boolean | Prisma.User$recurringBillsArgs<ExtArgs>
   pluggyItems?: boolean | Prisma.User$pluggyItemsArgs<ExtArgs>
   achievements?: boolean | Prisma.User$achievementsArgs<ExtArgs>
+  pushLogs?: boolean | Prisma.User$pushLogsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -5844,6 +6207,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   recurringBills?: boolean | Prisma.User$recurringBillsArgs<ExtArgs>
   pluggyItems?: boolean | Prisma.User$pluggyItemsArgs<ExtArgs>
   achievements?: boolean | Prisma.User$achievementsArgs<ExtArgs>
+  pushLogs?: boolean | Prisma.User$pushLogsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -5866,6 +6230,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     recurringBills: Prisma.$RecurringBillPayload<ExtArgs>[]
     pluggyItems: Prisma.$PluggyItemPayload<ExtArgs>[]
     achievements: Prisma.$UserAchievementPayload<ExtArgs>[]
+    pushLogs: Prisma.$PushLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -6324,6 +6689,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   recurringBills<T extends Prisma.User$recurringBillsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recurringBillsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringBillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pluggyItems<T extends Prisma.User$pluggyItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pluggyItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PluggyItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   achievements<T extends Prisma.User$achievementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$achievementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pushLogs<T extends Prisma.User$pushLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pushLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PushLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7127,6 +7493,30 @@ export type User$achievementsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.UserAchievementScalarFieldEnum | Prisma.UserAchievementScalarFieldEnum[]
+}
+
+/**
+ * User.pushLogs
+ */
+export type User$pushLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PushLog
+   */
+  select?: Prisma.PushLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PushLog
+   */
+  omit?: Prisma.PushLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PushLogInclude<ExtArgs> | null
+  where?: Prisma.PushLogWhereInput
+  orderBy?: Prisma.PushLogOrderByWithRelationInput | Prisma.PushLogOrderByWithRelationInput[]
+  cursor?: Prisma.PushLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PushLogScalarFieldEnum | Prisma.PushLogScalarFieldEnum[]
 }
 
 /**

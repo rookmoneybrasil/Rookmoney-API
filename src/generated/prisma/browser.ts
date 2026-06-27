@@ -113,6 +113,16 @@ export type AppSetting = Prisma.AppSettingModel
  */
 export type UserAchievement = Prisma.UserAchievementModel
 /**
+ * Model PushLog
+ * 
+ */
+export type PushLog = Prisma.PushLogModel
+/**
+ * Model BlogPost
+ * 
+ */
+export type BlogPost = Prisma.BlogPostModel
+/**
  * Model PluggyItem
  * 
  */

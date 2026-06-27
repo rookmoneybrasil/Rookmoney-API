@@ -403,6 +403,8 @@ export const ModelName = {
   AdminLog: 'AdminLog',
   AppSetting: 'AppSetting',
   UserAchievement: 'UserAchievement',
+  PushLog: 'PushLog',
+  BlogPost: 'BlogPost',
   PluggyItem: 'PluggyItem'
 } as const
 
@@ -419,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "transaction" | "recurringTransaction" | "goal" | "goalContribution" | "budget" | "incomeSource" | "bill" | "recurringBill" | "person" | "personEntryRecurring" | "personEntry" | "feedback" | "dataMigration" | "rateLimit" | "adminLog" | "appSetting" | "userAchievement" | "pluggyItem"
+    modelProps: "user" | "category" | "transaction" | "recurringTransaction" | "goal" | "goalContribution" | "budget" | "incomeSource" | "bill" | "recurringBill" | "person" | "personEntryRecurring" | "personEntry" | "feedback" | "dataMigration" | "rateLimit" | "adminLog" | "appSetting" | "userAchievement" | "pushLog" | "blogPost" | "pluggyItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1829,6 +1831,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PushLog: {
+      payload: Prisma.$PushLogPayload<ExtArgs>
+      fields: Prisma.PushLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PushLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PushLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PushLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PushLogPayload>
+        }
+        findFirst: {
+          args: Prisma.PushLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PushLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PushLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PushLogPayload>
+        }
+        findMany: {
+          args: Prisma.PushLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PushLogPayload>[]
+        }
+        create: {
+          args: Prisma.PushLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PushLogPayload>
+        }
+        createMany: {
+          args: Prisma.PushLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PushLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PushLogPayload>[]
+        }
+        delete: {
+          args: Prisma.PushLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PushLogPayload>
+        }
+        update: {
+          args: Prisma.PushLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PushLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.PushLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PushLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PushLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PushLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.PushLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PushLogPayload>
+        }
+        aggregate: {
+          args: Prisma.PushLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePushLog>
+        }
+        groupBy: {
+          args: Prisma.PushLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PushLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PushLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PushLogCountAggregateOutputType> | number
+        }
+      }
+    }
+    BlogPost: {
+      payload: Prisma.$BlogPostPayload<ExtArgs>
+      fields: Prisma.BlogPostFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BlogPostFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPostPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BlogPostFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPostPayload>
+        }
+        findFirst: {
+          args: Prisma.BlogPostFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPostPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BlogPostFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPostPayload>
+        }
+        findMany: {
+          args: Prisma.BlogPostFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPostPayload>[]
+        }
+        create: {
+          args: Prisma.BlogPostCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPostPayload>
+        }
+        createMany: {
+          args: Prisma.BlogPostCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BlogPostCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPostPayload>[]
+        }
+        delete: {
+          args: Prisma.BlogPostDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPostPayload>
+        }
+        update: {
+          args: Prisma.BlogPostUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPostPayload>
+        }
+        deleteMany: {
+          args: Prisma.BlogPostDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BlogPostUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BlogPostUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPostPayload>[]
+        }
+        upsert: {
+          args: Prisma.BlogPostUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPostPayload>
+        }
+        aggregate: {
+          args: Prisma.BlogPostAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBlogPost>
+        }
+        groupBy: {
+          args: Prisma.BlogPostGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BlogPostGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BlogPostCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BlogPostCountAggregateOutputType> | number
+        }
+      }
+    }
     PluggyItem: {
       payload: Prisma.$PluggyItemPayload<ExtArgs>
       fields: Prisma.PluggyItemFieldRefs
@@ -2261,6 +2411,38 @@ export const UserAchievementScalarFieldEnum = {
 export type UserAchievementScalarFieldEnum = (typeof UserAchievementScalarFieldEnum)[keyof typeof UserAchievementScalarFieldEnum]
 
 
+export const PushLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  body: 'body',
+  screen: 'screen',
+  read: 'read',
+  createdAt: 'createdAt'
+} as const
+
+export type PushLogScalarFieldEnum = (typeof PushLogScalarFieldEnum)[keyof typeof PushLogScalarFieldEnum]
+
+
+export const BlogPostScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  title: 'title',
+  excerpt: 'excerpt',
+  content: 'content',
+  category: 'category',
+  image: 'image',
+  imageAlt: 'imageAlt',
+  author: 'author',
+  published: 'published',
+  source: 'source',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BlogPostScalarFieldEnum = (typeof BlogPostScalarFieldEnum)[keyof typeof BlogPostScalarFieldEnum]
+
+
 export const PluggyItemScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -2567,6 +2749,8 @@ export type GlobalOmitConfig = {
   adminLog?: Prisma.AdminLogOmit
   appSetting?: Prisma.AppSettingOmit
   userAchievement?: Prisma.UserAchievementOmit
+  pushLog?: Prisma.PushLogOmit
+  blogPost?: Prisma.BlogPostOmit
   pluggyItem?: Prisma.PluggyItemOmit
 }
 
