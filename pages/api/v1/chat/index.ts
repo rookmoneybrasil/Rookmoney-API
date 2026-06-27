@@ -47,6 +47,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const { messages } = req.body as { messages: Anthropic.MessageParam[] }
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return res.status(400).json({ error: 'bad_request', message: 'Envie pelo menos uma mensagem.' })
+  }
   const lastMsg = messages[messages.length - 1]
   const hasFile = Array.isArray(lastMsg?.content) && (lastMsg.content as unknown[]).some((b: unknown) => {
     const block = b as { type?: string }
@@ -55,14 +58,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (hasFile && fileLimit && fileCount >= fileLimit) {
     return res.status(429).json({ error: 'file_limit', message: `Limite de ${fileLimit} arquivos/mês atingido. Faça upgrade pro Pro+ para envio ilimitado.` })
   }
-
-  await db.user.update({
-    where: { id: session.userId },
-    data: {
-      chatUsageMonth: yearMonth, chatUsageCount: chatCount + 1,
-      ...(hasFile ? { chatFileMonth: yearMonth, chatFileCount: fileCount + 1 } : {}),
-    },
-  })
 
   const truncated = messages.slice(-10)
   const safeMessages = truncated[0]?.role === 'assistant' ? truncated.slice(1) : truncated
@@ -84,6 +79,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       },
     )
+
+    await db.user.update({
+      where: { id: session.userId },
+      data: {
+        chatUsageMonth: yearMonth, chatUsageCount: chatCount + 1,
+        ...(hasFile ? { chatFileMonth: yearMonth, chatFileCount: fileCount + 1 } : {}),
+      },
+    })
 
     return res.status(200).json({
       message: result.message,

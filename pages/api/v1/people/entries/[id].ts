@@ -31,6 +31,8 @@ export default withAuth(async (req, res, session) => {
         ? `${entry.description} (${personName})`
         : entry.description
 
+      if (!categoryId) return res.status(400).json({ ok: false, error: 'Nenhuma categoria encontrada. Configure uma categoria padrão.' })
+
       const tx = await db.transaction.create({
         data: {
           amount:      entry.amount,
@@ -38,7 +40,7 @@ export default withAuth(async (req, res, session) => {
           description: txDescription,
           date:        new Date(),
           userId:      session.userId,
-          categoryId:  categoryId!,
+          categoryId,
         },
       })
 

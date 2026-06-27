@@ -18,6 +18,8 @@ export default withAuth(async (req, res, session) => {
         await db.category.findFirst({ where: { OR: [{ isDefault: true }, { userId: session.userId }] }, orderBy: { isDefault: 'desc' } })
       )?.id ?? null
 
+      if (!categoryId) return badRequest(res, 'Nenhuma categoria encontrada. Configure uma categoria padrão.')
+
       const tx = await db.transaction.create({
         data: {
           amount:      bill.amount,
@@ -25,7 +27,7 @@ export default withAuth(async (req, res, session) => {
           description: bill.name,
           date:        new Date(),
           userId:      session.userId,
-          categoryId:  categoryId!,
+          categoryId,
         },
       })
       const updated = await db.bill.update({ where: { id }, data: { isPaid: true, paidAt: new Date(), paidTransactionId: tx.id } })

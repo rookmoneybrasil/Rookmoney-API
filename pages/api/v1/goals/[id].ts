@@ -110,7 +110,7 @@ export default withAuth(async (req, res, session) => {
     await db.transaction.deleteMany({
       where: {
         userId: session.userId,
-        description: { in: [`Aporte — ${goal.name}`, `Retirada — ${goal.name}`] },
+        description: `Aporte — ${goal.name}`,
       },
     })
     await db.goal.deleteMany({ where: { id, userId: session.userId } })
