@@ -83,18 +83,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(503).json({ error: 'ANTHROPIC_API_KEY not configured' })
   }
 
-  // Check how many posts this week — max 2 per week
-  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-  const recentCount = await db.blogPost.count({
-    where: { source: 'ai-generated', createdAt: { gte: weekAgo } },
+  // Check if already generated today — max 1 per day
+  const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0)
+  const todayCount = await db.blogPost.count({
+    where: { source: 'ai-generated', createdAt: { gte: todayStart } },
   })
-  if (recentCount >= 2) {
-    return res.status(200).json({ ok: true, skipped: true, reason: 'Already generated 2 posts this week' })
+  if (todayCount >= 1) {
+    return res.status(200).json({ ok: true, skipped: true, reason: 'Already generated today' })
   }
 
-  // Pick a category that hasn't been used recently
+  // Pick a category that hasn't been used in the last 3 days
+  const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
   const recentCategories = await db.blogPost.findMany({
-    where: { createdAt: { gte: weekAgo } },
+    where: { createdAt: { gte: threeDaysAgo } },
     select: { category: true },
   })
   const usedCats = new Set(recentCategories.map(p => p.category))

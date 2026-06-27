@@ -531,20 +531,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   cleanupExpiredLimits().catch(e => console.error('[rate-limit] cleanup failed:', e))
 
-  // Blog auto-generation — Monday and Thursday
+  // Blog auto-generation — every day (blog-generate checks for duplicates)
   let blogGenerated = false
-  const dayOfWeek = new Date().getDay()
-  if (dayOfWeek === 1 || dayOfWeek === 4) {
-    try {
-      const blogRes = await fetch(`${process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : 'http://localhost:3000'}/api/cron/blog-generate`, {
-        method: 'GET',
-        headers: { 'x-cron-secret': process.env.CRON_SECRET ?? '' },
-      })
-      const blogJson = await blogRes.json()
-      blogGenerated = blogJson.ok && !blogJson.skipped
-    } catch (e) {
-      console.error('[blog-generate] fatal:', e)
-    }
+  try {
+    const blogRes = await fetch(`${process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : 'http://localhost:3000'}/api/cron/blog-generate`, {
+      method: 'GET',
+      headers: { 'x-cron-secret': process.env.CRON_SECRET ?? '' },
+    })
+    const blogJson = await blogRes.json()
+    blogGenerated = blogJson.ok && !blogJson.skipped
+  } catch (e) {
+    console.error('[blog-generate] fatal:', e)
   }
 
   return res.status(200).json({ ok: true, processed, pushSent, blogGenerated, errors })
