@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import Anthropic from '@anthropic-ai/sdk'
 import { db } from '@/lib/db'
+import { sendNewsletterEmail } from '@/lib/email'
 
 const UNSPLASH_IMAGES: Record<string, string[]> = {
   'dicas': [
@@ -179,5 +180,24 @@ Responda APENAS com o JSON, sem markdown code fence.`,
     },
   })
 
-  return res.status(201).json({ ok: true, post: { id: post.id, slug: post.slug, title: post.title, category } })
+  // Send newsletter to all active subscribers
+  let newsletterSent = 0
+  try {
+    const subscribers = await db.newsletterSubscriber.findMany({ where: { isActive: true } })
+    const categoryLabels: Record<string, string> = {
+      'dicas': 'Dicas', 'educacao-financeira': 'Educação Financeira',
+      'investimentos': 'Investimentos', 'cripto': 'Cripto', 'curiosidades': 'Curiosidades',
+    }
+    for (const sub of subscribers) {
+      await sendNewsletterEmail(sub.email, sub.unsubscribeToken, {
+        title: post.title, excerpt: post.excerpt, slug: post.slug,
+        image, category: categoryLabels[category] ?? category,
+      }).catch(e => console.error(`[newsletter] failed for ${sub.email}:`, e))
+      newsletterSent++
+    }
+  } catch (e) {
+    console.error('[newsletter] fatal:', e)
+  }
+
+  return res.status(201).json({ ok: true, post: { id: post.id, slug: post.slug, title: post.title, category }, newsletterSent })
 }

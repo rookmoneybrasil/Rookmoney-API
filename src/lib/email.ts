@@ -139,6 +139,37 @@ export async function sendPaymentFailedEmail(
   })
 }
 
+export async function sendNewsletterEmail(
+  to: string,
+  unsubscribeToken: string,
+  post: { title: string; excerpt: string; slug: string; image: string; category: string },
+): Promise<void> {
+  const unsubUrl = `https://rookmoney-api-production.up.railway.app/api/v1/newsletter/unsubscribe?token=${unsubscribeToken}`
+  const postUrl = `https://rookmoney.com/blog/${post.slug}`
+
+  await resendPost({
+    from:    FROM,
+    to:      [to],
+    subject: `📰 ${post.title}`,
+    headers: { 'List-Unsubscribe': `<${unsubUrl}>` },
+    html: `
+<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#080e1d;color:#f1f5f9;padding:0;border-radius:16px;overflow:hidden">
+  <img src="${post.image}" alt="${post.title}" style="width:100%;height:200px;object-fit:cover" />
+  <div style="padding:24px 32px 32px">
+    <span style="display:inline-block;font-size:11px;font-weight:600;color:#3b82f6;text-transform:uppercase;margin-bottom:8px">${post.category}</span>
+    <h2 style="margin:0 0 12px;font-size:22px;line-height:1.3"><a href="${postUrl}" style="color:#f1f5f9;text-decoration:none">${post.title}</a></h2>
+    <p style="color:#94a3b8;margin:0 0 24px;font-size:15px;line-height:1.6">${post.excerpt}</p>
+    <a href="${postUrl}" style="display:inline-block;padding:12px 28px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Ler artigo completo →</a>
+    <hr style="border:none;border-top:1px solid #1e293b;margin:28px 0 16px" />
+    <p style="color:#475569;font-size:11px;margin:0;text-align:center">
+      Você recebeu este email porque se inscreveu na newsletter do Rook Money.<br/>
+      <a href="${unsubUrl}" style="color:#60a5fa">Cancelar inscrição</a>
+    </p>
+  </div>
+</div>`,
+  })
+}
+
 export async function sendChurnAlertEmail(
   to: string, churnCount: number, threshold: number, month: string,
 ): Promise<void> {
