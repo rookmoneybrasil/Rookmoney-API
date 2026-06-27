@@ -8,7 +8,7 @@ export default withBackofficeAuth(async (req, res) => {
   const { search = '', plan = '', inactive = '', page = '1', pageSize = '20' } = req.query as Record<string, string>
   const skip = (parseInt(page) - 1) * parseInt(pageSize)
 
-  const where: Record<string, unknown> = {}
+  const where: Record<string, unknown> = { NOT: { email: { startsWith: 'bot-' } } }
 
   if (plan === 'PRO_MANUAL') { where.plan = { in: ['PRO', 'PRO_PLUS'] }; where.stripeSubscriptionId = null }
   else if (plan === 'PRO') where.plan = 'PRO'

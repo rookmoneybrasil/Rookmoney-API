@@ -15,6 +15,8 @@ export default withBackofficeAuth(async (_req, res) => {
   const fiveMinAgo  = new Date(Date.now() - 5 * 60_000)
   const sevenDaysOn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
+  const notBot = { NOT: { email: { startsWith: 'bot-' } } } as const
+
   const [
     total, proStripe, proPlusStripe, proManual, proPlusManual,
     onlineUsers,
@@ -29,20 +31,20 @@ export default withBackofficeAuth(async (_req, res) => {
     androidUsers,
     iosUsers,
   ] = await Promise.all([
-    db.user.count(),
-    db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: { not: null } } }),
-    db.user.count({ where: { plan: 'PRO_PLUS', stripeSubscriptionId: { not: null } } }),
-    db.user.count({ where: { plan: 'PRO', stripeSubscriptionId: null } }),
-    db.user.count({ where: { plan: 'PRO_PLUS', stripeSubscriptionId: null } }),
-    db.user.count({ where: { lastActiveAt: { gte: fiveMinAgo } } }),
-    db.user.count({ where: { createdAt: { gte: prevMonthStart, lte: prevMonthEnd } } }),
-    db.user.count({ where: { createdAt: { gte: today } } }),
-    db.user.count({ where: { createdAt: { gte: weekAgo } } }),
-    db.user.count({ where: { createdAt: { gte: monthStart } } }),
+    db.user.count({ where: notBot }),
+    db.user.count({ where: { ...notBot, plan: 'PRO', stripeSubscriptionId: { not: null } } }),
+    db.user.count({ where: { ...notBot, plan: 'PRO_PLUS', stripeSubscriptionId: { not: null } } }),
+    db.user.count({ where: { ...notBot, plan: 'PRO', stripeSubscriptionId: null } }),
+    db.user.count({ where: { ...notBot, plan: 'PRO_PLUS', stripeSubscriptionId: null } }),
+    db.user.count({ where: { ...notBot, lastActiveAt: { gte: fiveMinAgo } } }),
+    db.user.count({ where: { ...notBot, createdAt: { gte: prevMonthStart, lte: prevMonthEnd } } }),
+    db.user.count({ where: { ...notBot, createdAt: { gte: today } } }),
+    db.user.count({ where: { ...notBot, createdAt: { gte: weekAgo } } }),
+    db.user.count({ where: { ...notBot, createdAt: { gte: monthStart } } }),
     db.transaction.count(),
     db.transaction.count({ where: { createdAt: { gte: monthStart } } }),
     db.goal.count({ where: { isCompleted: false } }),
-    db.user.findMany({ orderBy: { createdAt: 'desc' }, take: 8, select: { id: true, name: true, email: true, plan: true, createdAt: true } }),
+    db.user.findMany({ where: notBot, orderBy: { createdAt: 'desc' }, take: 8, select: { id: true, name: true, email: true, plan: true, createdAt: true } }),
     db.feedback.count({ where: { status: 'open' } }),
     db.feedback.findMany({
       where: { status: 'open' },
@@ -89,9 +91,9 @@ export default withBackofficeAuth(async (_req, res) => {
       )
     `,
     db.adminLog.findMany({ orderBy: { createdAt: 'desc' }, take: 5 }),
-    db.user.count({ where: { plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, proPlanExpiresAt: { not: null, lte: sevenDaysOn } } }),
-    db.user.count({ where: { platform: 'android' } }),
-    db.user.count({ where: { platform: 'ios' } }),
+    db.user.count({ where: { ...notBot, plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, proPlanExpiresAt: { not: null, lte: sevenDaysOn } } }),
+    db.user.count({ where: { ...notBot, platform: 'android' } }),
+    db.user.count({ where: { ...notBot, platform: 'ios' } }),
   ])
 
   const totalPro      = proStripe + proManual

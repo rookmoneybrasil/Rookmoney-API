@@ -11,12 +11,14 @@ export default withBackofficeAuth(async (_req, res) => {
       SELECT DATE_TRUNC('day', "createdAt")::date AS day, COUNT(*)::int AS count
       FROM "User"
       WHERE "createdAt" >= NOW() - INTERVAL '30 days'
+        AND "email" NOT LIKE 'bot-%'
       GROUP BY 1 ORDER BY 1
     `,
     db.$queryRaw<MonthRow[]>`
       SELECT DATE_TRUNC('month', "createdAt")::date AS month, COUNT(*)::int AS count
       FROM "User"
       WHERE "createdAt" >= NOW() - INTERVAL '12 months'
+        AND "email" NOT LIKE 'bot-%'
       GROUP BY 1 ORDER BY 1
     `,
   ])
