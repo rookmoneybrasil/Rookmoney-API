@@ -72,6 +72,7 @@ export const ModelName = {
   UserAchievement: 'UserAchievement',
   PushLog: 'PushLog',
   BlogPost: 'BlogPost',
+  NewsletterSubscriber: 'NewsletterSubscriber',
   PluggyItem: 'PluggyItem'
 } as const
 
@@ -440,6 +441,18 @@ export const BlogPostScalarFieldEnum = {
 } as const
 
 export type BlogPostScalarFieldEnum = (typeof BlogPostScalarFieldEnum)[keyof typeof BlogPostScalarFieldEnum]
+
+
+export const NewsletterSubscriberScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  name: 'name',
+  isActive: 'isActive',
+  unsubscribeToken: 'unsubscribeToken',
+  createdAt: 'createdAt'
+} as const
+
+export type NewsletterSubscriberScalarFieldEnum = (typeof NewsletterSubscriberScalarFieldEnum)[keyof typeof NewsletterSubscriberScalarFieldEnum]
 
 
 export const PluggyItemScalarFieldEnum = {

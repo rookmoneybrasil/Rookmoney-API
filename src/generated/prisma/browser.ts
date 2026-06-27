@@ -123,6 +123,11 @@ export type PushLog = Prisma.PushLogModel
  */
 export type BlogPost = Prisma.BlogPostModel
 /**
+ * Model NewsletterSubscriber
+ * 
+ */
+export type NewsletterSubscriber = Prisma.NewsletterSubscriberModel
+/**
  * Model PluggyItem
  * 
  */

@@ -15,8 +15,6 @@ model User {
   email               String    @unique
   password            String?   // null for OAuth-only users
   googleId            String?   @unique
-  phone               String?   @unique  // E.164: +5511999999999 — login por telefone
-  firebaseUid         String?   @unique  // Firebase Auth UID
   hasOnboarded        Boolean   @default(false)
   plan                String    @default("FREE")   // FREE | PRO | PRO_PLUS
   isAdmin             Boolean   @default(false)
