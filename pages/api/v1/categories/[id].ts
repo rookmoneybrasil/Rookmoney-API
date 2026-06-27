@@ -30,6 +30,10 @@ export default withAuth(async (req, res, session) => {
       + await db.bill.count({ where: { categoryId: id } })
       + await db.budget.count({ where: { categoryId: id } })
       + await db.recurringTransaction.count({ where: { categoryId: id } })
+      + await db.incomeSource.count({ where: { categoryId: id } })
+      + await db.recurringBill.count({ where: { categoryId: id } })
+      + await db.personEntry.count({ where: { categoryId: id } })
+      + await db.personEntryRecurring.count({ where: { categoryId: id } })
     if (usageCount > 0) {
       return badRequest(res, `Esta categoria está em uso em ${usageCount} registro(s). Reatribua-os antes de excluir.`)
     }
