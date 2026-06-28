@@ -44,19 +44,19 @@ export async function markAsRead(messageId: string): Promise<void> {
   }).catch(err => console.error('[whatsapp] markAsRead failed:', err))
 }
 
-export async function downloadMedia(mediaId: string): Promise<{ buffer: Buffer; mimeType: string }> {
+export async function downloadMedia(mediaId: string, timeoutMs = 30_000): Promise<{ buffer: Buffer; mimeType: string }> {
   const { token } = getConfig()
 
-  // Step 1: get the media URL
   const metaRes = await fetch(`${GRAPH_API}/${mediaId}`, {
     headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(timeoutMs),
   })
   if (!metaRes.ok) throw new Error(`Failed to get media URL: ${metaRes.status}`)
   const meta = await metaRes.json() as { url: string; mime_type: string }
 
-  // Step 2: download the actual file
   const fileRes = await fetch(meta.url, {
     headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(timeoutMs),
   })
   if (!fileRes.ok) throw new Error(`Failed to download media: ${fileRes.status}`)
   const arrayBuffer = await fileRes.arrayBuffer()

@@ -8,7 +8,32 @@ import type Anthropic from '@anthropic-ai/sdk'
 
 export const config = { api: { bodyParser: { sizeLimit: '10mb' } } }
 
-// Meta webhook verification (GET)
+// ── In-memory stores (reset on deploy, acceptable for these use cases) ──
+
+// Conversation history: userId → last N message pairs (expires after 30 min)
+const conversationHistory = new Map<string, { messages: Anthropic.MessageParam[]; updatedAt: number }>()
+const HISTORY_TTL = 30 * 60 * 1000 // 30 minutes
+const MAX_HISTORY = 10 // last 10 messages (5 user + 5 assistant)
+
+// Message deduplication: messageId set (expires after 5 min)
+const processedMessages = new Map<string, number>()
+const DEDUP_TTL = 5 * 60 * 1000
+
+// Rate limiting for unlinked phones: phone → { count, windowStart }
+const unlinkedRateLimit = new Map<string, { count: number; windowStart: number }>()
+const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
+const RATE_LIMIT_MAX = 3 // max 3 messages per minute from unlinked phones
+
+// Cleanup stale entries periodically
+setInterval(() => {
+  const now = Date.now()
+  for (const [k, v] of conversationHistory) if (now - v.updatedAt > HISTORY_TTL) conversationHistory.delete(k)
+  for (const [k, v] of processedMessages) if (now - v > DEDUP_TTL) processedMessages.delete(k)
+  for (const [k, v] of unlinkedRateLimit) if (now - v.windowStart > RATE_LIMIT_WINDOW) unlinkedRateLimit.delete(k)
+}, 60 * 1000)
+
+// ── Webhook verification ──
+
 function handleVerification(req: NextApiRequest, res: NextApiResponse) {
   const mode = req.query['hub.mode']
   const token = req.query['hub.verify_token']
@@ -19,6 +44,8 @@ function handleVerification(req: NextApiRequest, res: NextApiResponse) {
   }
   return res.status(403).send('Forbidden')
 }
+
+// ── Types ──
 
 interface WhatsAppMessage {
   from: string
@@ -56,12 +83,16 @@ function extractMessages(body: WhatsAppWebhookBody): WhatsAppMessage[] {
   return messages
 }
 
+// ── Media download with timeout ──
+
+const DOWNLOAD_TIMEOUT = 30_000
+
 async function buildContentBlocks(msg: WhatsAppMessage): Promise<Anthropic.ContentBlockParam[]> {
   const blocks: Anthropic.ContentBlockParam[] = []
 
   if (msg.type === 'image' && msg.image) {
     try {
-      const { buffer, mimeType } = await downloadMedia(msg.image.id)
+      const { buffer, mimeType } = await downloadMedia(msg.image.id, DOWNLOAD_TIMEOUT)
       const base64 = buffer.toString('base64')
       const mediaType = mimeType as 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif'
       blocks.push({ type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } })
@@ -73,7 +104,7 @@ async function buildContentBlocks(msg: WhatsAppMessage): Promise<Anthropic.Conte
   } else if (msg.type === 'document' && msg.document) {
     if (msg.document.mime_type === 'application/pdf') {
       try {
-        const { buffer } = await downloadMedia(msg.document.id)
+        const { buffer } = await downloadMedia(msg.document.id, DOWNLOAD_TIMEOUT)
         const base64 = buffer.toString('base64')
         blocks.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } })
         if (msg.document.caption) blocks.push({ type: 'text', text: msg.document.caption })
@@ -93,12 +124,35 @@ async function buildContentBlocks(msg: WhatsAppMessage): Promise<Anthropic.Conte
   return blocks
 }
 
+// ── Conversation history helpers ──
+
+function getHistory(userId: string): Anthropic.MessageParam[] {
+  const entry = conversationHistory.get(userId)
+  if (!entry || Date.now() - entry.updatedAt > HISTORY_TTL) return []
+  return entry.messages
+}
+
+function appendHistory(userId: string, userMsg: Anthropic.MessageParam, assistantText: string) {
+  const existing = getHistory(userId)
+  const updated = [
+    ...existing,
+    userMsg,
+    { role: 'assistant' as const, content: assistantText },
+  ].slice(-MAX_HISTORY)
+  conversationHistory.set(userId, { messages: updated, updatedAt: Date.now() })
+}
+
+// ── Process message ──
+
 async function processMessage(msg: WhatsAppMessage): Promise<void> {
+  // Deduplication
+  if (processedMessages.has(msg.id)) return
+  processedMessages.set(msg.id, Date.now())
+
   const phone = msg.from.startsWith('+') ? msg.from : `+${msg.from}`
 
   markAsRead(msg.id).catch(() => {})
 
-  // Find user by WhatsApp phone
   const user = await db.user.findFirst({
     where: { whatsappPhone: phone },
     select: {
@@ -110,6 +164,16 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
   })
 
   if (!user) {
+    // Rate limit unlinked phones
+    const now = Date.now()
+    const rl = unlinkedRateLimit.get(msg.from)
+    if (rl && now - rl.windowStart < RATE_LIMIT_WINDOW) {
+      if (rl.count >= RATE_LIMIT_MAX) return
+      rl.count++
+    } else {
+      unlinkedRateLimit.set(msg.from, { count: 1, windowStart: now })
+    }
+
     await sendTextMessage(msg.from,
       'Oi! Sou o Rookinho, assistente financeiro do Rook Money 🐦\n\n' +
       'Não encontrei uma conta vinculada a esse número.\n\n' +
@@ -156,10 +220,13 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
     await sendTextMessage(msg.from, 'Esse tipo de mensagem não é suportado. Envie texto, foto ou PDF.')
     return
   }
-  const messages: Anthropic.MessageParam[] = [{ role: 'user', content: contentBlocks }]
+
+  const userMsg: Anthropic.MessageParam = { role: 'user', content: contentBlocks }
+  const history = getHistory(user.id)
+  const allMessages: Anthropic.MessageParam[] = [...history, userMsg]
 
   try {
-    const result = await processRookinhoChat(user.id, user.name, messages, {
+    const result = await processRookinhoChat(user.id, user.name, allMessages, {
       channel: 'whatsapp',
       analysisCount,
       analysisLimit: limits.chatAnalysis,
@@ -172,7 +239,6 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
       },
     })
 
-    // Increment usage only after successful processing
     await db.user.update({
       where: { id: user.id },
       data: {
@@ -182,6 +248,9 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
     })
 
     if (result.message) {
+      // Store text-only version in history
+      const userTextContent = msg.text?.body ?? (msg.image?.caption ?? (msg.document?.caption ?? '[arquivo]'))
+      appendHistory(user.id, { role: 'user', content: userTextContent }, result.message)
       await sendTextMessage(msg.from, result.message)
     }
   } catch (err) {
