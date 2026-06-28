@@ -1,6 +1,5 @@
 import type { PrismaClient } from '../generated/prisma/client'
 import { getAchievementsByTrigger } from './achievements'
-import { sendAchievementEmail } from './email'
 
 export interface UnlockedAchievement {
   slug: string
@@ -40,17 +39,6 @@ export async function checkAchievements(
         data: { userId, slug: achievement.slug },
       }).catch(() => {}) // ignore unique constraint race
       newlyUnlocked.push({ slug: achievement.slug, icon: achievement.icon })
-    }
-  }
-
-  const emailWorthy = newlyUnlocked.filter(a => a.slug !== 'welcome')
-  if (emailWorthy.length > 0) {
-    const user = await db.user.findUnique({ where: { id: userId }, select: { email: true, name: true } })
-    if (user) {
-      for (const a of emailWorthy) {
-        const title = a.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-        sendAchievementEmail(user.email, user.name, title, a.icon).catch(() => {})
-      }
     }
   }
 
