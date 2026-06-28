@@ -43,10 +43,11 @@ export async function checkAchievements(
     }
   }
 
-  if (newlyUnlocked.length > 0) {
+  const emailWorthy = newlyUnlocked.filter(a => a.slug !== 'welcome')
+  if (emailWorthy.length > 0) {
     const user = await db.user.findUnique({ where: { id: userId }, select: { email: true, name: true } })
     if (user) {
-      for (const a of newlyUnlocked) {
+      for (const a of emailWorthy) {
         const title = a.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
         sendAchievementEmail(user.email, user.name, title, a.icon).catch(() => {})
       }

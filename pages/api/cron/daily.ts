@@ -221,10 +221,15 @@ async function checkChurnAlert() {
 
 async function sendDripOnboardingEmails() {
   const now = new Date()
+  const eightDaysAgo = new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000)
   const users = await db.user.findMany({
     where: {
       email: { not: { startsWith: 'bot-' } },
-      lastDripEmailDay: { not: 7 },
+      createdAt: { gte: eightDaysAgo },
+      OR: [
+        { lastDripEmailDay: null },
+        { lastDripEmailDay: { lt: 7 } },
+      ],
     },
     select: { id: true, email: true, name: true, createdAt: true, lastDripEmailDay: true },
   })
@@ -291,13 +296,22 @@ async function sendAnniversaryEmails() {
     if (created.getMonth() !== todayMonth || created.getDate() !== todayDay) continue
     const years = now.getFullYear() - created.getFullYear()
     if (years < 1) continue
+    const alreadySent = await db.adminLog.count({
+      where: { targetId: user.id, action: 'anniversary_email', createdAt: { gte: new Date(now.getFullYear(), 0, 1) } },
+    })
+    if (alreadySent > 0) continue
     await sendAnniversaryEmail(user.email, user.name, years)
       .catch(e => console.error('[anniversary] email failed:', e))
+    await db.adminLog.create({ data: { action: 'anniversary_email', targetId: user.id, details: `Email de ${years} ano(s) enviado (${user.email})` } })
+      .catch(() => {})
   }
 }
 
 async function sendAnnualUpsellEmails() {
   if (new Date().getDate() !== 15) return
+
+  const stripe = (await import('stripe')).default
+  const stripeClient = new stripe(process.env.STRIPE_SECRET_KEY ?? '', { apiVersion: '2025-04-30.basil' as never })
 
   const threeMonthsAgo = new Date()
   threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
@@ -310,24 +324,42 @@ async function sendAnnualUpsellEmails() {
       email: { not: { startsWith: 'bot-' } },
       createdAt: { lte: threeMonthsAgo },
     },
-    select: { id: true, email: true, name: true, plan: true, createdAt: true },
+    select: { id: true, email: true, name: true, plan: true, createdAt: true, stripeSubscriptionId: true },
   })
 
   for (const user of users) {
+    if (!user.stripeSubscriptionId) continue
+    try {
+      const sub = await stripeClient.subscriptions.retrieve(user.stripeSubscriptionId)
+      const interval = sub.items?.data?.[0]?.price?.recurring?.interval
+      if (interval !== 'month') continue
+    } catch { continue }
+
+    const alreadySent = await db.adminLog.count({
+      where: { targetId: user.id, action: 'annual_upsell_email', createdAt: { gte: threeMonthsAgo } },
+    })
+    if (alreadySent > 0) continue
+
     const months = Math.floor((Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 30))
-    if (months < 3) continue
     await sendAnnualUpsellEmail(user.email, user.name, user.plan, months)
       .catch(e => console.error('[upsell] email failed:', e))
+    await db.adminLog.create({ data: { action: 'annual_upsell_email', targetId: user.id, details: `Upsell anual enviado (${user.email})` } })
+      .catch(() => {})
   }
 }
 
 async function sendConversionEmails() {
   const now = new Date()
+  const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000)
   const users = await db.user.findMany({
     where: {
       plan: 'FREE',
       email: { not: { startsWith: 'bot-' } },
-      lastPromoEmailDay: { not: 60 },
+      createdAt: { lte: fourteenDaysAgo },
+      OR: [
+        { lastPromoEmailDay: null },
+        { lastPromoEmailDay: { lt: 60 } },
+      ],
     },
     select: { id: true, email: true, name: true, createdAt: true, lastPromoEmailDay: true },
   })
