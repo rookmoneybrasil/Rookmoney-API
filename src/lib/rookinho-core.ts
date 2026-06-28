@@ -634,7 +634,7 @@ export async function processRookinhoChat(
   userId: string,
   userName: string,
   messages: Anthropic.MessageParam[],
-  opts?: { analysisCount?: number; analysisLimit?: number | null; onAnalysis?: () => Promise<void> },
+  opts?: { analysisCount?: number; analysisLimit?: number | null; onAnalysis?: () => Promise<void>; channel?: 'web' | 'whatsapp' },
 ): Promise<RookinhoResult> {
   const client = new Anthropic()
   const system = buildSystemPrompt(userName)
@@ -642,8 +642,7 @@ export async function processRookinhoChat(
   let currentMessages: Anthropic.MessageParam[] = [...messages]
   let analysisCount = opts?.analysisCount ?? 0
 
-  // Filter out navigate tool for WhatsApp (no navigation possible)
-  const tools = TOOLS
+  const tools = opts?.channel === 'whatsapp' ? TOOLS.filter(t => t.name !== 'navigate') : TOOLS
 
   for (let i = 0; i < 5; i++) {
     const response = await client.messages.create({

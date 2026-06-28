@@ -151,20 +151,12 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
     return
   }
 
-  // Increment usage
-  await db.user.update({
-    where: { id: user.id },
-    data: {
-      chatUsageMonth: yearMonth, chatUsageCount: chatCount + 1,
-      ...(hasFile ? { chatFileMonth: yearMonth, chatFileCount: fileCount + 1 } : {}),
-    },
-  })
-
   const contentBlocks = await buildContentBlocks(msg)
   const messages: Anthropic.MessageParam[] = [{ role: 'user', content: contentBlocks }]
 
   try {
     const result = await processRookinhoChat(user.id, user.name, messages, {
+      channel: 'whatsapp',
       analysisCount,
       analysisLimit: limits.chatAnalysis,
       onAnalysis: async () => {
@@ -173,6 +165,15 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
           where: { id: user.id },
           data: { chatAnalysisMonth: yearMonth, chatAnalysisCount: analysisCount },
         })
+      },
+    })
+
+    // Increment usage only after successful processing
+    await db.user.update({
+      where: { id: user.id },
+      data: {
+        chatUsageMonth: yearMonth, chatUsageCount: chatCount + 1,
+        ...(hasFile ? { chatFileMonth: yearMonth, chatFileCount: fileCount + 1 } : {}),
       },
     })
 
