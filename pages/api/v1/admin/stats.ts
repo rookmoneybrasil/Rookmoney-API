@@ -30,6 +30,10 @@ export default withBackofficeAuth(async (_req, res) => {
     manualExpiringCount,
     androidUsers,
     iosUsers,
+    emailDripStarted,
+    emailDripCompleted,
+    emailPromoSent,
+    emailInactivitySent,
   ] = await Promise.all([
     db.user.count({ where: notBot }),
     db.user.count({ where: { ...notBot, plan: 'PRO', stripeSubscriptionId: { not: null } } }),
@@ -94,6 +98,11 @@ export default withBackofficeAuth(async (_req, res) => {
     db.user.count({ where: { ...notBot, plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, proPlanExpiresAt: { not: null, lte: sevenDaysOn } } }),
     db.user.count({ where: { ...notBot, platform: 'android' } }),
     db.user.count({ where: { ...notBot, platform: 'ios' } }),
+    // Email lifecycle stats
+    db.user.count({ where: { ...notBot, lastDripEmailDay: { gte: 1 } } }),
+    db.user.count({ where: { ...notBot, lastDripEmailDay: 7 } }),
+    db.user.count({ where: { ...notBot, lastPromoEmailDay: { gte: 14 } } }),
+    db.user.count({ where: { ...notBot, lastInactivityEmail: { not: null } } }),
   ])
 
   const totalPro      = proStripe + proManual
@@ -136,5 +145,9 @@ export default withBackofficeAuth(async (_req, res) => {
     androidUsers,
     iosUsers,
     webOnlyUsers: total - androidUsers - iosUsers,
+    emailDripStarted,
+    emailDripCompleted,
+    emailPromoSent,
+    emailInactivitySent,
   })
 })
