@@ -59,6 +59,9 @@ model User {
   utmCampaign         String?
   platform            String?   // 'android' | 'ios' | null (web-only)
   lastActiveAt        DateTime?
+  lastDripEmailDay    Int?      // onboarding drip: last day sent (1, 3, or 7)
+  lastInactivityEmail DateTime? // last inactivity reengagement email sent
+  lastPromoEmailDay   Int?      // conversion promo: last day-threshold sent (14, 30, or 60)
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 

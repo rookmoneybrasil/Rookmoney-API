@@ -633,14 +633,6 @@ export type EnumRecurringFreqFieldUpdateOperationsInput = {
   set?: $Enums.RecurringFreq
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type RecurringTransactionCreateWithoutUserInput = {
   id?: string
   name: string

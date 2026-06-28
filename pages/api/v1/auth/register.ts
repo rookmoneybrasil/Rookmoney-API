@@ -7,6 +7,7 @@ import { badRequest } from '@/lib/respond'
 import { rateLimit, getIp, tooManyRequests } from '@/lib/rate-limit'
 import { checkAchievements } from '@/lib/achievement-checker'
 import { sendMetaEvent, extractMetaUserData } from '@/lib/meta-capi'
+import { sendWelcomeEmail } from '@/lib/email'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -51,6 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }))
 
   checkAchievements(db, user.id, 'register').catch(() => {})
+  sendWelcomeEmail(user.email, user.name).catch(() => {})
 
   const eventId = `reg_${user.id}`
   sendMetaEvent({

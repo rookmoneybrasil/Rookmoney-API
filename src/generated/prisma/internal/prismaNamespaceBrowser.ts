@@ -139,6 +139,9 @@ export const UserScalarFieldEnum = {
   utmCampaign: 'utmCampaign',
   platform: 'platform',
   lastActiveAt: 'lastActiveAt',
+  lastDripEmailDay: 'lastDripEmailDay',
+  lastInactivityEmail: 'lastInactivityEmail',
+  lastPromoEmailDay: 'lastPromoEmailDay',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

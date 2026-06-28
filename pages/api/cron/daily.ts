@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '@/lib/db'
 import { format, addDays, startOfMonth, endOfMonth, subMonths } from 'date-fns'
-import { sendBillReminderEmail, sendMonthlySummaryEmail, sendManualProExpiryWarningEmail, sendChurnAlertEmail } from '@/lib/email'
+import { sendBillReminderEmail, sendMonthlySummaryEmail, sendManualProExpiryWarningEmail, sendChurnAlertEmail, sendInactivityEmail, sendDripOnboardingEmail, sendAnniversaryEmail, sendAnnualUpsellEmail, sendFreeToProEmail } from '@/lib/email'
 import { cleanupExpiredLimits } from '@/lib/rate-limit'
 import { sendPush, isValidPushToken } from '@/lib/push'
 
@@ -216,6 +216,147 @@ async function checkChurnAlert() {
     const monthLabel = prevMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
     await sendChurnAlertEmail(adminEmail, churnCount, threshold, monthLabel)
       .catch(e => console.error('[churn-alert] email failed:', e))
+  }
+}
+
+async function sendDripOnboardingEmails() {
+  const now = new Date()
+  const users = await db.user.findMany({
+    where: {
+      email: { not: { startsWith: 'bot-' } },
+      lastDripEmailDay: { not: 7 },
+    },
+    select: { id: true, email: true, name: true, createdAt: true, lastDripEmailDay: true },
+  })
+
+  for (const user of users) {
+    const daysSinceSignup = Math.floor((now.getTime() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+    const lastDay = user.lastDripEmailDay ?? 0
+
+    let sendDay: 1 | 3 | 7 | null = null
+    if (daysSinceSignup >= 7 && lastDay < 7) sendDay = 7
+    else if (daysSinceSignup >= 3 && lastDay < 3) sendDay = 3
+    else if (daysSinceSignup >= 1 && lastDay < 1) sendDay = 1
+
+    if (sendDay) {
+      await sendDripOnboardingEmail(user.email, user.name, sendDay)
+        .catch(e => console.error('[drip] email failed:', e))
+      await db.user.update({ where: { id: user.id }, data: { lastDripEmailDay: sendDay } })
+        .catch(() => {})
+    }
+  }
+}
+
+async function sendInactivityEmails() {
+  const now = new Date()
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000)
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+
+  const users = await db.user.findMany({
+    where: {
+      email: { not: { startsWith: 'bot-' } },
+      lastActiveAt: { not: null, lte: sevenDaysAgo },
+      OR: [
+        { lastInactivityEmail: null },
+        { lastInactivityEmail: { lte: fourteenDaysAgo } },
+      ],
+      createdAt: { lte: thirtyDaysAgo },
+    },
+    select: { id: true, email: true, name: true, lastActiveAt: true },
+  })
+
+  for (const user of users) {
+    if (!user.lastActiveAt) continue
+    const daysSince = Math.floor((now.getTime() - new Date(user.lastActiveAt).getTime()) / (1000 * 60 * 60 * 24))
+    await sendInactivityEmail(user.email, user.name, daysSince)
+      .catch(e => console.error('[inactivity] email failed:', e))
+    await db.user.update({ where: { id: user.id }, data: { lastInactivityEmail: now } })
+      .catch(() => {})
+  }
+}
+
+async function sendAnniversaryEmails() {
+  const now = new Date()
+  const todayMonth = now.getMonth()
+  const todayDay = now.getDate()
+
+  const users = await db.user.findMany({
+    where: { email: { not: { startsWith: 'bot-' } } },
+    select: { id: true, email: true, name: true, createdAt: true },
+  })
+
+  for (const user of users) {
+    const created = new Date(user.createdAt)
+    if (created.getMonth() !== todayMonth || created.getDate() !== todayDay) continue
+    const years = now.getFullYear() - created.getFullYear()
+    if (years < 1) continue
+    await sendAnniversaryEmail(user.email, user.name, years)
+      .catch(e => console.error('[anniversary] email failed:', e))
+  }
+}
+
+async function sendAnnualUpsellEmails() {
+  if (new Date().getDate() !== 15) return
+
+  const threeMonthsAgo = new Date()
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
+
+  const users = await db.user.findMany({
+    where: {
+      plan: { in: ['PRO', 'PRO_PLUS'] },
+      subscriptionSource: 'stripe',
+      stripeSubscriptionId: { not: null },
+      email: { not: { startsWith: 'bot-' } },
+      createdAt: { lte: threeMonthsAgo },
+    },
+    select: { id: true, email: true, name: true, plan: true, createdAt: true },
+  })
+
+  for (const user of users) {
+    const months = Math.floor((Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 30))
+    if (months < 3) continue
+    await sendAnnualUpsellEmail(user.email, user.name, user.plan, months)
+      .catch(e => console.error('[upsell] email failed:', e))
+  }
+}
+
+async function sendConversionEmails() {
+  const now = new Date()
+  const users = await db.user.findMany({
+    where: {
+      plan: 'FREE',
+      email: { not: { startsWith: 'bot-' } },
+      lastPromoEmailDay: { not: 60 },
+    },
+    select: { id: true, email: true, name: true, createdAt: true, lastPromoEmailDay: true },
+  })
+
+  for (const user of users) {
+    const daysSinceSignup = Math.floor((now.getTime() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+    const lastDay = user.lastPromoEmailDay ?? 0
+
+    let sendDay: 14 | 30 | 60 | null = null
+    if (daysSinceSignup >= 60 && lastDay < 60) sendDay = 60
+    else if (daysSinceSignup >= 30 && lastDay < 30) sendDay = 30
+    else if (daysSinceSignup >= 14 && lastDay < 14) sendDay = 14
+
+    if (!sendDay) continue
+
+    let stats: { transactions?: number; bills?: number; goals?: number } | undefined
+    if (sendDay === 30) {
+      const [txCount, billCount, goalCount] = await Promise.all([
+        db.transaction.count({ where: { userId: user.id } }),
+        db.bill.count({ where: { userId: user.id } }),
+        db.goal.count({ where: { userId: user.id } }),
+      ])
+      stats = { transactions: txCount, bills: billCount, goals: goalCount }
+    }
+
+    await sendFreeToProEmail(user.email, user.name, sendDay, stats)
+      .catch(e => console.error('[conversion] email failed:', e))
+    await db.user.update({ where: { id: user.id }, data: { lastPromoEmailDay: sendDay } })
+      .catch(() => {})
   }
 }
 
@@ -521,6 +662,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await warnExpiringManualPro().catch(e => console.error('[expire-warn] fatal:', e))
   await expireManualPro().catch(e => console.error('[expire-pro] fatal:', e))
   await checkChurnAlert().catch(e => console.error('[churn-alert] fatal:', e))
+  await sendDripOnboardingEmails().catch(e => console.error('[drip] fatal:', e))
+  await sendInactivityEmails().catch(e => console.error('[inactivity] fatal:', e))
+  await sendAnniversaryEmails().catch(e => console.error('[anniversary] fatal:', e))
+  await sendAnnualUpsellEmails().catch(e => console.error('[upsell] fatal:', e))
+  await sendConversionEmails().catch(e => console.error('[conversion] fatal:', e))
 
   // Send notifications — await so we can report count
   let pushSent = 0

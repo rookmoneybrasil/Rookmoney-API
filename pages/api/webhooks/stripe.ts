@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import Stripe from 'stripe'
 import { db } from '@/lib/db'
 import { sendMetaEvent } from '@/lib/meta-capi'
+import { sendUpgradeEmail, sendDowngradeEmail } from '@/lib/email'
 import { planFromPriceId } from '@/lib/stripe'
 
 export const config = { api: { bodyParser: false } }
@@ -78,6 +79,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         value,
         currency:  'BRL',
       }).catch(() => {})
+
+      const fullUser = await db.user.findUnique({ where: { id: userId }, select: { name: true } })
+      if (fullUser) sendUpgradeEmail(user.email, fullUser.name, detectedPlan).catch(() => {})
     }
   }
 
@@ -110,7 +114,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const sub        = event.data.object as Stripe.Subscription
     const customerId = typeof sub.customer === 'string' ? sub.customer : null
     if (customerId) {
-      const user = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true, email: true } })
+      const user = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true, email: true, name: true, plan: true } })
+      const previousPlan = user?.plan ?? 'PRO'
       await db.user.updateMany({
         where: { stripeCustomerId: customerId },
         data:  {
@@ -126,6 +131,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           action: 'stripe_downgrade', targetId: user.id,
           details: `Downgrade para FREE — assinatura Stripe encerrada (${user.email})`,
         }})
+        sendDowngradeEmail(user.email, user.name, previousPlan).catch(() => {})
       }
     }
   }

@@ -32,6 +32,8 @@ export type UserAvgAggregateOutputType = {
   chatAnalysisCount: number | null
   scannerUsageCount: number | null
   tokenVersion: number | null
+  lastDripEmailDay: number | null
+  lastPromoEmailDay: number | null
 }
 
 export type UserSumAggregateOutputType = {
@@ -40,6 +42,8 @@ export type UserSumAggregateOutputType = {
   chatAnalysisCount: number | null
   scannerUsageCount: number | null
   tokenVersion: number | null
+  lastDripEmailDay: number | null
+  lastPromoEmailDay: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -89,6 +93,9 @@ export type UserMinAggregateOutputType = {
   utmCampaign: string | null
   platform: string | null
   lastActiveAt: Date | null
+  lastDripEmailDay: number | null
+  lastInactivityEmail: Date | null
+  lastPromoEmailDay: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -140,6 +147,9 @@ export type UserMaxAggregateOutputType = {
   utmCampaign: string | null
   platform: string | null
   lastActiveAt: Date | null
+  lastDripEmailDay: number | null
+  lastInactivityEmail: Date | null
+  lastPromoEmailDay: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -191,6 +201,9 @@ export type UserCountAggregateOutputType = {
   utmCampaign: number
   platform: number
   lastActiveAt: number
+  lastDripEmailDay: number
+  lastInactivityEmail: number
+  lastPromoEmailDay: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -203,6 +216,8 @@ export type UserAvgAggregateInputType = {
   chatAnalysisCount?: true
   scannerUsageCount?: true
   tokenVersion?: true
+  lastDripEmailDay?: true
+  lastPromoEmailDay?: true
 }
 
 export type UserSumAggregateInputType = {
@@ -211,6 +226,8 @@ export type UserSumAggregateInputType = {
   chatAnalysisCount?: true
   scannerUsageCount?: true
   tokenVersion?: true
+  lastDripEmailDay?: true
+  lastPromoEmailDay?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -260,6 +277,9 @@ export type UserMinAggregateInputType = {
   utmCampaign?: true
   platform?: true
   lastActiveAt?: true
+  lastDripEmailDay?: true
+  lastInactivityEmail?: true
+  lastPromoEmailDay?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -311,6 +331,9 @@ export type UserMaxAggregateInputType = {
   utmCampaign?: true
   platform?: true
   lastActiveAt?: true
+  lastDripEmailDay?: true
+  lastInactivityEmail?: true
+  lastPromoEmailDay?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -362,6 +385,9 @@ export type UserCountAggregateInputType = {
   utmCampaign?: true
   platform?: true
   lastActiveAt?: true
+  lastDripEmailDay?: true
+  lastInactivityEmail?: true
+  lastPromoEmailDay?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -500,6 +526,9 @@ export type UserGroupByOutputType = {
   utmCampaign: string | null
   platform: string | null
   lastActiveAt: Date | null
+  lastDripEmailDay: number | null
+  lastInactivityEmail: Date | null
+  lastPromoEmailDay: number | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -574,6 +603,9 @@ export type UserWhereInput = {
   utmCampaign?: Prisma.StringNullableFilter<"User"> | string | null
   platform?: Prisma.StringNullableFilter<"User"> | string | null
   lastActiveAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  lastDripEmailDay?: Prisma.IntNullableFilter<"User"> | number | null
+  lastInactivityEmail?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  lastPromoEmailDay?: Prisma.IntNullableFilter<"User"> | number | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   transactions?: Prisma.TransactionListRelationFilter
@@ -640,6 +672,9 @@ export type UserOrderByWithRelationInput = {
   utmCampaign?: Prisma.SortOrderInput | Prisma.SortOrder
   platform?: Prisma.SortOrderInput | Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastDripEmailDay?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastInactivityEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastPromoEmailDay?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
@@ -709,6 +744,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   utmCampaign?: Prisma.StringNullableFilter<"User"> | string | null
   platform?: Prisma.StringNullableFilter<"User"> | string | null
   lastActiveAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  lastDripEmailDay?: Prisma.IntNullableFilter<"User"> | number | null
+  lastInactivityEmail?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  lastPromoEmailDay?: Prisma.IntNullableFilter<"User"> | number | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   transactions?: Prisma.TransactionListRelationFilter
@@ -775,6 +813,9 @@ export type UserOrderByWithAggregationInput = {
   utmCampaign?: Prisma.SortOrderInput | Prisma.SortOrder
   platform?: Prisma.SortOrderInput | Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastDripEmailDay?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastInactivityEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastPromoEmailDay?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -834,6 +875,9 @@ export type UserScalarWhereWithAggregatesInput = {
   utmCampaign?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   platform?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   lastActiveAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  lastDripEmailDay?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
+  lastInactivityEmail?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  lastPromoEmailDay?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -885,6 +929,9 @@ export type UserCreateInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -951,6 +998,9 @@ export type UserUncheckedCreateInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1017,6 +1067,9 @@ export type UserUpdateInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1083,6 +1136,9 @@ export type UserUncheckedUpdateInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1149,6 +1205,9 @@ export type UserCreateManyInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1200,6 +1259,9 @@ export type UserUpdateManyMutationInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1251,6 +1313,9 @@ export type UserUncheckedUpdateManyInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1302,6 +1367,9 @@ export type UserCountOrderByAggregateInput = {
   utmCampaign?: Prisma.SortOrder
   platform?: Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrder
+  lastDripEmailDay?: Prisma.SortOrder
+  lastInactivityEmail?: Prisma.SortOrder
+  lastPromoEmailDay?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1312,6 +1380,8 @@ export type UserAvgOrderByAggregateInput = {
   chatAnalysisCount?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  lastDripEmailDay?: Prisma.SortOrder
+  lastPromoEmailDay?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -1361,6 +1431,9 @@ export type UserMaxOrderByAggregateInput = {
   utmCampaign?: Prisma.SortOrder
   platform?: Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrder
+  lastDripEmailDay?: Prisma.SortOrder
+  lastInactivityEmail?: Prisma.SortOrder
+  lastPromoEmailDay?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1412,6 +1485,9 @@ export type UserMinOrderByAggregateInput = {
   utmCampaign?: Prisma.SortOrder
   platform?: Prisma.SortOrder
   lastActiveAt?: Prisma.SortOrder
+  lastDripEmailDay?: Prisma.SortOrder
+  lastInactivityEmail?: Prisma.SortOrder
+  lastPromoEmailDay?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1422,6 +1498,8 @@ export type UserSumOrderByAggregateInput = {
   chatAnalysisCount?: Prisma.SortOrder
   scannerUsageCount?: Prisma.SortOrder
   tokenVersion?: Prisma.SortOrder
+  lastDripEmailDay?: Prisma.SortOrder
+  lastPromoEmailDay?: Prisma.SortOrder
 }
 
 export type UserNullableScalarRelationFilter = {
@@ -1452,6 +1530,14 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
 
 export type IntFieldUpdateOperationsInput = {
   set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
   increment?: number
   decrement?: number
   multiply?: number
@@ -1721,6 +1807,9 @@ export type UserCreateWithoutCategoriesInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -1786,6 +1875,9 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -1867,6 +1959,9 @@ export type UserUpdateWithoutCategoriesInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -1932,6 +2027,9 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -1997,6 +2095,9 @@ export type UserCreateWithoutTransactionsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
@@ -2062,6 +2163,9 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
@@ -2143,6 +2247,9 @@ export type UserUpdateWithoutTransactionsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
@@ -2208,6 +2315,9 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
@@ -2273,6 +2383,9 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -2338,6 +2451,9 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -2419,6 +2535,9 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -2484,6 +2603,9 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -2549,6 +2671,9 @@ export type UserCreateWithoutGoalsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -2614,6 +2739,9 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -2695,6 +2823,9 @@ export type UserUpdateWithoutGoalsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -2760,6 +2891,9 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -2825,6 +2959,9 @@ export type UserCreateWithoutBudgetsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -2890,6 +3027,9 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -2971,6 +3111,9 @@ export type UserUpdateWithoutBudgetsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -3036,6 +3179,9 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -3101,6 +3247,9 @@ export type UserCreateWithoutIncomeSourcesInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -3166,6 +3315,9 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -3247,6 +3399,9 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -3312,6 +3467,9 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -3377,6 +3535,9 @@ export type UserCreateWithoutBillsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -3442,6 +3603,9 @@ export type UserUncheckedCreateWithoutBillsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -3523,6 +3687,9 @@ export type UserUpdateWithoutBillsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -3588,6 +3755,9 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -3653,6 +3823,9 @@ export type UserCreateWithoutRecurringBillsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -3718,6 +3891,9 @@ export type UserUncheckedCreateWithoutRecurringBillsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -3799,6 +3975,9 @@ export type UserUpdateWithoutRecurringBillsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -3864,6 +4043,9 @@ export type UserUncheckedUpdateWithoutRecurringBillsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -3929,6 +4111,9 @@ export type UserCreateWithoutPeopleInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -3994,6 +4179,9 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -4075,6 +4263,9 @@ export type UserUpdateWithoutPeopleInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -4140,6 +4331,9 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -4205,6 +4399,9 @@ export type UserCreateWithoutPersonEntryRecurringInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -4270,6 +4467,9 @@ export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -4351,6 +4551,9 @@ export type UserUpdateWithoutPersonEntryRecurringInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -4416,6 +4619,9 @@ export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -4481,6 +4687,9 @@ export type UserCreateWithoutPersonEntriesInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -4546,6 +4755,9 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -4627,6 +4839,9 @@ export type UserUpdateWithoutPersonEntriesInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -4692,6 +4907,9 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -4757,6 +4975,9 @@ export type UserCreateWithoutFeedbacksInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -4822,6 +5043,9 @@ export type UserUncheckedCreateWithoutFeedbacksInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -4903,6 +5127,9 @@ export type UserUpdateWithoutFeedbacksInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -4968,6 +5195,9 @@ export type UserUncheckedUpdateWithoutFeedbacksInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -5033,6 +5263,9 @@ export type UserCreateWithoutAchievementsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -5098,6 +5331,9 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -5179,6 +5415,9 @@ export type UserUpdateWithoutAchievementsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -5244,6 +5483,9 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -5309,6 +5551,9 @@ export type UserCreateWithoutPushLogsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -5374,6 +5619,9 @@ export type UserUncheckedCreateWithoutPushLogsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -5455,6 +5703,9 @@ export type UserUpdateWithoutPushLogsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -5520,6 +5771,9 @@ export type UserUncheckedUpdateWithoutPushLogsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -5585,6 +5839,9 @@ export type UserCreateWithoutPluggyItemsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
@@ -5650,6 +5907,9 @@ export type UserUncheckedCreateWithoutPluggyItemsInput = {
   utmCampaign?: string | null
   platform?: string | null
   lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
@@ -5731,6 +5991,9 @@ export type UserUpdateWithoutPluggyItemsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
@@ -5796,6 +6059,9 @@ export type UserUncheckedUpdateWithoutPluggyItemsInput = {
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
@@ -6018,6 +6284,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   utmCampaign?: boolean
   platform?: boolean
   lastActiveAt?: boolean
+  lastDripEmailDay?: boolean
+  lastInactivityEmail?: boolean
+  lastPromoEmailDay?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
@@ -6085,6 +6354,9 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   utmCampaign?: boolean
   platform?: boolean
   lastActiveAt?: boolean
+  lastDripEmailDay?: boolean
+  lastInactivityEmail?: boolean
+  lastPromoEmailDay?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -6136,6 +6408,9 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   utmCampaign?: boolean
   platform?: boolean
   lastActiveAt?: boolean
+  lastDripEmailDay?: boolean
+  lastInactivityEmail?: boolean
+  lastPromoEmailDay?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -6187,11 +6462,14 @@ export type UserSelectScalar = {
   utmCampaign?: boolean
   platform?: boolean
   lastActiveAt?: boolean
+  lastDripEmailDay?: boolean
+  lastInactivityEmail?: boolean
+  lastPromoEmailDay?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "profileImage" | "bio" | "city" | "occupation" | "birthdate" | "notifBillReminder" | "notifCategoryLimit" | "notifMonthlyEmail" | "pushToken" | "currency" | "dateFormat" | "chatUsageMonth" | "chatUsageCount" | "chatFileMonth" | "chatFileCount" | "chatAnalysisMonth" | "chatAnalysisCount" | "scannerUsageMonth" | "scannerUsageCount" | "stripeCancelAtPeriodEnd" | "stripeCurrentPeriodEnd" | "googlePlayToken" | "googlePlayOrderId" | "subscriptionSource" | "proPlanExpiresAt" | "proPlanReason" | "adminNotes" | "tokenVersion" | "utmSource" | "utmMedium" | "utmCampaign" | "platform" | "lastActiveAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "profileImage" | "bio" | "city" | "occupation" | "birthdate" | "notifBillReminder" | "notifCategoryLimit" | "notifMonthlyEmail" | "pushToken" | "currency" | "dateFormat" | "chatUsageMonth" | "chatUsageCount" | "chatFileMonth" | "chatFileCount" | "chatAnalysisMonth" | "chatAnalysisCount" | "scannerUsageMonth" | "scannerUsageCount" | "stripeCancelAtPeriodEnd" | "stripeCurrentPeriodEnd" | "googlePlayToken" | "googlePlayOrderId" | "subscriptionSource" | "proPlanExpiresAt" | "proPlanReason" | "adminNotes" | "tokenVersion" | "utmSource" | "utmMedium" | "utmCampaign" | "platform" | "lastActiveAt" | "lastDripEmailDay" | "lastInactivityEmail" | "lastPromoEmailDay" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
   categories?: boolean | Prisma.User$categoriesArgs<ExtArgs>
@@ -6279,6 +6557,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     utmCampaign: string | null
     platform: string | null
     lastActiveAt: Date | null
+    lastDripEmailDay: number | null
+    lastInactivityEmail: Date | null
+    lastPromoEmailDay: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -6765,6 +7046,9 @@ export interface UserFieldRefs {
   readonly utmCampaign: Prisma.FieldRef<"User", 'String'>
   readonly platform: Prisma.FieldRef<"User", 'String'>
   readonly lastActiveAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly lastDripEmailDay: Prisma.FieldRef<"User", 'Int'>
+  readonly lastInactivityEmail: Prisma.FieldRef<"User", 'DateTime'>
+  readonly lastPromoEmailDay: Prisma.FieldRef<"User", 'Int'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
