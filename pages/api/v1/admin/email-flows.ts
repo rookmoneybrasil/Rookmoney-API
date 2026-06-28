@@ -42,7 +42,7 @@ export default withBackofficeAuth(async (_req, res) => {
       name: 'Boas-vindas',
       trigger: 'Ao criar conta',
       description: 'Email com Rookinho, features e CTA pro dashboard',
-      sent: totalUsers,
+      sent: null,
       audience: 'Todos os novos usuários',
       type: 'transactional' as const,
     },

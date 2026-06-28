@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           googlePlayToken: null,
           googlePlayOrderId: null,
         },
-        select: { email: true },
+        select: { email: true, name: true },
       })
       await db.adminLog.create({ data: {
         action: 'stripe_upgrade', targetId: userId,
@@ -80,8 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         currency:  'BRL',
       }).catch(() => {})
 
-      const fullUser = await db.user.findUnique({ where: { id: userId }, select: { name: true } })
-      if (fullUser) sendUpgradeEmail(user.email, fullUser.name, detectedPlan).catch(() => {})
+      sendUpgradeEmail(user.email, user.name, detectedPlan).catch(() => {})
     }
   }
 
