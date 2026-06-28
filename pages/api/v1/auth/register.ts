@@ -52,7 +52,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }))
 
   checkAchievements(db, user.id, 'register').catch(() => {})
-  sendWelcomeEmail(user.email, user.name).catch(() => {})
+  sendWelcomeEmail(user.email, user.name)
+    .then(() => db.adminLog.create({ data: { action: 'welcome_email', targetId: user.id, details: `Email de boas-vindas enviado (${user.email})` } }))
+    .catch(() => {})
 
   const eventId = `reg_${user.id}`
   sendMetaEvent({

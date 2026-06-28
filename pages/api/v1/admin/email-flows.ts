@@ -7,6 +7,7 @@ export default withBackofficeAuth(async (_req, res) => {
 
   const [
     totalUsers,
+    welcomeSent,
     dripDay1,
     dripDay3,
     dripDay7,
@@ -19,6 +20,7 @@ export default withBackofficeAuth(async (_req, res) => {
     usersInactive7d,
   ] = await Promise.all([
     db.user.count({ where: notBot }),
+    db.adminLog.count({ where: { action: 'welcome_email' } }),
     db.user.count({ where: { ...notBot, lastDripEmailDay: { gte: 1 } } }),
     db.user.count({ where: { ...notBot, lastDripEmailDay: { gte: 3 } } }),
     db.user.count({ where: { ...notBot, lastDripEmailDay: 7 } }),
@@ -42,7 +44,7 @@ export default withBackofficeAuth(async (_req, res) => {
       name: 'Boas-vindas',
       trigger: 'Ao criar conta',
       description: 'Email com Rookinho, features e CTA pro dashboard',
-      sent: null,
+      sent: welcomeSent,
       audience: 'Todos os novos usuários',
       type: 'transactional' as const,
     },
