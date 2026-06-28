@@ -134,11 +134,27 @@ export default withAuth(async (req, res, session) => {
     if (city       && city.length       > FIELD_LIMITS.city)       return badRequest(res, `Cidade muito longa (máx ${FIELD_LIMITS.city} chars).`)
     if (occupation && occupation.length > FIELD_LIMITS.occupation) return badRequest(res, `Profissão muito longa (máx ${FIELD_LIMITS.occupation} chars).`)
 
+    // Normalize + validate WhatsApp phone
+    let normalizedPhone: string | null | undefined = undefined
+    if (whatsappPhone !== undefined) {
+      if (!whatsappPhone) {
+        normalizedPhone = null
+      } else {
+        const digits = whatsappPhone.replace(/\D/g, '')
+        if (digits.length === 11)                        normalizedPhone = `+55${digits}`
+        else if (digits.length === 12 || digits.length === 13) normalizedPhone = `+${digits}`
+        else return badRequest(res, 'Número de WhatsApp inválido. Use o formato: (11) 99999-9999')
+
+        const existing = await db.user.findFirst({ where: { whatsappPhone: normalizedPhone, NOT: { id: session.userId } } })
+        if (existing) return badRequest(res, 'Este número já está vinculado a outra conta.')
+      }
+    }
+
     const updated = await db.user.update({
       where: { id: session.userId },
       data: {
         ...(name          !== undefined && { name }),
-        ...(whatsappPhone !== undefined && { whatsappPhone: whatsappPhone || null }),
+        ...(normalizedPhone !== undefined && { whatsappPhone: normalizedPhone }),
         ...(profileImage  !== undefined && { profileImage:  profileImage  || null }),
         ...(bio           !== undefined && { bio:           bio           || null }),
         ...(city          !== undefined && { city:          city          || null }),

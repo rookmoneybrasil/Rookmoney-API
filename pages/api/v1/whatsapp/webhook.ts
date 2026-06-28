@@ -87,7 +87,7 @@ async function buildContentBlocks(msg: WhatsAppMessage): Promise<Anthropic.Conte
   } else if (msg.type === 'text' && msg.text) {
     blocks.push({ type: 'text', text: msg.text.body })
   } else {
-    blocks.push({ type: 'text', text: '[Tipo de mensagem não suportado. Envie texto, foto ou PDF.]' })
+    return []
   }
 
   return blocks
@@ -152,6 +152,10 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
   }
 
   const contentBlocks = await buildContentBlocks(msg)
+  if (contentBlocks.length === 0) {
+    await sendTextMessage(msg.from, 'Esse tipo de mensagem não é suportado. Envie texto, foto ou PDF.')
+    return
+  }
   const messages: Anthropic.MessageParam[] = [{ role: 'user', content: contentBlocks }]
 
   try {
@@ -197,9 +201,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const body = req.body as WhatsAppWebhookBody
   const messages = extractMessages(body)
 
-  for (const msg of messages) {
-    processMessage(msg).catch(err => {
-      console.error('[whatsapp] processMessage error:', err)
-    })
-  }
+  // Sequential processing to avoid race conditions on usage counters
+  ;(async () => {
+    for (const msg of messages) {
+      try { await processMessage(msg) }
+      catch (err) { console.error('[whatsapp] processMessage error:', err) }
+    }
+  })()
 }
