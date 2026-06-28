@@ -123,6 +123,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       role: 'user',
       content: `Você é um redator especializado em finanças pessoais para o blog do Rook Money, um app brasileiro de controle financeiro.
 
+DATA DE HOJE: ${new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}. Use o ano correto (${new Date().getFullYear()}) em todos os títulos e referências temporais.
+
 CONTEXTO — Notícias da semana:
 ${trendingContext}
 

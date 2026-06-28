@@ -221,6 +221,34 @@ const MIGRATIONS: Migration[] = [
     },
   },
 
+  // ─── 2026-06-28 ─────────────────────────────────────────────────────
+  {
+    id:  '2026-06-28-fix-blog-year-2024',
+    run: async (db) => {
+      const posts = await db.blogPost.findMany({
+        where: {
+          source: 'ai-generated',
+          OR: [
+            { title: { contains: '2024' } },
+            { excerpt: { contains: '2024' } },
+            { content: { contains: '2024' } },
+          ],
+        },
+      })
+      for (const post of posts) {
+        await db.blogPost.update({
+          where: { id: post.id },
+          data: {
+            title:   post.title.replaceAll('2024', '2026'),
+            excerpt: post.excerpt.replaceAll('2024', '2026'),
+            content: post.content.replaceAll('2024', '2026'),
+            slug:    post.slug.includes('2024') ? post.slug.replaceAll('2024', '2026') : post.slug,
+          },
+        })
+      }
+    },
+  },
+
   // ─── 2026-06-05 ─────────────────────────────────────────────────────
   {
     id:  '2026-06-05-revert-future-startdate-income',
