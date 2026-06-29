@@ -6,9 +6,17 @@ import { isPro } from '@/lib/plans'
 
 type NotifType    = 'bill' | 'goal' | 'budget' | 'person' | 'income' | 'rookinho'
 type NotifUrgency = 'high' | 'medium' | 'low'
-interface Notification { id: string; type: NotifType; title: string; message: string; href: string; urgency: NotifUrgency }
+interface Notification { id: string; type: NotifType; title: string; message: string; href: string; urgency: NotifUrgency; isNew: boolean }
 
 export default withAuth(async (req, res, session) => {
+  if (req.method === 'PATCH') {
+    await db.user.update({
+      where: { id: session.userId },
+      data: { notificationsReadAt: new Date() },
+    })
+    return ok(res, { message: 'Notificações marcadas como lidas.' })
+  }
+
   if (req.method !== 'GET') return res.status(405).end()
 
   const uid   = session.userId
@@ -19,7 +27,7 @@ export default withAuth(async (req, res, session) => {
   const dayOfMonth = now.getDate()
 
   const [user, bills, goals, budgets, txs, incomeSources, people] = await Promise.all([
-    db.user.findUnique({ where: { id: uid }, select: { name: true, plan: true } }),
+    db.user.findUnique({ where: { id: uid }, select: { name: true, plan: true, notificationsReadAt: true } }),
     db.bill.findMany({ where: { userId: uid, isPaid: false, dueDate: { gte: now, lte: in3 } }, orderBy: { dueDate: 'asc' } }),
     db.goal.findMany({ where: { userId: uid, isCompleted: false, deadline: { gte: now, lte: in7 } }, orderBy: { deadline: 'asc' } }),
     db.budget.findMany({ where: { userId: uid, month }, include: { category: true } }),
@@ -28,46 +36,43 @@ export default withAuth(async (req, res, session) => {
     db.person.findMany({ where: { userId: uid }, include: { entries: { where: { isSettled: false } } } }),
   ])
 
+  const readAt = user?.notificationsReadAt
   const notifications: Notification[] = []
 
   for (const b of bills) {
     const diff = Math.ceil((new Date(b.dueDate).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
     const when = diff <= 0 ? 'vence hoje' : diff === 1 ? 'vence amanhã' : `vence em ${diff} dias`
-    notifications.push({ id: `bill-${b.id}`, type: 'bill', title: b.name, message: `${when} · R$ ${Number(b.amount).toFixed(2)}`, href: '/bills', urgency: diff <= 1 ? 'high' : 'medium' })
+    notifications.push({ id: `bill-${b.id}`, type: 'bill', title: b.name, message: `${when} · R$ ${Number(b.amount).toFixed(2)}`, href: '/bills', urgency: diff <= 1 ? 'high' : 'medium', isNew: !readAt || new Date(b.createdAt) > readAt })
   }
 
   for (const g of goals) {
     if (!g.deadline) continue
     const diff = Math.ceil((new Date(g.deadline).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
     const pct  = Number(g.targetAmount) > 0 ? Math.round((Number(g.currentAmount) / Number(g.targetAmount)) * 100) : 0
-    notifications.push({ id: `goal-${g.id}`, type: 'goal', title: g.name, message: `${pct}% concluída · prazo em ${diff} dias`, href: '/goals', urgency: pct < 50 ? 'high' : 'medium' })
+    notifications.push({ id: `goal-${g.id}`, type: 'goal', title: g.name, message: `${pct}% concluída · prazo em ${diff} dias`, href: '/goals', urgency: pct < 50 ? 'high' : 'medium', isNew: !readAt || new Date(g.createdAt) > readAt })
   }
 
   for (const bgt of budgets) {
     const spent = txs.filter(t => t.categoryId === bgt.categoryId).reduce((s, t) => s + Number(t.amount), 0)
     const pct   = Number(bgt.amount) > 0 ? Math.round((spent / Number(bgt.amount)) * 100) : 0
     if (pct >= 80) {
-      notifications.push({ id: `budget-${bgt.id}`, type: 'budget', title: bgt.category.name, message: `${pct}% do orçamento utilizado`, href: '/budget', urgency: pct >= 100 ? 'high' : 'medium' })
+      notifications.push({ id: `budget-${bgt.id}`, type: 'budget', title: bgt.category.name, message: `${pct}% do orçamento utilizado`, href: '/budget', urgency: pct >= 100 ? 'high' : 'medium', isNew: !readAt })
     }
   }
 
-  // Income sources: notify when dayOfMonth is within 7 days
   for (const src of incomeSources) {
     if (!src.dayOfMonth) continue
     const daysUntil = src.dayOfMonth - dayOfMonth
     if (daysUntil < 0 || daysUntil > 7) continue
     const when = daysUntil === 0 ? 'entra hoje' : daysUntil === 1 ? 'entra amanhã' : `entra em ${daysUntil} dias`
     notifications.push({
-      id: `income-${src.id}`,
-      type: 'income',
-      title: src.name,
+      id: `income-${src.id}`, type: 'income', title: src.name,
       message: `${when} · R$ ${Number(src.amount).toFixed(2)}`,
-      href: '/income',
-      urgency: daysUntil <= 3 ? 'medium' : 'low',
+      href: '/income', urgency: daysUntil <= 3 ? 'medium' : 'low',
+      isNew: !readAt,
     })
   }
 
-  // People: outstanding balances
   for (const person of people) {
     let theyOweMe = 0
     let iOweThem  = 0
@@ -79,37 +84,33 @@ export default withAuth(async (req, res, session) => {
     if (Math.abs(net) < 1) continue
     const theyOweMeNet = net > 0
     notifications.push({
-      id: `person-${person.id}`,
-      type: 'person',
-      title: person.name,
-      message: theyOweMeNet
-        ? `Te deve R$ ${net.toFixed(2)}`
-        : `Você deve R$ ${Math.abs(net).toFixed(2)}`,
-      href: '/people',
-      urgency: theyOweMeNet ? 'medium' : 'low',
+      id: `person-${person.id}`, type: 'person', title: person.name,
+      message: theyOweMeNet ? `Te deve R$ ${net.toFixed(2)}` : `Você deve R$ ${Math.abs(net).toFixed(2)}`,
+      href: '/people', urgency: theyOweMeNet ? 'medium' : 'low',
+      isNew: !readAt || new Date(person.createdAt) > readAt,
     })
   }
 
-  // ── PushLogs (cron + broadcast, last 7 days, max 10) ──────────────
+  // Push logs (last 7 days, max 5)
   const pushLogs = await db.pushLog.findMany({
     where: { userId: uid, createdAt: { gte: addDays(now, -7) } },
     orderBy: { createdAt: 'desc' },
-    take: 10,
+    take: 5,
   })
   for (const log of pushLogs) {
     notifications.push({
-      id:      `push-${log.id}`,
-      type:    'rookinho',
-      title:   log.title,
-      message: log.body,
-      href:    log.screen ? `/${log.screen}` : '/',
+      id: `push-${log.id}`, type: 'rookinho', title: log.title, message: log.body,
+      href: log.screen ? `/${log.screen}` : '/',
       urgency: 'low',
+      isNew: !readAt || new Date(log.createdAt) > readAt,
     })
   }
 
-  // ── Rookinho daily message ────────────────────────────────────────
+  // Rookinho daily tip (only 1, always new if not read today)
   const firstName = (user?.name ?? '').split(' ')[0] || 'aí'
   const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24))
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const readToday = readAt && readAt >= todayStart
 
   if (user && !isPro(user.plan)) {
     const proTips = [
@@ -121,7 +122,7 @@ export default withAuth(async (req, res, session) => {
       { title: '🐦 Rookinho sincerão', message: `${firstName}, quer organizar de verdade ou só de brincadeira? PRO é pra quem leva a sério.`, href: '/settings' },
       { title: '🐦 Todo mundo tá virando PRO', message: 'Quem assina não volta pro grátis. Será que sabem algo que você não sabe?', href: '/settings' },
     ]
-    notifications.push({ id: 'rookinho-pro', type: 'rookinho', ...proTips[dayOfYear % proTips.length], urgency: 'low' })
+    notifications.push({ id: 'rookinho-pro', type: 'rookinho', ...proTips[dayOfYear % proTips.length], urgency: 'low', isNew: !readToday })
   }
 
   const dailyTips = [
@@ -140,7 +141,9 @@ export default withAuth(async (req, res, session) => {
     { title: '🐦 Dica de ouro', message: `${firstName}, paga as contas assim que cair o salário. Futuro-você vai agradecer!`, href: '/bills' },
     { title: `🐦 Opa ${firstName}`, message: 'Importar extrato bancário é rapidinho. Vai em Transações e tenta!', href: '/transactions' },
   ]
-  notifications.push({ id: 'rookinho-tip', type: 'rookinho', ...dailyTips[dayOfYear % dailyTips.length], urgency: 'low' })
+  notifications.push({ id: 'rookinho-tip', type: 'rookinho', ...dailyTips[dayOfYear % dailyTips.length], urgency: 'low', isNew: !readToday })
 
-  return ok(res, notifications)
+  const newCount = notifications.filter(n => n.isNew).length
+
+  return ok(res, { notifications, newCount })
 })

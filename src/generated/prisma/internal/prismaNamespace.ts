@@ -2217,6 +2217,7 @@ export const UserScalarFieldEnum = {
   lastDripEmailDay: 'lastDripEmailDay',
   lastInactivityEmail: 'lastInactivityEmail',
   lastPromoEmailDay: 'lastPromoEmailDay',
+  notificationsReadAt: 'notificationsReadAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
