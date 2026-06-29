@@ -113,24 +113,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const sub        = event.data.object as Stripe.Subscription
     const customerId = typeof sub.customer === 'string' ? sub.customer : null
     if (customerId) {
-      const user = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true, email: true, name: true, plan: true } })
-      const previousPlan = user?.plan ?? 'PRO'
-      await db.user.updateMany({
-        where: { stripeCustomerId: customerId },
-        data:  {
-          plan: 'FREE',
-          stripeSubscriptionId: null,
-          stripeCancelAtPeriodEnd: false,
-          stripeCurrentPeriodEnd: null,
-          subscriptionSource: null,
-        },
-      })
-      if (user) {
-        await db.adminLog.create({ data: {
-          action: 'stripe_downgrade', targetId: user.id,
-          details: `Downgrade para FREE — assinatura Stripe encerrada (${user.email})`,
-        }})
-        sendDowngradeEmail(user.email, user.name, previousPlan).catch(() => {})
+      const user = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true, email: true, name: true, plan: true, proPlanExpiresAt: true } })
+      const hasManualPlan = user?.proPlanExpiresAt && new Date(user.proPlanExpiresAt) > new Date()
+
+      if (hasManualPlan) {
+        await db.user.updateMany({
+          where: { stripeCustomerId: customerId },
+          data:  {
+            stripeSubscriptionId: null,
+            stripeCancelAtPeriodEnd: false,
+            stripeCurrentPeriodEnd: null,
+            subscriptionSource: null,
+          },
+        })
+        if (user) {
+          await db.adminLog.create({ data: {
+            action: 'stripe_downgrade', targetId: user.id,
+            details: `Assinatura Stripe encerrada — plano manual ativo mantido até ${new Date(user.proPlanExpiresAt!).toLocaleDateString('pt-BR')} (${user.email})`,
+          }})
+        }
+      } else {
+        const previousPlan = user?.plan ?? 'PRO'
+        await db.user.updateMany({
+          where: { stripeCustomerId: customerId },
+          data:  {
+            plan: 'FREE',
+            stripeSubscriptionId: null,
+            stripeCancelAtPeriodEnd: false,
+            stripeCurrentPeriodEnd: null,
+            subscriptionSource: null,
+          },
+        })
+        if (user) {
+          await db.adminLog.create({ data: {
+            action: 'stripe_downgrade', targetId: user.id,
+            details: `Downgrade para FREE — assinatura Stripe encerrada (${user.email})`,
+          }})
+          sendDowngradeEmail(user.email, user.name, previousPlan).catch(() => {})
+        }
       }
     }
   }

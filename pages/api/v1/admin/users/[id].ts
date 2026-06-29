@@ -105,9 +105,27 @@ export default withBackofficeAuth(async (req, res) => {
         }
         const planLabel = plan === 'PRO_PLUS' ? 'PRO+' : 'PRO'
         const expiresAt = calcExpiresAt(duration)
+
+        if (user.stripeSubscriptionId) {
+          try {
+            const { cancelSubscription } = await import('@/lib/stripe')
+            await cancelSubscription(user.stripeSubscriptionId)
+          } catch (err) {
+            console.error('[admin] Stripe cancel on manual upgrade:', err instanceof Error ? err.message : err)
+          }
+        }
+
         await db.user.update({
           where: { id },
-          data: { plan, proPlanExpiresAt: expiresAt, proPlanReason: reason.trim() },
+          data: {
+            plan,
+            proPlanExpiresAt: expiresAt,
+            proPlanReason: reason.trim(),
+            stripeSubscriptionId: null,
+            stripeCancelAtPeriodEnd: false,
+            stripeCurrentPeriodEnd: null,
+            subscriptionSource: null,
+          },
         })
         const durationLabel = duration === 'lifetime' ? 'vitalício' : duration
         const expiryText    = expiresAt ? ` (expira ${expiresAt.toLocaleDateString('pt-BR')})` : ' (vitalício)'

@@ -99,6 +99,20 @@ export function planFromPriceId(priceId: string): 'PRO' | 'PRO_PLUS' {
   return 'PRO'
 }
 
+export async function cancelSubscription(subscriptionId: string): Promise<void> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 15_000)
+  const res = await fetch(`https://api.stripe.com/v1/subscriptions/${subscriptionId}`, {
+    method: 'DELETE',
+    headers: { Authorization: stripeAuth() },
+    signal: controller.signal,
+  }).finally(() => clearTimeout(timeout))
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error?.message ?? 'Stripe cancel error')
+  }
+}
+
 export async function createCheckoutSession(
   userId: string,
   email: string,
