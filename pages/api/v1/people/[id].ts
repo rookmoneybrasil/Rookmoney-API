@@ -12,7 +12,10 @@ export default withAuth(async (req, res, session) => {
       include: { entries: { include: { category: { select: { id: true, name: true, icon: true, color: true } } }, orderBy: { date: 'desc' } } },
     })
     if (!person) return notFound(res)
-    return ok(res, person)
+    return ok(res, {
+      ...person,
+      entries: person.entries.map((e) => ({ ...e, amount: Number(e.amount) })),
+    })
   }
 
   if (req.method === 'POST' && req.query.action === 'entry') {
