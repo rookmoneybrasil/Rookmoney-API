@@ -58,19 +58,10 @@ export default withAuth(async (req, res, session) => {
     }
 
     // Delete ALL entries in the group — cron will create next one from template
+    // lastMonth is set to current month above, so cron won't generate a duplicate this month.
+    // Any loose entry (installmentGroupId: null) with the same description is left intact:
+    // deleting it risks removing manually-created entries with the same name.
     await db.personEntry.deleteMany({ where: { installmentGroupId: groupId, userId: uid } })
-
-    // Also clean up any loose duplicate entries (without groupId) that cron may have already created
-    // for this recurring item (same person + description + isSettled: false)
-    await db.personEntry.deleteMany({
-      where: {
-        userId:            uid,
-        personId:          first.personId,
-        description:       first.description,
-        isSettled:         false,
-        installmentGroupId: null,
-      },
-    })
 
     converted++
   }
