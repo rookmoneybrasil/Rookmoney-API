@@ -31,7 +31,6 @@ export default withAuth(async (req, res, session) => {
     ])
 
     const result = people.map(p => {
-      const groupSeen = new Set<string>()
       let theyOweMe = 0
       let iOweThem  = 0
 
@@ -40,8 +39,9 @@ export default withAuth(async (req, res, session) => {
         const isOldRecurring = (e.installmentTotal ?? 0) >= 24
         if (isOldRecurring && new Date(e.date) > cutoff) continue
         if (e.installmentGroupId) {
-          if (groupSeen.has(e.installmentGroupId)) continue
-          groupSeen.add(e.installmentGroupId)
+          // Only count installments due in the current month (mirrors detail page logic)
+          const eDate = new Date(e.date)
+          if (eDate.getFullYear() !== now.getFullYear() || eDate.getMonth() !== now.getMonth()) continue
         }
         if (e.type === 'THEY_OWE_ME') theyOweMe += Number(e.amount)
         else                           iOweThem  += Number(e.amount)
