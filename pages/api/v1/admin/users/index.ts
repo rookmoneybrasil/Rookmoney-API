@@ -23,8 +23,9 @@ export default withBackofficeAuth(async (req, res) => {
 
   if (search) {
     const searchClause = [
-      { name:  { contains: search, mode: 'insensitive' } },
-      { email: { contains: search, mode: 'insensitive' } },
+      { name:         { contains: search, mode: 'insensitive' } },
+      { email:        { contains: search, mode: 'insensitive' } },
+      { whatsappPhone: { contains: search, mode: 'insensitive' } },
     ]
     where.OR = where.OR
       ? [{ AND: [{ OR: where.OR as unknown[] }, { OR: searchClause }] }]
@@ -36,7 +37,7 @@ export default withBackofficeAuth(async (req, res) => {
       where, skip, take: parseInt(pageSize),
       orderBy: { createdAt: 'desc' },
       select: { id: true, name: true, email: true, plan: true, isAdmin: true, createdAt: true,
-        lastActiveAt: true, stripeSubscriptionId: true, profileImage: true,
+        lastActiveAt: true, stripeSubscriptionId: true, profileImage: true, whatsappPhone: true,
         _count: { select: { transactions: true, goals: true } } },
     }),
     db.user.count({ where }),
