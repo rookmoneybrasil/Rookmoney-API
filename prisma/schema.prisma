@@ -15,6 +15,7 @@ model User {
   email               String    @unique
   password            String?   // null for OAuth-only users
   googleId            String?   @unique
+  appleId             String?   @unique
   hasOnboarded        Boolean   @default(false)
   plan                String    @default("FREE")   // FREE | PRO | PRO_PLUS
   isAdmin             Boolean   @default(false)
