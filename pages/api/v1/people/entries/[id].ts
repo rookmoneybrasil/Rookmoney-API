@@ -114,11 +114,23 @@ export default withAuth(async (req, res, session) => {
   if (req.method === 'DELETE') {
     // applyToGroup=true → delete all installments in the group
     if (req.query.applyToGroup === 'true' && entry.installmentGroupId) {
+      // Collect settled transaction IDs from all group entries before deleting
+      const groupEntries = await db.personEntry.findMany({
+        where:  { installmentGroupId: entry.installmentGroupId, userId: session.userId },
+        select: { settledTransactionId: true },
+      })
+      const txIds = groupEntries.map(e => e.settledTransactionId).filter(Boolean) as string[]
       await db.personEntry.deleteMany({
         where: { installmentGroupId: entry.installmentGroupId, userId: session.userId },
       })
+      if (txIds.length > 0) {
+        await db.transaction.deleteMany({ where: { id: { in: txIds }, userId: session.userId } })
+      }
     } else {
       await db.personEntry.deleteMany({ where: { id, userId: session.userId } })
+      if (entry.settledTransactionId) {
+        await db.transaction.deleteMany({ where: { id: entry.settledTransactionId, userId: session.userId } })
+      }
     }
     return noContent(res)
   }
