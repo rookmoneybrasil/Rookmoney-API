@@ -129,7 +129,7 @@ export default withAuth(async (req, res, session) => {
       orderBy: { dueDate: 'asc' }, take: 5,
     }),
 
-    db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { gte: mS, lte: mE } } }),
+    db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { lte: mE } } }),
     db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { lt: now } } }),
 
     // PersonEntry: all unsettled THEY_OWE_ME entries (no date filter — old debts still count)
@@ -178,7 +178,7 @@ export default withAuth(async (req, res, session) => {
       select: { type: true, amount: true, date: true },
     }),
 
-    db.bill.aggregate({ where: { userId: uid, isPaid: false, dueDate: { gte: mS, lte: mE } }, _sum: { amount: true } }),
+    db.bill.aggregate({ where: { userId: uid, isPaid: false, dueDate: { lte: mE } }, _sum: { amount: true } }),
 
     // Fix 2: all unsettled person payables up to end of current month (not just this month)
     db.personEntry.aggregate({ where: { userId: uid, type: 'I_OWE_THEM', isSettled: false, date: { lte: mE } }, _sum: { amount: true } }),
