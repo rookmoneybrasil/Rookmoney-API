@@ -88,18 +88,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const sub        = event.data.object as Stripe.Subscription
     const customerId = typeof sub.customer === 'string' ? sub.customer : null
     if (customerId) {
-      const periodEnd = sub.items?.data?.[0]?.current_period_end
-      const isCanceling = sub.cancel_at_period_end || (sub.cancel_at != null)
-      const cancelDate = sub.cancel_at ? new Date(sub.cancel_at * 1000) : periodEnd ? new Date(periodEnd * 1000) : null
-      await db.user.updateMany({
-        where: { stripeCustomerId: customerId },
-        data:  {
-          stripeCancelAtPeriodEnd: isCanceling,
-          ...(cancelDate && { stripeCurrentPeriodEnd: cancelDate }),
-        },
-      })
-      const user = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true, email: true } })
-      if (user) {
+      const user = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true, email: true, subscriptionSource: true } })
+      // Ignore events for users who switched to Google Play or Apple — their Stripe sub is stale
+      if (!user || (user.subscriptionSource !== 'stripe' && user.subscriptionSource !== null)) {
+        // still return 200 below
+      } else {
+        const periodEnd = sub.items?.data?.[0]?.current_period_end
+        const isCanceling = sub.cancel_at_period_end || (sub.cancel_at != null)
+        const cancelDate = sub.cancel_at ? new Date(sub.cancel_at * 1000) : periodEnd ? new Date(periodEnd * 1000) : null
+        await db.user.updateMany({
+          where: { stripeCustomerId: customerId },
+          data:  {
+            stripeCancelAtPeriodEnd: isCanceling,
+            ...(cancelDate && { stripeCurrentPeriodEnd: cancelDate }),
+          },
+        })
         const action = isCanceling ? 'stripe_cancel_scheduled' : 'stripe_cancel_reversed'
         const details = isCanceling
           ? `Cancelamento agendado via Stripe — acesso até ${cancelDate ? cancelDate.toLocaleDateString('pt-BR') : '?'} (${user.email})`
@@ -113,23 +116,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const sub        = event.data.object as Stripe.Subscription
     const customerId = typeof sub.customer === 'string' ? sub.customer : null
     if (customerId) {
-      const user = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true, email: true, name: true, plan: true, proPlanExpiresAt: true } })
-      const hasManualPlan = user?.proPlanExpiresAt && new Date(user.proPlanExpiresAt) > new Date()
+      const user = await db.user.findFirst({ where: { stripeCustomerId: customerId }, select: { id: true, email: true, name: true, plan: true, proPlanExpiresAt: true, subscriptionSource: true } })
+      const hasManualPlan     = user?.proPlanExpiresAt && new Date(user.proPlanExpiresAt) > new Date()
+      const hasNonStripePlan  = user?.subscriptionSource === 'google_play' || user?.subscriptionSource === 'apple'
 
-      if (hasManualPlan) {
+      if (hasManualPlan || hasNonStripePlan) {
+        // Just clear stale Stripe fields — don't touch the plan
         await db.user.updateMany({
           where: { stripeCustomerId: customerId },
           data:  {
-            stripeSubscriptionId: null,
+            stripeSubscriptionId:    null,
             stripeCancelAtPeriodEnd: false,
-            stripeCurrentPeriodEnd: null,
-            subscriptionSource: null,
+            stripeCurrentPeriodEnd:  null,
           },
         })
         if (user) {
+          const reason = hasNonStripePlan
+            ? `${user.subscriptionSource} ativo — plano mantido`
+            : `plano manual ativo até ${new Date(user.proPlanExpiresAt!).toLocaleDateString('pt-BR')}`
           await db.adminLog.create({ data: {
             action: 'stripe_downgrade', targetId: user.id,
-            details: `Assinatura Stripe encerrada — plano manual ativo mantido até ${new Date(user.proPlanExpiresAt!).toLocaleDateString('pt-BR')} (${user.email})`,
+            details: `Assinatura Stripe encerrada — ${reason} (${user.email})`,
           }})
         }
       } else {
@@ -137,11 +144,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         await db.user.updateMany({
           where: { stripeCustomerId: customerId },
           data:  {
-            plan: 'FREE',
-            stripeSubscriptionId: null,
+            plan:                    'FREE',
+            stripeSubscriptionId:    null,
             stripeCancelAtPeriodEnd: false,
-            stripeCurrentPeriodEnd: null,
-            subscriptionSource: null,
+            stripeCurrentPeriodEnd:  null,
+            subscriptionSource:      null,
           },
         })
         if (user) {
