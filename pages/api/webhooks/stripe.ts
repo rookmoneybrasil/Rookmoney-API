@@ -55,14 +55,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const user = await db.user.update({
         where: { id: userId },
         data:  {
-          plan: detectedPlan,
-          stripeCustomerId: customerId ?? undefined,
-          stripeSubscriptionId: subscriptionId ?? undefined,
-          stripeCancelAtPeriodEnd: false,
-          stripeCurrentPeriodEnd: null,
-          subscriptionSource: 'stripe',
-          googlePlayToken: null,
-          googlePlayOrderId: null,
+          plan:                       detectedPlan,
+          stripeCustomerId:           customerId ?? undefined,
+          stripeSubscriptionId:       subscriptionId ?? undefined,
+          stripeCancelAtPeriodEnd:    false,
+          stripeCurrentPeriodEnd:     null,
+          subscriptionSource:         'stripe',
+          googlePlayToken:            null,
+          googlePlayOrderId:          null,
+          appleOriginalTransactionId: null,
         },
         select: { email: true, name: true },
       })

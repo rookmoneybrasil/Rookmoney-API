@@ -156,7 +156,7 @@ async function warnExpiringManualPro() {
 
   // Warn users expiring in ~3 days (between 3d and 4d from now)
   const expiringSoon = await db.user.findMany({
-    where: { plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, proPlanExpiresAt: { gte: in3Days, lt: in4Days } },
+    where: { plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, subscriptionSource: null, proPlanExpiresAt: { gte: in3Days, lt: in4Days } },
     select: { email: true, name: true, proPlanExpiresAt: true },
   })
   for (const u of expiringSoon) {
@@ -169,7 +169,7 @@ async function warnExpiringManualPro() {
   // Warn users expiring today
   const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
   const expiringToday = await db.user.findMany({
-    where: { plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, proPlanExpiresAt: { gte: now, lt: tomorrow } },
+    where: { plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, subscriptionSource: null, proPlanExpiresAt: { gte: now, lt: tomorrow } },
     select: { email: true, name: true, proPlanExpiresAt: true },
   })
   for (const u of expiringToday) {
@@ -181,7 +181,7 @@ async function warnExpiringManualPro() {
 
 async function expireManualPro() {
   const expired = await db.user.findMany({
-    where: { plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, proPlanExpiresAt: { not: null, lte: new Date() } },
+    where: { plan: { in: ['PRO', 'PRO_PLUS'] }, stripeSubscriptionId: null, subscriptionSource: null, proPlanExpiresAt: { not: null, lte: new Date() } },
     select: { id: true, email: true },
   })
   for (const u of expired) {

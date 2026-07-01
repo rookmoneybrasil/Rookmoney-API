@@ -38,11 +38,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const user = await db.user.findFirst({
       where: { googlePlayToken: purchaseToken },
-      select: { id: true, email: true, plan: true },
+      select: { id: true, email: true, plan: true, subscriptionSource: true },
     })
 
     if (!user) {
       console.warn('[google-play-webhook] No user found for token:', purchaseToken?.slice(0, 20))
+      return res.status(200).json({ ok: true })
+    }
+
+    // Ignore stale tokens — user switched to a different payment source
+    if (user.subscriptionSource !== 'google_play') {
+      console.warn('[google-play-webhook] Token belongs to user with subscriptionSource:', user.subscriptionSource, '— ignoring')
       return res.status(200).json({ ok: true })
     }
 

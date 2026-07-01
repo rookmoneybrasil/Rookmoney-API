@@ -119,12 +119,15 @@ export default withBackofficeAuth(async (req, res) => {
           where: { id },
           data: {
             plan,
-            proPlanExpiresAt: expiresAt,
-            proPlanReason: reason.trim(),
-            stripeSubscriptionId: null,
-            stripeCancelAtPeriodEnd: false,
-            stripeCurrentPeriodEnd: null,
-            subscriptionSource: null,
+            proPlanExpiresAt:           expiresAt,
+            proPlanReason:              reason.trim(),
+            stripeSubscriptionId:       null,
+            stripeCancelAtPeriodEnd:    false,
+            stripeCurrentPeriodEnd:     null,
+            subscriptionSource:         null,
+            googlePlayToken:            null,
+            googlePlayOrderId:          null,
+            appleOriginalTransactionId: null,
           },
         })
         const durationLabel = duration === 'lifetime' ? 'vitalício' : duration
