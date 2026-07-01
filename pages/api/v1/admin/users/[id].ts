@@ -138,9 +138,29 @@ export default withBackofficeAuth(async (req, res) => {
           details: `${verb} ${durationLabel}${expiryText} — motivo: ${reason.trim()} (${user.email})`,
         }})
       } else if (plan === 'FREE') {
+        // Cancel active Stripe subscription to stop billing immediately
+        if (user.stripeSubscriptionId) {
+          try {
+            const { cancelSubscription } = await import('@/lib/stripe')
+            await cancelSubscription(user.stripeSubscriptionId)
+          } catch (err) {
+            console.error('[admin] Stripe cancel on FREE downgrade:', err instanceof Error ? err.message : err)
+          }
+        }
         await db.user.update({
           where: { id },
-          data: { plan: 'FREE', proPlanExpiresAt: null, proPlanReason: null },
+          data: {
+            plan:                       'FREE',
+            proPlanExpiresAt:           null,
+            proPlanReason:              null,
+            stripeSubscriptionId:       null,
+            stripeCancelAtPeriodEnd:    false,
+            stripeCurrentPeriodEnd:     null,
+            subscriptionSource:         null,
+            googlePlayToken:            null,
+            googlePlayOrderId:          null,
+            appleOriginalTransactionId: null,
+          },
         })
         await db.adminLog.create({ data: {
           action: 'plan_change', targetId: id,
