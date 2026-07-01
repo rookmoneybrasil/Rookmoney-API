@@ -30,6 +30,20 @@ export default withAuth(async (req, res, session) => {
       await acknowledgeSubscription(productId, purchaseToken)
     }
 
+    // Cancel active Stripe subscription to prevent double-charging
+    const existing = await db.user.findUnique({
+      where:  { id: session.userId },
+      select: { stripeSubscriptionId: true },
+    })
+    if (existing?.stripeSubscriptionId) {
+      try {
+        const { cancelSubscription } = await import('@/lib/stripe')
+        await cancelSubscription(existing.stripeSubscriptionId)
+      } catch (err) {
+        console.error('[google-play] Stripe cancel on mobile upgrade:', err instanceof Error ? err.message : err)
+      }
+    }
+
     const user = await db.user.update({
       where: { id: session.userId },
       data: {
