@@ -52,6 +52,7 @@ export type UserMinAggregateOutputType = {
   email: string | null
   password: string | null
   googleId: string | null
+  appleId: string | null
   hasOnboarded: boolean | null
   plan: string | null
   isAdmin: boolean | null
@@ -83,6 +84,7 @@ export type UserMinAggregateOutputType = {
   stripeCurrentPeriodEnd: Date | null
   googlePlayToken: string | null
   googlePlayOrderId: string | null
+  appleOriginalTransactionId: string | null
   subscriptionSource: string | null
   proPlanExpiresAt: Date | null
   proPlanReason: string | null
@@ -107,6 +109,7 @@ export type UserMaxAggregateOutputType = {
   email: string | null
   password: string | null
   googleId: string | null
+  appleId: string | null
   hasOnboarded: boolean | null
   plan: string | null
   isAdmin: boolean | null
@@ -138,6 +141,7 @@ export type UserMaxAggregateOutputType = {
   stripeCurrentPeriodEnd: Date | null
   googlePlayToken: string | null
   googlePlayOrderId: string | null
+  appleOriginalTransactionId: string | null
   subscriptionSource: string | null
   proPlanExpiresAt: Date | null
   proPlanReason: string | null
@@ -162,6 +166,7 @@ export type UserCountAggregateOutputType = {
   email: number
   password: number
   googleId: number
+  appleId: number
   hasOnboarded: number
   plan: number
   isAdmin: number
@@ -193,6 +198,7 @@ export type UserCountAggregateOutputType = {
   stripeCurrentPeriodEnd: number
   googlePlayToken: number
   googlePlayOrderId: number
+  appleOriginalTransactionId: number
   subscriptionSource: number
   proPlanExpiresAt: number
   proPlanReason: number
@@ -239,6 +245,7 @@ export type UserMinAggregateInputType = {
   email?: true
   password?: true
   googleId?: true
+  appleId?: true
   hasOnboarded?: true
   plan?: true
   isAdmin?: true
@@ -270,6 +277,7 @@ export type UserMinAggregateInputType = {
   stripeCurrentPeriodEnd?: true
   googlePlayToken?: true
   googlePlayOrderId?: true
+  appleOriginalTransactionId?: true
   subscriptionSource?: true
   proPlanExpiresAt?: true
   proPlanReason?: true
@@ -294,6 +302,7 @@ export type UserMaxAggregateInputType = {
   email?: true
   password?: true
   googleId?: true
+  appleId?: true
   hasOnboarded?: true
   plan?: true
   isAdmin?: true
@@ -325,6 +334,7 @@ export type UserMaxAggregateInputType = {
   stripeCurrentPeriodEnd?: true
   googlePlayToken?: true
   googlePlayOrderId?: true
+  appleOriginalTransactionId?: true
   subscriptionSource?: true
   proPlanExpiresAt?: true
   proPlanReason?: true
@@ -349,6 +359,7 @@ export type UserCountAggregateInputType = {
   email?: true
   password?: true
   googleId?: true
+  appleId?: true
   hasOnboarded?: true
   plan?: true
   isAdmin?: true
@@ -380,6 +391,7 @@ export type UserCountAggregateInputType = {
   stripeCurrentPeriodEnd?: true
   googlePlayToken?: true
   googlePlayOrderId?: true
+  appleOriginalTransactionId?: true
   subscriptionSource?: true
   proPlanExpiresAt?: true
   proPlanReason?: true
@@ -491,6 +503,7 @@ export type UserGroupByOutputType = {
   email: string
   password: string | null
   googleId: string | null
+  appleId: string | null
   hasOnboarded: boolean
   plan: string
   isAdmin: boolean
@@ -522,6 +535,7 @@ export type UserGroupByOutputType = {
   stripeCurrentPeriodEnd: Date | null
   googlePlayToken: string | null
   googlePlayOrderId: string | null
+  appleOriginalTransactionId: string | null
   subscriptionSource: string | null
   proPlanExpiresAt: Date | null
   proPlanReason: string | null
@@ -569,6 +583,7 @@ export type UserWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringNullableFilter<"User"> | string | null
   googleId?: Prisma.StringNullableFilter<"User"> | string | null
+  appleId?: Prisma.StringNullableFilter<"User"> | string | null
   hasOnboarded?: Prisma.BoolFilter<"User"> | boolean
   plan?: Prisma.StringFilter<"User"> | string
   isAdmin?: Prisma.BoolFilter<"User"> | boolean
@@ -600,6 +615,7 @@ export type UserWhereInput = {
   stripeCurrentPeriodEnd?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   googlePlayToken?: Prisma.StringNullableFilter<"User"> | string | null
   googlePlayOrderId?: Prisma.StringNullableFilter<"User"> | string | null
+  appleOriginalTransactionId?: Prisma.StringNullableFilter<"User"> | string | null
   subscriptionSource?: Prisma.StringNullableFilter<"User"> | string | null
   proPlanExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   proPlanReason?: Prisma.StringNullableFilter<"User"> | string | null
@@ -639,6 +655,7 @@ export type UserOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrderInput | Prisma.SortOrder
   googleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  appleId?: Prisma.SortOrderInput | Prisma.SortOrder
   hasOnboarded?: Prisma.SortOrder
   plan?: Prisma.SortOrder
   isAdmin?: Prisma.SortOrder
@@ -670,6 +687,7 @@ export type UserOrderByWithRelationInput = {
   stripeCurrentPeriodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
   googlePlayToken?: Prisma.SortOrderInput | Prisma.SortOrder
   googlePlayOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
+  appleOriginalTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   subscriptionSource?: Prisma.SortOrderInput | Prisma.SortOrder
   proPlanExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   proPlanReason?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -707,6 +725,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
   googleId?: string
+  appleId?: string
   whatsappPhone?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
@@ -743,6 +762,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   stripeCurrentPeriodEnd?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   googlePlayToken?: Prisma.StringNullableFilter<"User"> | string | null
   googlePlayOrderId?: Prisma.StringNullableFilter<"User"> | string | null
+  appleOriginalTransactionId?: Prisma.StringNullableFilter<"User"> | string | null
   subscriptionSource?: Prisma.StringNullableFilter<"User"> | string | null
   proPlanExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   proPlanReason?: Prisma.StringNullableFilter<"User"> | string | null
@@ -774,7 +794,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   pluggyItems?: Prisma.PluggyItemListRelationFilter
   achievements?: Prisma.UserAchievementListRelationFilter
   pushLogs?: Prisma.PushLogListRelationFilter
-}, "id" | "email" | "googleId" | "whatsappPhone">
+}, "id" | "email" | "googleId" | "appleId" | "whatsappPhone">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -782,6 +802,7 @@ export type UserOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrderInput | Prisma.SortOrder
   googleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  appleId?: Prisma.SortOrderInput | Prisma.SortOrder
   hasOnboarded?: Prisma.SortOrder
   plan?: Prisma.SortOrder
   isAdmin?: Prisma.SortOrder
@@ -813,6 +834,7 @@ export type UserOrderByWithAggregationInput = {
   stripeCurrentPeriodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
   googlePlayToken?: Prisma.SortOrderInput | Prisma.SortOrder
   googlePlayOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
+  appleOriginalTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
   subscriptionSource?: Prisma.SortOrderInput | Prisma.SortOrder
   proPlanExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   proPlanReason?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -845,6 +867,7 @@ export type UserScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   password?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   googleId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  appleId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   hasOnboarded?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   plan?: Prisma.StringWithAggregatesFilter<"User"> | string
   isAdmin?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
@@ -876,6 +899,7 @@ export type UserScalarWhereWithAggregatesInput = {
   stripeCurrentPeriodEnd?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   googlePlayToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   googlePlayOrderId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  appleOriginalTransactionId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   subscriptionSource?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   proPlanExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   proPlanReason?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -900,6 +924,7 @@ export type UserCreateInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -931,6 +956,7 @@ export type UserCreateInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -970,6 +996,7 @@ export type UserUncheckedCreateInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -1001,6 +1028,7 @@ export type UserUncheckedCreateInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -1040,6 +1068,7 @@ export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1071,6 +1100,7 @@ export type UserUpdateInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1110,6 +1140,7 @@ export type UserUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1141,6 +1172,7 @@ export type UserUncheckedUpdateInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1180,6 +1212,7 @@ export type UserCreateManyInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -1211,6 +1244,7 @@ export type UserCreateManyInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -1235,6 +1269,7 @@ export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1266,6 +1301,7 @@ export type UserUpdateManyMutationInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1290,6 +1326,7 @@ export type UserUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1321,6 +1358,7 @@ export type UserUncheckedUpdateManyInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1345,6 +1383,7 @@ export type UserCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
   googleId?: Prisma.SortOrder
+  appleId?: Prisma.SortOrder
   hasOnboarded?: Prisma.SortOrder
   plan?: Prisma.SortOrder
   isAdmin?: Prisma.SortOrder
@@ -1376,6 +1415,7 @@ export type UserCountOrderByAggregateInput = {
   stripeCurrentPeriodEnd?: Prisma.SortOrder
   googlePlayToken?: Prisma.SortOrder
   googlePlayOrderId?: Prisma.SortOrder
+  appleOriginalTransactionId?: Prisma.SortOrder
   subscriptionSource?: Prisma.SortOrder
   proPlanExpiresAt?: Prisma.SortOrder
   proPlanReason?: Prisma.SortOrder
@@ -1410,6 +1450,7 @@ export type UserMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
   googleId?: Prisma.SortOrder
+  appleId?: Prisma.SortOrder
   hasOnboarded?: Prisma.SortOrder
   plan?: Prisma.SortOrder
   isAdmin?: Prisma.SortOrder
@@ -1441,6 +1482,7 @@ export type UserMaxOrderByAggregateInput = {
   stripeCurrentPeriodEnd?: Prisma.SortOrder
   googlePlayToken?: Prisma.SortOrder
   googlePlayOrderId?: Prisma.SortOrder
+  appleOriginalTransactionId?: Prisma.SortOrder
   subscriptionSource?: Prisma.SortOrder
   proPlanExpiresAt?: Prisma.SortOrder
   proPlanReason?: Prisma.SortOrder
@@ -1465,6 +1507,7 @@ export type UserMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
   googleId?: Prisma.SortOrder
+  appleId?: Prisma.SortOrder
   hasOnboarded?: Prisma.SortOrder
   plan?: Prisma.SortOrder
   isAdmin?: Prisma.SortOrder
@@ -1496,6 +1539,7 @@ export type UserMinOrderByAggregateInput = {
   stripeCurrentPeriodEnd?: Prisma.SortOrder
   googlePlayToken?: Prisma.SortOrder
   googlePlayOrderId?: Prisma.SortOrder
+  appleOriginalTransactionId?: Prisma.SortOrder
   subscriptionSource?: Prisma.SortOrder
   proPlanExpiresAt?: Prisma.SortOrder
   proPlanReason?: Prisma.SortOrder
@@ -1788,6 +1832,7 @@ export type UserCreateWithoutCategoriesInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -1819,6 +1864,7 @@ export type UserCreateWithoutCategoriesInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -1857,6 +1903,7 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -1888,6 +1935,7 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -1942,6 +1990,7 @@ export type UserUpdateWithoutCategoriesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1973,6 +2022,7 @@ export type UserUpdateWithoutCategoriesInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2011,6 +2061,7 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2042,6 +2093,7 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2080,6 +2132,7 @@ export type UserCreateWithoutTransactionsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -2111,6 +2164,7 @@ export type UserCreateWithoutTransactionsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -2149,6 +2203,7 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -2180,6 +2235,7 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -2234,6 +2290,7 @@ export type UserUpdateWithoutTransactionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2265,6 +2322,7 @@ export type UserUpdateWithoutTransactionsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2303,6 +2361,7 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2334,6 +2393,7 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2372,6 +2432,7 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -2403,6 +2464,7 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -2441,6 +2503,7 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -2472,6 +2535,7 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -2526,6 +2590,7 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2557,6 +2622,7 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2595,6 +2661,7 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2626,6 +2693,7 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2664,6 +2732,7 @@ export type UserCreateWithoutGoalsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -2695,6 +2764,7 @@ export type UserCreateWithoutGoalsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -2733,6 +2803,7 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -2764,6 +2835,7 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -2818,6 +2890,7 @@ export type UserUpdateWithoutGoalsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2849,6 +2922,7 @@ export type UserUpdateWithoutGoalsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2887,6 +2961,7 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2918,6 +2993,7 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2956,6 +3032,7 @@ export type UserCreateWithoutBudgetsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -2987,6 +3064,7 @@ export type UserCreateWithoutBudgetsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -3025,6 +3103,7 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -3056,6 +3135,7 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -3110,6 +3190,7 @@ export type UserUpdateWithoutBudgetsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3141,6 +3222,7 @@ export type UserUpdateWithoutBudgetsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3179,6 +3261,7 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3210,6 +3293,7 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3248,6 +3332,7 @@ export type UserCreateWithoutIncomeSourcesInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -3279,6 +3364,7 @@ export type UserCreateWithoutIncomeSourcesInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -3317,6 +3403,7 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -3348,6 +3435,7 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -3402,6 +3490,7 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3433,6 +3522,7 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3471,6 +3561,7 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3502,6 +3593,7 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3540,6 +3632,7 @@ export type UserCreateWithoutBillsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -3571,6 +3664,7 @@ export type UserCreateWithoutBillsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -3609,6 +3703,7 @@ export type UserUncheckedCreateWithoutBillsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -3640,6 +3735,7 @@ export type UserUncheckedCreateWithoutBillsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -3694,6 +3790,7 @@ export type UserUpdateWithoutBillsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3725,6 +3822,7 @@ export type UserUpdateWithoutBillsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3763,6 +3861,7 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3794,6 +3893,7 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3832,6 +3932,7 @@ export type UserCreateWithoutRecurringBillsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -3863,6 +3964,7 @@ export type UserCreateWithoutRecurringBillsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -3901,6 +4003,7 @@ export type UserUncheckedCreateWithoutRecurringBillsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -3932,6 +4035,7 @@ export type UserUncheckedCreateWithoutRecurringBillsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -3986,6 +4090,7 @@ export type UserUpdateWithoutRecurringBillsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4017,6 +4122,7 @@ export type UserUpdateWithoutRecurringBillsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4055,6 +4161,7 @@ export type UserUncheckedUpdateWithoutRecurringBillsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4086,6 +4193,7 @@ export type UserUncheckedUpdateWithoutRecurringBillsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4124,6 +4232,7 @@ export type UserCreateWithoutPeopleInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -4155,6 +4264,7 @@ export type UserCreateWithoutPeopleInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -4193,6 +4303,7 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -4224,6 +4335,7 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -4278,6 +4390,7 @@ export type UserUpdateWithoutPeopleInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4309,6 +4422,7 @@ export type UserUpdateWithoutPeopleInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4347,6 +4461,7 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4378,6 +4493,7 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4416,6 +4532,7 @@ export type UserCreateWithoutPersonEntryRecurringInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -4447,6 +4564,7 @@ export type UserCreateWithoutPersonEntryRecurringInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -4485,6 +4603,7 @@ export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -4516,6 +4635,7 @@ export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -4570,6 +4690,7 @@ export type UserUpdateWithoutPersonEntryRecurringInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4601,6 +4722,7 @@ export type UserUpdateWithoutPersonEntryRecurringInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4639,6 +4761,7 @@ export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4670,6 +4793,7 @@ export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4708,6 +4832,7 @@ export type UserCreateWithoutPersonEntriesInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -4739,6 +4864,7 @@ export type UserCreateWithoutPersonEntriesInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -4777,6 +4903,7 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -4808,6 +4935,7 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -4862,6 +4990,7 @@ export type UserUpdateWithoutPersonEntriesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4893,6 +5022,7 @@ export type UserUpdateWithoutPersonEntriesInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4931,6 +5061,7 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -4962,6 +5093,7 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5000,6 +5132,7 @@ export type UserCreateWithoutFeedbacksInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -5031,6 +5164,7 @@ export type UserCreateWithoutFeedbacksInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -5069,6 +5203,7 @@ export type UserUncheckedCreateWithoutFeedbacksInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -5100,6 +5235,7 @@ export type UserUncheckedCreateWithoutFeedbacksInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -5154,6 +5290,7 @@ export type UserUpdateWithoutFeedbacksInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -5185,6 +5322,7 @@ export type UserUpdateWithoutFeedbacksInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5223,6 +5361,7 @@ export type UserUncheckedUpdateWithoutFeedbacksInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -5254,6 +5393,7 @@ export type UserUncheckedUpdateWithoutFeedbacksInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5292,6 +5432,7 @@ export type UserCreateWithoutAchievementsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -5323,6 +5464,7 @@ export type UserCreateWithoutAchievementsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -5361,6 +5503,7 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -5392,6 +5535,7 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -5446,6 +5590,7 @@ export type UserUpdateWithoutAchievementsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -5477,6 +5622,7 @@ export type UserUpdateWithoutAchievementsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5515,6 +5661,7 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -5546,6 +5693,7 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5584,6 +5732,7 @@ export type UserCreateWithoutPushLogsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -5615,6 +5764,7 @@ export type UserCreateWithoutPushLogsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -5653,6 +5803,7 @@ export type UserUncheckedCreateWithoutPushLogsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -5684,6 +5835,7 @@ export type UserUncheckedCreateWithoutPushLogsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -5738,6 +5890,7 @@ export type UserUpdateWithoutPushLogsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -5769,6 +5922,7 @@ export type UserUpdateWithoutPushLogsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5807,6 +5961,7 @@ export type UserUncheckedUpdateWithoutPushLogsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -5838,6 +5993,7 @@ export type UserUncheckedUpdateWithoutPushLogsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5876,6 +6032,7 @@ export type UserCreateWithoutPluggyItemsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -5907,6 +6064,7 @@ export type UserCreateWithoutPluggyItemsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -5945,6 +6103,7 @@ export type UserUncheckedCreateWithoutPluggyItemsInput = {
   email: string
   password?: string | null
   googleId?: string | null
+  appleId?: string | null
   hasOnboarded?: boolean
   plan?: string
   isAdmin?: boolean
@@ -5976,6 +6135,7 @@ export type UserUncheckedCreateWithoutPluggyItemsInput = {
   stripeCurrentPeriodEnd?: Date | string | null
   googlePlayToken?: string | null
   googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
   subscriptionSource?: string | null
   proPlanExpiresAt?: Date | string | null
   proPlanReason?: string | null
@@ -6030,6 +6190,7 @@ export type UserUpdateWithoutPluggyItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -6061,6 +6222,7 @@ export type UserUpdateWithoutPluggyItemsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6099,6 +6261,7 @@ export type UserUncheckedUpdateWithoutPluggyItemsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
   plan?: Prisma.StringFieldUpdateOperationsInput | string
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -6130,6 +6293,7 @@ export type UserUncheckedUpdateWithoutPluggyItemsInput = {
   stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6325,6 +6489,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   email?: boolean
   password?: boolean
   googleId?: boolean
+  appleId?: boolean
   hasOnboarded?: boolean
   plan?: boolean
   isAdmin?: boolean
@@ -6356,6 +6521,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   stripeCurrentPeriodEnd?: boolean
   googlePlayToken?: boolean
   googlePlayOrderId?: boolean
+  appleOriginalTransactionId?: boolean
   subscriptionSource?: boolean
   proPlanExpiresAt?: boolean
   proPlanReason?: boolean
@@ -6396,6 +6562,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   password?: boolean
   googleId?: boolean
+  appleId?: boolean
   hasOnboarded?: boolean
   plan?: boolean
   isAdmin?: boolean
@@ -6427,6 +6594,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   stripeCurrentPeriodEnd?: boolean
   googlePlayToken?: boolean
   googlePlayOrderId?: boolean
+  appleOriginalTransactionId?: boolean
   subscriptionSource?: boolean
   proPlanExpiresAt?: boolean
   proPlanReason?: boolean
@@ -6451,6 +6619,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   password?: boolean
   googleId?: boolean
+  appleId?: boolean
   hasOnboarded?: boolean
   plan?: boolean
   isAdmin?: boolean
@@ -6482,6 +6651,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   stripeCurrentPeriodEnd?: boolean
   googlePlayToken?: boolean
   googlePlayOrderId?: boolean
+  appleOriginalTransactionId?: boolean
   subscriptionSource?: boolean
   proPlanExpiresAt?: boolean
   proPlanReason?: boolean
@@ -6506,6 +6676,7 @@ export type UserSelectScalar = {
   email?: boolean
   password?: boolean
   googleId?: boolean
+  appleId?: boolean
   hasOnboarded?: boolean
   plan?: boolean
   isAdmin?: boolean
@@ -6537,6 +6708,7 @@ export type UserSelectScalar = {
   stripeCurrentPeriodEnd?: boolean
   googlePlayToken?: boolean
   googlePlayOrderId?: boolean
+  appleOriginalTransactionId?: boolean
   subscriptionSource?: boolean
   proPlanExpiresAt?: boolean
   proPlanReason?: boolean
@@ -6555,7 +6727,7 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "profileImage" | "bio" | "city" | "occupation" | "birthdate" | "notifBillReminder" | "notifCategoryLimit" | "notifMonthlyEmail" | "pushToken" | "currency" | "dateFormat" | "chatUsageMonth" | "chatUsageCount" | "chatFileMonth" | "chatFileCount" | "chatAnalysisMonth" | "chatAnalysisCount" | "scannerUsageMonth" | "scannerUsageCount" | "stripeCancelAtPeriodEnd" | "stripeCurrentPeriodEnd" | "googlePlayToken" | "googlePlayOrderId" | "subscriptionSource" | "proPlanExpiresAt" | "proPlanReason" | "adminNotes" | "tokenVersion" | "utmSource" | "utmMedium" | "utmCampaign" | "platform" | "lastActiveAt" | "lastDripEmailDay" | "lastInactivityEmail" | "lastPromoEmailDay" | "notificationsReadAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "appleId" | "hasOnboarded" | "plan" | "isAdmin" | "stripeCustomerId" | "stripeSubscriptionId" | "passwordResetToken" | "passwordResetExpiry" | "whatsappPhone" | "profileImage" | "bio" | "city" | "occupation" | "birthdate" | "notifBillReminder" | "notifCategoryLimit" | "notifMonthlyEmail" | "pushToken" | "currency" | "dateFormat" | "chatUsageMonth" | "chatUsageCount" | "chatFileMonth" | "chatFileCount" | "chatAnalysisMonth" | "chatAnalysisCount" | "scannerUsageMonth" | "scannerUsageCount" | "stripeCancelAtPeriodEnd" | "stripeCurrentPeriodEnd" | "googlePlayToken" | "googlePlayOrderId" | "appleOriginalTransactionId" | "subscriptionSource" | "proPlanExpiresAt" | "proPlanReason" | "adminNotes" | "tokenVersion" | "utmSource" | "utmMedium" | "utmCampaign" | "platform" | "lastActiveAt" | "lastDripEmailDay" | "lastInactivityEmail" | "lastPromoEmailDay" | "notificationsReadAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
   categories?: boolean | Prisma.User$categoriesArgs<ExtArgs>
@@ -6602,6 +6774,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     email: string
     password: string | null
     googleId: string | null
+    appleId: string | null
     hasOnboarded: boolean
     plan: string
     isAdmin: boolean
@@ -6633,6 +6806,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     stripeCurrentPeriodEnd: Date | null
     googlePlayToken: string | null
     googlePlayOrderId: string | null
+    appleOriginalTransactionId: string | null
     subscriptionSource: string | null
     proPlanExpiresAt: Date | null
     proPlanReason: string | null
@@ -7092,6 +7266,7 @@ export interface UserFieldRefs {
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
   readonly googleId: Prisma.FieldRef<"User", 'String'>
+  readonly appleId: Prisma.FieldRef<"User", 'String'>
   readonly hasOnboarded: Prisma.FieldRef<"User", 'Boolean'>
   readonly plan: Prisma.FieldRef<"User", 'String'>
   readonly isAdmin: Prisma.FieldRef<"User", 'Boolean'>
@@ -7123,6 +7298,7 @@ export interface UserFieldRefs {
   readonly stripeCurrentPeriodEnd: Prisma.FieldRef<"User", 'DateTime'>
   readonly googlePlayToken: Prisma.FieldRef<"User", 'String'>
   readonly googlePlayOrderId: Prisma.FieldRef<"User", 'String'>
+  readonly appleOriginalTransactionId: Prisma.FieldRef<"User", 'String'>
   readonly subscriptionSource: Prisma.FieldRef<"User", 'String'>
   readonly proPlanExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly proPlanReason: Prisma.FieldRef<"User", 'String'>
