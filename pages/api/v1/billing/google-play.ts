@@ -34,11 +34,13 @@ export default withAuth(async (req, res, session) => {
       where: { id: session.userId },
       data: {
         plan,
-        googlePlayToken: purchaseToken,
-        googlePlayOrderId: sub.orderId,
-        subscriptionSource: 'google_play',
-        stripeCancelAtPeriodEnd: false,
-        stripeCurrentPeriodEnd: null,
+        googlePlayToken:            purchaseToken,
+        googlePlayOrderId:          sub.orderId,
+        subscriptionSource:         'google_play',
+        stripeSubscriptionId:       null,
+        stripeCancelAtPeriodEnd:    false,
+        stripeCurrentPeriodEnd:     null,
+        appleOriginalTransactionId: null,
       },
       select: { email: true },
     })
