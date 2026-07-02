@@ -172,7 +172,60 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'DELETE') {
+    // Cancel any active Stripe subscription BEFORE deleting the user. Otherwise
+    // the subscription keeps billing a customer who no longer has an account
+    // (nor any way to cancel it), and future Stripe webhooks can't match the
+    // deleted user to stop it. Block deletion if the cancel fails so the user
+    // can retry instead of being silently left with orphaned billing.
+    // (Google Play / Apple IAP subscriptions can only be cancelled by the user
+    // in the store — nothing we can do server-side for those.)
+    const user = await db.user.findUnique({
+      where: { id: session.userId },
+      select: { stripeSubscriptionId: true, email: true, name: true, plan: true },
+    })
+
+    // Step 1: cancel the paid plan BEFORE deleting anything. If it fails, abort
+    // the whole deletion so the user can retry — never delete while the
+    // subscription is still billing.
+    let planCancelled = false
+    if (user?.stripeSubscriptionId) {
+      try {
+        const { cancelSubscription } = await import('@/lib/stripe')
+        await cancelSubscription(user.stripeSubscriptionId)
+        planCancelled = true
+      } catch (err) {
+        console.error('[settings] Stripe cancel on account delete failed:', err instanceof Error ? err.message : err)
+        return res.status(503).json({ ok: false, error: 'Não foi possível cancelar sua assinatura agora. Tente novamente em alguns instantes.' })
+      }
+    }
+
+    // Step 2: persist the cancellation reason. AdminLog has no FK to the user
+    // (targetId is a plain string), so it survives the delete below — this is
+    // where we keep churn feedback.
+    const rawReason   = typeof req.body?.reason   === 'string' ? req.body.reason.slice(0, 200)  : ''
+    const rawFeedback = typeof req.body?.feedback === 'string' ? req.body.feedback.slice(0, 1000) : ''
+    await db.adminLog.create({
+      data: {
+        action:   'account_deleted',
+        targetId: session.userId,
+        details:  `Conta excluída (${user?.email ?? '?'}, plano ${user?.plan ?? '?'})`
+          + (rawReason   ? ` — motivo: ${rawReason}`   : ' — sem motivo informado')
+          + (rawFeedback ? ` | feedback: ${rawFeedback}` : ''),
+      },
+    }).catch(() => {})
+
+    // Step 3: delete the user (cascades to all owned records).
     await db.user.delete({ where: { id: session.userId } })
+
+    // Step 4: confirmation email (fire-and-forget — must not block the response
+    // nor fail the deletion, which already succeeded).
+    if (user?.email) {
+      import('@/lib/email')
+        .then(({ sendAccountDeletedEmail }) =>
+          sendAccountDeletedEmail(user.email, user.name ?? '', { planCancelled, planName: user.plan }))
+        .catch((err) => console.error('[settings] account-deleted email failed:', err instanceof Error ? err.message : err))
+    }
+
     return ok(res, { message: 'Conta excluída.' })
   }
 

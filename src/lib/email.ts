@@ -88,6 +88,59 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
   })
 }
 
+export async function sendAccountDeletedEmail(
+  to: string,
+  name: string,
+  opts?: { planCancelled?: boolean; planName?: string },
+): Promise<void> {
+  const firstName = (name || '').split(' ')[0] || 'você'
+  const planCancelled = opts?.planCancelled ?? false
+  const planName = opts?.planName ?? 'PRO'
+
+  await resendPost({
+    from:    FROM,
+    to:      [to],
+    subject: 'Sua conta no Rook Money foi excluída',
+    html: `
+<div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#080e1d;color:#f1f5f9;padding:0;border-radius:16px;overflow:hidden">
+  <div style="background:linear-gradient(135deg,#0d1b3e 0%,#1a1040 100%);padding:40px 32px 24px;text-align:center">
+    <img src="https://rookmoney.com/rookinho.png" alt="Rookinho" width="110" height="110" style="display:inline-block;object-fit:contain" />
+    <h1 style="color:#f1f5f9;margin:16px 0 0;font-size:22px;font-weight:700">Até logo, ${firstName} 👋</h1>
+    <p style="color:#94a3b8;margin:8px 0 0;font-size:15px">Sua conta foi excluída conforme solicitado.</p>
+  </div>
+
+  <div style="padding:32px">
+    <p style="color:#94a3b8;margin:0 0 20px;font-size:15px;line-height:1.6">
+      Confirmamos que sua conta no <strong style="color:#f1f5f9">Rook Money</strong> e todos os seus dados foram
+      <strong style="color:#f1f5f9">excluídos permanentemente</strong>. Não é possível recuperá-los.
+    </p>
+
+    ${planCancelled ? `
+    <div style="background:#0d1b3e;border:1px solid #1e2d4a;border-radius:12px;padding:16px;margin-bottom:20px">
+      <p style="margin:0;color:#f1f5f9;font-size:14px;font-weight:600">✅ Assinatura ${planName} cancelada</p>
+      <p style="margin:6px 0 0;color:#94a3b8;font-size:13px;line-height:1.5">
+        Sua assinatura foi cancelada e <strong style="color:#cbd5e1">você não será cobrado novamente</strong>.
+        Eventuais cobranças já realizadas não são reembolsadas automaticamente.
+      </p>
+    </div>` : ''}
+
+    <p style="color:#64748b;margin:0 0 24px;font-size:14px;line-height:1.6">
+      Se mudou de ideia, você é sempre bem-vindo de volta — é só criar uma nova conta quando quiser. 🐂
+    </p>
+
+    <a href="https://rookmoney.com" style="display:block;text-align:center;padding:13px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Voltar para o Rook Money</a>
+  </div>
+
+  <div style="padding:20px 32px;border-top:1px solid #1e2d4a;background:#060a16">
+    <p style="margin:0;font-size:12px;color:#334155;text-align:center">
+      Você recebeu este e-mail porque excluiu sua conta no <a href="https://rookmoney.com" style="color:#60a5fa;text-decoration:none">Rook Money</a>.
+      Se você não fez essa solicitação, entre em contato conosco imediatamente.
+    </p>
+  </div>
+</div>`,
+  })
+}
+
 export async function sendBillReminderEmail(
   to: string, name: string,
   bills: { name: string; amount: number; dueDate: Date }[],
