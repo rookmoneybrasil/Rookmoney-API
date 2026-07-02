@@ -9,6 +9,12 @@ function createPrismaClient() {
   const isProduction = process.env.NODE_ENV === 'production'
   const adapter = new PrismaPg({
     connectionString: process.env.DATABASE_URL!,
+    // Default pg pool max is 10, but endpoints like /me fire ~10 queries in
+    // parallel (Promise.all) — a single request could exhaust the pool, making
+    // concurrent requests queue for seconds. Raise the ceiling; keep it well
+    // under Postgres max_connections for a single Railway instance.
+    max: 25,
+    connectionTimeoutMillis: 10_000,
     ...(isProduction ? { ssl: { rejectUnauthorized: false } } : {}),
   })
   return new PrismaClient({ adapter })
