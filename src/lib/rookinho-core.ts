@@ -187,17 +187,34 @@ export const TOOLS: Anthropic.Tool[] = [
   },
   {
     name: 'add_person_entry',
-    description: 'Registra uma dívida ou crédito com uma pessoa. Use quando alguém empresta ou deve dinheiro.',
+    description: 'Registra uma divida ou credito com uma pessoa (aba Pessoas). Suporta AVULSA (uma vez) ou PARCELADA. Para parcelada, informe installments (total de parcelas) e alreadyPaid (parcelas ja pagas) — o campo amount e o valor de CADA parcela, nao o total. NAO use pra recorrente/fixo mensal: pra isso use add_recurring_person_entry.',
     input_schema: {
       type: 'object' as const,
       properties: {
         personName: { type: 'string', description: 'Nome da pessoa (busca por nome parcial)' },
         type: { type: 'string', enum: ['THEY_OWE_ME', 'I_OWE_THEM'], description: 'THEY_OWE_ME = pessoa me deve, I_OWE_THEM = eu devo pra pessoa' },
         description: { type: 'string', description: 'Descrição (ex: almoço, empréstimo, conta de luz)' },
-        amount: { type: 'number', description: 'Valor em reais' },
-        date: { type: 'string', description: 'Data no formato YYYY-MM-DD' },
+        amount: { type: 'number', description: 'Valor de CADA parcela em reais (se avulsa, e o valor unico)' },
+        date: { type: 'string', description: 'Data (da parcela atual/primeira a lancar) no formato YYYY-MM-DD' },
+        installments: { type: 'number', description: 'Total de parcelas (1 = avulsa, 2+ = parcelada). Notacao "parc N/T" = installments T' },
+        alreadyPaid: { type: 'number', description: 'Parcelas ja pagas. Notacao "parc N/T" (a N-esima e a atual) => alreadyPaid = N-1' },
       },
       required: ['personName', 'type', 'description', 'amount', 'date'],
+    },
+  },
+  {
+    name: 'add_recurring_person_entry',
+    description: 'Cria um modelo de divida/credito RECORRENTE com uma pessoa (aba Pessoas) — gera o lancamento automaticamente todo mes. Use quando a divida entre pessoas se repete todo mes (ex: "a Mariana me paga R$120 de ChatGPT todo mes", "pago R$200 de aluguel pro meu irmao mensalmente").',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        personName: { type: 'string', description: 'Nome da pessoa (busca por nome parcial)' },
+        type: { type: 'string', enum: ['THEY_OWE_ME', 'I_OWE_THEM'], description: 'THEY_OWE_ME = pessoa me deve todo mes, I_OWE_THEM = eu devo pra pessoa todo mes' },
+        description: { type: 'string', description: 'Descrição (ex: ChatGPT, aluguel, mensalidade)' },
+        amount: { type: 'number', description: 'Valor mensal em reais' },
+        dayOfMonth: { type: 'number', description: 'Dia do mês em que se repete (1-31)' },
+      },
+      required: ['personName', 'type', 'description', 'amount'],
     },
   },
   {
@@ -713,16 +730,56 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
     }
 
     if (name === 'add_person_entry') {
-      const { personName, type: eType, description: desc, amount, date } = input as { personName: string; type: string; description: string; amount: number; date: string }
+      const { personName, type: eType, description: desc, amount, date, installments = 1, alreadyPaid = 0 } = input as { personName: string; type: string; description: string; amount: number; date: string; installments?: number; alreadyPaid?: number }
       let person = await db.person.findFirst({ where: { userId, name: { contains: personName, mode: 'insensitive' } } })
       if (!person) {
         person = await db.person.create({ data: { name: personName, userId } })
       }
+      const pType = eType as 'THEY_OWE_ME' | 'I_OWE_THEM'
+      const perInstallment = Math.abs(amount)
+      const baseDate = parseISO(date)
+      const numTotal = Math.max(1, Math.round(installments))
+      const label = pType === 'THEY_OWE_ME' ? `${person.name} te deve` : `Voce deve pra ${person.name}`
+
+      // Parcelada: cria uma PersonEntry por parcela restante, com grupo (mesma
+      // logica do endpoint people/[id]?action=entry — amount e POR PARCELA).
+      if (numTotal > 1) {
+        const numAlreadyPaid = Math.max(0, Math.min(Math.round(alreadyPaid), numTotal - 1))
+        const remaining = numTotal - numAlreadyPaid
+        const groupId = randomUUID()
+        await db.personEntry.createMany({
+          data: Array.from({ length: remaining }, (_, i) => ({
+            type: pType, description: desc, amount: perInstallment,
+            date: addMonths(baseDate, i),
+            personId: person!.id, userId,
+            installmentTotal: numTotal,
+            installmentCurrent: numAlreadyPaid + i + 1,
+            installmentGroupId: groupId,
+          })),
+        })
+        return `Registrado: ${label} ${remaining}x de ${money(perInstallment)} (${desc})${numAlreadyPaid > 0 ? ` — ${numAlreadyPaid} ja pagas, ${remaining} restantes` : ''}.`
+      }
+
+      // Avulsa
       await db.personEntry.create({
-        data: { type: eType as 'THEY_OWE_ME' | 'I_OWE_THEM', description: desc, amount: Math.abs(amount), date: parseISO(date), personId: person.id, userId },
+        data: { type: pType, description: desc, amount: perInstallment, date: baseDate, personId: person.id, userId },
       })
-      const label = eType === 'THEY_OWE_ME' ? `${person.name} te deve` : `Voce deve pra ${person.name}`
-      return `Registrado: ${label} ${money(amount)} (${desc}).`
+      return `Registrado: ${label} ${money(perInstallment)} (${desc}).`
+    }
+
+    if (name === 'add_recurring_person_entry') {
+      const { personName, type: eType, description: desc, amount, dayOfMonth = 1 } = input as { personName: string; type: string; description: string; amount: number; dayOfMonth?: number }
+      let person = await db.person.findFirst({ where: { userId, name: { contains: personName, mode: 'insensitive' } } })
+      if (!person) {
+        person = await db.person.create({ data: { name: personName, userId } })
+      }
+      const pType = eType as 'THEY_OWE_ME' | 'I_OWE_THEM'
+      const day = Math.min(Math.max(Math.round(dayOfMonth), 1), 31)
+      await db.personEntryRecurring.create({
+        data: { type: pType, description: desc, amount: Math.abs(amount), dayOfMonth: day, personId: person.id, userId },
+      })
+      const label = pType === 'THEY_OWE_ME' ? `${person.name} te deve` : `Voce deve pra ${person.name}`
+      return `Recorrente cadastrado: ${label} ${money(amount)}/mês (dia ${day}) — ${desc}. Vai gerar automaticamente todo mês.`
     }
 
     if (name === 'add_recurring_bill') {
@@ -1048,6 +1105,12 @@ Existem DUAS coisas diferentes que a palavra "conta" pode significar. NUNCA conf
 Regra pratica: se a mensagem cita o NOME de uma pessoa como quem deve ou a quem se deve, ou fala de emprestimo/divida entre pessoas, e SEMPRE add_person_entry (Pessoas) — NUNCA add_bill.
 Se o usuario disser explicitamente "coloca em Pessoas", "lanca em Pessoas" ou "isso e divida de pessoa", use add_person_entry mesmo que ele tenha usado a palavra "conta".
 Na duvida entre os dois, PERGUNTE antes de criar: "Isso e uma conta que voce paga (aba Contas) ou uma divida com alguem (aba Pessoas)?".
+
+DENTRO DE PESSOAS — diferencie avulsa, parcelada e recorrente (nao lance tudo como avulsa):
+- AVULSA (uma vez so): use add_person_entry SEM installments. Ex: "a Ana me deve 50 do almoco".
+- PARCELADA: use add_person_entry COM installments (total de parcelas) e alreadyPaid (ja pagas). O amount e o valor de CADA parcela. A notacao "parc N/T" quer dizer: installments=T, e a N-esima e a parcela ATUAL, entao alreadyPaid=N-1. Ex: "Curso parc 3/3 R$141,68" => installments=3, alreadyPaid=2, amount=141,68 (cria so a 3a). Ex: "Camisa parc 4/5 R$24,65" => installments=5, alreadyPaid=3, amount=24,65 (cria a 4a e a 5a).
+- RECORRENTE / FIXO mensal: use add_recurring_person_entry. Ex: "ChatGPT (fixo) R$120/mes que a Mariana me paga", "aluguel que pago pro meu irmao todo mes".
+Ao receber uma LISTA de itens de uma pessoa (ex: extrato/audio com varios), classifique CADA item pelo texto: "parc X/Y" = parcelada; "fixo"/"mensal"/"todo mes" = recorrente; o resto = avulsa. Nao jogue todos como avulsa.
 
 CORRIGIR E EDITAR (voce CONSEGUE desfazer e alterar):
 - Excluir: delete_bill, delete_transaction, delete_person_entry, delete_goal, delete_income_source, delete_recurring_bill.
