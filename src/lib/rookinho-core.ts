@@ -1087,10 +1087,16 @@ export async function processRookinhoChat(
 
   const tools = opts?.channel === 'whatsapp' ? TOOLS.filter(t => t.name !== 'navigate') : TOOLS
 
+  let lastText = ''
+
   for (let i = 0; i < 8; i++) {
     const response = await client.messages.create({
       model: ROOKINHO_MODEL,
-      max_tokens: 1024,
+      // 4096 (era 1024) — o usuario pode confirmar o cadastro de VARIOS itens de
+      // uma vez (ex: "lanca essas 10 dividas da Mariana"), e o modelo dispara
+      // muitos tool_use no mesmo turno. Com 1024 a resposta truncava, vinha
+      // stop_reason='max_tokens' e o loop devolvia erro sem registrar nada.
+      max_tokens: 4096,
       // Sonnet 5 roda "adaptive thinking" por padrao quando thinking e omitido —
       // desligado aqui pra manter o chat rapido e barato (ganho de inteligencia
       // do Sonnet vem do modelo, nao do thinking). Reative com {type:'adaptive'}
@@ -1105,32 +1111,38 @@ export async function processRookinhoChat(
       messages: currentMessages,
     })
 
-    if (response.stop_reason === 'end_turn') {
-      const text = response.content.find(b => b.type === 'text')?.text ?? ''
-      return { message: text, navigate: navigationSuggestion }
+    const text = response.content.find(b => b.type === 'text')?.text
+    if (text) lastText = text
+
+    const toolUseBlocks = response.content.filter(b => b.type === 'tool_use') as Anthropic.ToolUseBlock[]
+
+    // Sem tool calls = resposta final. (Reage a PRESENCA de tool_use, nao ao
+    // stop_reason, pra sobreviver a stop_reason='max_tokens' num turno com tools.)
+    if (toolUseBlocks.length === 0) {
+      return { message: lastText || 'Feito!', navigate: navigationSuggestion }
     }
 
-    if (response.stop_reason === 'tool_use') {
-      const toolUseBlocks = response.content.filter(b => b.type === 'tool_use') as Anthropic.ToolUseBlock[]
-      const toolResults: Anthropic.ToolResultBlockParam[] = []
-      for (const block of toolUseBlocks) {
-        if (block.name === 'analyze_finances' && opts?.analysisLimit && analysisCount >= opts.analysisLimit) {
-          toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: `Limite de ${opts.analysisLimit} análises/mês atingido.` })
-          continue
-        }
-        const result = await executeTool(block.name, block.input as Record<string, unknown>, userId)
-        if (block.name === 'navigate') { try { navigationSuggestion = JSON.parse(result) } catch { /* */ } }
-        if (block.name === 'analyze_finances' && opts?.onAnalysis) {
-          analysisCount++
-          await opts.onAnalysis()
-        }
-        toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: result })
+    const toolResults: Anthropic.ToolResultBlockParam[] = []
+    for (const block of toolUseBlocks) {
+      if (block.name === 'analyze_finances' && opts?.analysisLimit && analysisCount >= opts.analysisLimit) {
+        toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: `Limite de ${opts.analysisLimit} análises/mês atingido.` })
+        continue
       }
-      currentMessages = [...currentMessages, { role: 'assistant', content: response.content }, { role: 'user', content: toolResults }]
-      continue
+      const result = await executeTool(block.name, block.input as Record<string, unknown>, userId)
+      if (block.name === 'navigate') { try { navigationSuggestion = JSON.parse(result) } catch { /* */ } }
+      if (block.name === 'analyze_finances' && opts?.onAnalysis) {
+        analysisCount++
+        await opts.onAnalysis()
+      }
+      toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: result })
     }
-    break
+    currentMessages = [...currentMessages, { role: 'assistant', content: response.content }, { role: 'user', content: toolResults }]
   }
 
-  return { message: 'Desculpe, não consegui processar sua mensagem. Tente reformular.', navigate: null }
+  // Estourou as 8 iteracoes ainda com tool calls pendentes (lote gigante). O que
+  // deu pra executar ja foi feito — devolve o ultimo texto ou um aviso claro.
+  return {
+    message: lastText || 'Registrei o que consegui, mas foram muitos itens de uma vez. Confere se lançou tudo (ou me manda em partes menores).',
+    navigate: navigationSuggestion,
+  }
 }
