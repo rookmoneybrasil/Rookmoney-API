@@ -183,10 +183,13 @@ export default withAuth(async (req, res, session) => {
     // Fix 2: all unsettled person payables up to end of current month (not just this month)
     db.personEntry.aggregate({ where: { userId: uid, type: 'I_OWE_THEM', isSettled: false, date: { lte: mE } }, _sum: { amount: true } }),
 
-    // "A Pagar" modal: only current month + overdue (consistent with the KPI aggregate)
+    // "A Pagar" modal: current month + overdue. NO take — the modal groups these
+    // by person and shows a per-person TOTAL, so it needs ALL entries (a take:4
+    // made the per-person total count only 4 of N entries → undercounted, e.g.
+    // Michele R$1.303 in the modal vs R$5.559 real).
     db.personEntry.findMany({
       where:   { userId: uid, type: 'I_OWE_THEM', isSettled: false, date: { lte: mE } },
-      orderBy: { date: 'asc' }, take: 4,
+      orderBy: { date: 'asc' },
       include: { person: { select: { name: true } } },
     }),
 
@@ -197,9 +200,10 @@ export default withAuth(async (req, res, session) => {
       include: { person: { select: { name: true } } },
     }),
 
+    // "A Receber" modal — grouped per-person total, so no take (same fix as A Pagar)
     db.personEntry.findMany({
       where:   { userId: uid, type: 'THEY_OWE_ME', isSettled: false, date: { lte: addDays(now, 45) } },
-      orderBy: { date: 'asc' }, take: 5,
+      orderBy: { date: 'asc' },
       include: { person: { select: { name: true } } },
     }),
 
