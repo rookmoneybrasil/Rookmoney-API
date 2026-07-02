@@ -4,7 +4,7 @@ import { getSessionFromRequest } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { format } from 'date-fns'
 import { getLimits, isPro } from '@/lib/plans'
-import { processRookinhoChat } from '@/lib/rookinho-core'
+import { processRookinhoChat, checkBurstLimit } from '@/lib/rookinho-core'
 
 export const config = { api: { bodyParser: { sizeLimit: '10mb' } } }
 
@@ -44,6 +44,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (chatLimit && chatCount >= chatLimit) {
     return res.status(429).json({ error: 'rate_limited', message: `Limite de ${chatLimit} mensagens/mês atingido. Renova no próximo mês.`, remaining: 0 })
+  }
+
+  // Rate limit de rajada (anti-abuso) — não é limite mensal; PRO+ segue ilimitado.
+  const burst = checkBurstLimit(session.userId)
+  if (!burst.allowed) {
+    return res.status(429).json({ error: 'rate_limited', message: `Opa, muitas mensagens em pouco tempo! Espera uns ${burst.retryAfterMin} min que a gente continua.`, remaining: chatLimit ? chatLimit - chatCount : 999 })
   }
 
   const { messages } = req.body as { messages: Anthropic.MessageParam[] }

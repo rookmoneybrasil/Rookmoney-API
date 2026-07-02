@@ -4,6 +4,35 @@ import { parseISO, format, startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { ptBR } from 'date-fns/locale'
 
+// Modelo do Rookinho. Testando Sonnet 5 (muito mais "esperto" que o Haiku 4.5
+// que confundia Contas com Pessoas). Preco promocional $2/$10 por MTok ate
+// 31/08/2026, depois $3/$15. Pra voltar pro Haiku: 'claude-haiku-4-5-20251001'.
+export const ROOKINHO_MODEL = 'claude-sonnet-5'
+
+// ── Rate limit de rajada (anti-abuso) ───────────────────────────────────────
+// PRO+ tem mensagens ILIMITADAS/mes (promessa). Isso aqui NAO e um limite mensal
+// — so barra rajada absurda (spam, bot, ou usuario "brincando" com a IA), que e
+// o unico jeito de o custo por usuario disparar no plano ilimitado. Invisivel pro
+// uso normal. Em memoria: a API roda em processo persistente no Railway, mesmo
+// padrao dos maps de historico/dedup do whatsapp.ts. Ajuste os numeros aqui.
+const BURST_MAX = 30                      // mensagens
+const BURST_WINDOW_MS = 60 * 60 * 1000    // por hora
+const burstHits = new Map<string, number[]>()
+
+export function checkBurstLimit(userId: string): { allowed: boolean; retryAfterMin: number } {
+  const now = Date.now()
+  const cutoff = now - BURST_WINDOW_MS
+  const hits = (burstHits.get(userId) ?? []).filter(t => t > cutoff)
+  if (hits.length >= BURST_MAX) {
+    burstHits.set(userId, hits)
+    const retryAfterMin = Math.max(1, Math.ceil((hits[0] + BURST_WINDOW_MS - now) / 60000))
+    return { allowed: false, retryAfterMin }
+  }
+  hits.push(now)
+  burstHits.set(userId, hits)
+  return { allowed: true, retryAfterMin: 0 }
+}
+
 export const TOOLS: Anthropic.Tool[] = [
   {
     name: 'get_summary',
@@ -183,6 +212,167 @@ export const TOOLS: Anthropic.Tool[] = [
         categoryName: { type: 'string', description: 'Nome da categoria' },
       },
       required: ['name', 'amount', 'dayOfMonth'],
+    },
+  },
+  {
+    name: 'delete_bill',
+    description: 'Exclui uma conta a pagar (aba Contas). Use para corrigir uma conta cadastrada por engano ou no lugar errado. Busca pelo nome. Se for parcelada, remove TODAS as parcelas do grupo. Se ja estava paga, remove tambem a transacao vinculada.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        billName: { type: 'string', description: 'Nome (ou parte) da conta a excluir' },
+      },
+      required: ['billName'],
+    },
+  },
+  {
+    name: 'delete_transaction',
+    description: 'Exclui uma transacao (receita ou despesa) lancada por engano. Busca pela descricao e remove a mais recente que combinar. Reseta contas/rendas que tenham gerado a transacao.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        description: { type: 'string', description: 'Descricao (ou parte) da transacao a excluir' },
+        type: { type: 'string', enum: ['INCOME', 'EXPENSE'], description: 'Opcional: filtrar por tipo' },
+      },
+      required: ['description'],
+    },
+  },
+  {
+    name: 'delete_person_entry',
+    description: 'Exclui um lancamento de divida/credito de uma pessoa (aba Pessoas). Busca pela pessoa e, opcionalmente, pela descricao. Remove o lancamento mais recente que combinar.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        personName: { type: 'string', description: 'Nome (ou parte) da pessoa' },
+        description: { type: 'string', description: 'Opcional: descricao (ou parte) do lancamento a excluir' },
+      },
+      required: ['personName'],
+    },
+  },
+  {
+    name: 'delete_goal',
+    description: 'Exclui uma meta financeira criada por engano. Busca pelo nome. Remove tambem as transacoes de aporte vinculadas.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        goalName: { type: 'string', description: 'Nome (ou parte) da meta a excluir' },
+      },
+      required: ['goalName'],
+    },
+  },
+  {
+    name: 'delete_income_source',
+    description: 'Exclui uma fonte de renda cadastrada por engano. Busca pelo nome. Remove tambem as transacoes de receita geradas por ela.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        name: { type: 'string', description: 'Nome (ou parte) da fonte de renda a excluir' },
+      },
+      required: ['name'],
+    },
+  },
+  {
+    name: 'delete_recurring_bill',
+    description: 'Exclui um modelo de conta recorrente (fixa) cadastrado por engano. Busca pelo nome. Remove tambem as contas pendentes ja geradas por ele.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        name: { type: 'string', description: 'Nome (ou parte) da conta recorrente a excluir' },
+      },
+      required: ['name'],
+    },
+  },
+  {
+    name: 'settle_person_entry',
+    description: 'Quita uma divida/credito de uma pessoa (marca como pago/recebido na aba Pessoas). Use quando o usuario disser que alguem pagou o que devia, ou que ele pagou o que devia a alguem. Cria a transacao correspondente (receita se a pessoa pagou voce, despesa se voce pagou a pessoa).',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        personName: { type: 'string', description: 'Nome (ou parte) da pessoa' },
+        description: { type: 'string', description: 'Opcional: descricao (ou parte) do lancamento a quitar' },
+      },
+      required: ['personName'],
+    },
+  },
+  {
+    name: 'update_bill',
+    description: 'Edita uma conta a pagar existente (nome, valor, vencimento ou categoria). Use para corrigir dados de uma conta ja cadastrada. So informe os campos que mudam.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        billName: { type: 'string', description: 'Nome (ou parte) da conta a editar' },
+        newName: { type: 'string', description: 'Novo nome' },
+        amount: { type: 'number', description: 'Novo valor em reais' },
+        dueDate: { type: 'string', description: 'Novo vencimento no formato YYYY-MM-DD' },
+        categoryName: { type: 'string', description: 'Nova categoria' },
+      },
+      required: ['billName'],
+    },
+  },
+  {
+    name: 'update_transaction',
+    description: 'Edita uma transacao existente (valor, tipo, descricao, data ou categoria). Use para corrigir uma transacao ja lancada. So informe os campos que mudam.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        description: { type: 'string', description: 'Descricao (ou parte) da transacao a editar' },
+        amount: { type: 'number', description: 'Novo valor em reais' },
+        newDescription: { type: 'string', description: 'Nova descricao' },
+        date: { type: 'string', description: 'Nova data no formato YYYY-MM-DD' },
+        categoryName: { type: 'string', description: 'Nova categoria' },
+      },
+      required: ['description'],
+    },
+  },
+  {
+    name: 'update_person_entry',
+    description: 'Edita um lancamento de divida/credito de uma pessoa (valor, descricao, tipo ou data). Use para corrigir um lancamento ja feito na aba Pessoas. So informe os campos que mudam.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        personName: { type: 'string', description: 'Nome (ou parte) da pessoa' },
+        description: { type: 'string', description: 'Descricao (ou parte) do lancamento a editar' },
+        amount: { type: 'number', description: 'Novo valor em reais' },
+        newDescription: { type: 'string', description: 'Nova descricao' },
+        type: { type: 'string', enum: ['THEY_OWE_ME', 'I_OWE_THEM'], description: 'Novo tipo' },
+        date: { type: 'string', description: 'Nova data no formato YYYY-MM-DD' },
+      },
+      required: ['personName'],
+    },
+  },
+  {
+    name: 'unpay_bill',
+    description: 'Desmarca uma conta como paga (volta a pendente) e remove a transacao de despesa que foi criada quando ela foi paga. Use quando o usuario disser que marcou uma conta como paga por engano.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        billName: { type: 'string', description: 'Nome (ou parte) da conta paga a desmarcar' },
+      },
+      required: ['billName'],
+    },
+  },
+  {
+    name: 'withdraw_from_goal',
+    description: 'Retira dinheiro de uma meta (reduz o valor guardado). Use quando o usuario disser que tirou/sacou dinheiro de uma meta. Remove as transacoes de aporte correspondentes.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        goalName: { type: 'string', description: 'Nome (ou parte) da meta' },
+        amount: { type: 'number', description: 'Valor a retirar em reais' },
+      },
+      required: ['goalName', 'amount'],
+    },
+  },
+  {
+    name: 'set_budget',
+    description: 'Define ou atualiza o orcamento planejado de uma categoria para o mes atual. Use quando o usuario quiser planejar quanto pretende gastar numa categoria.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        categoryName: { type: 'string', description: 'Nome da categoria (ex: Alimentacao, Transporte)' },
+        amount: { type: 'number', description: 'Valor planejado em reais para o mes' },
+      },
+      required: ['categoryName', 'amount'],
     },
   },
   {
@@ -544,6 +734,243 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       return `Conta recorrente "${rbName}" de ${money(amount)}/mês (dia ${dayOfMonth}) cadastrada. Vai gerar contas automaticamente todo mês.`
     }
 
+    if (name === 'delete_bill') {
+      const { billName } = input as { billName: string }
+      const bill = await db.bill.findFirst({
+        where: { userId, name: { contains: billName, mode: 'insensitive' } },
+        orderBy: { createdAt: 'desc' },
+      })
+      if (!bill) return `Nao encontrei conta com nome "${billName}".`
+
+      // Parcelada → apaga todas as parcelas do grupo + transacoes vinculadas
+      if (bill.installmentGroupId) {
+        const group = await db.bill.findMany({
+          where: { installmentGroupId: bill.installmentGroupId, userId },
+          select: { paidTransactionId: true },
+        })
+        const txIds = group.map(b => b.paidTransactionId).filter(Boolean) as string[]
+        await db.bill.deleteMany({ where: { installmentGroupId: bill.installmentGroupId, userId } })
+        if (txIds.length) await db.transaction.deleteMany({ where: { id: { in: txIds }, userId } })
+        return `Conta parcelada "${bill.name}" excluida (todas as parcelas).`
+      }
+
+      if (bill.paidTransactionId) {
+        await db.transaction.deleteMany({ where: { id: bill.paidTransactionId, userId } })
+      }
+      await db.bill.deleteMany({ where: { id: bill.id, userId } })
+      // Se veio de um modelo recorrente, marca o mes como ja processado (nao regenera)
+      if (bill.recurringBillId) {
+        await db.recurringBill.updateMany({
+          where: { id: bill.recurringBillId, userId },
+          data: { lastAutoMonth: format(now, 'yyyy-MM') },
+        })
+      }
+      return `Conta "${bill.name}" de ${money(bill.amount)} excluida.`
+    }
+
+    if (name === 'delete_transaction') {
+      const { description: desc, type: tType } = input as { description: string; type?: string }
+      const tx = await db.transaction.findFirst({
+        where: { userId, description: { contains: desc, mode: 'insensitive' }, ...(tType ? { type: tType as 'INCOME' | 'EXPENSE' } : {}) },
+        orderBy: { createdAt: 'desc' },
+      })
+      if (!tx) return `Nao encontrei transacao com descricao "${desc}".`
+
+      // Reseta conta paga por essa transacao
+      await db.bill.updateMany({
+        where: { paidTransactionId: tx.id, userId },
+        data: { isPaid: false, paidAt: null, paidTransactionId: null },
+      })
+      // Reseta renda/recorrente se foi gerada este mes
+      const txDate = new Date(tx.date)
+      if (txDate.getFullYear() === now.getFullYear() && txDate.getMonth() === now.getMonth() && tx.description) {
+        const yearMonth = format(now, 'yyyy-MM')
+        if (tx.type === 'INCOME') {
+          await db.incomeSource.updateMany({
+            where: { userId, name: tx.description, isRecurring: true, lastAutoPayMonth: yearMonth },
+            data: { lastAutoPayMonth: null },
+          })
+        }
+        await db.recurringTransaction.updateMany({
+          where: { userId, name: tx.description, type: tx.type, lastAutoMonth: yearMonth },
+          data: { lastAutoMonth: null },
+        })
+      }
+      await db.transaction.deleteMany({ where: { id: tx.id, userId } })
+      return `Transacao "${tx.description ?? '(sem descricao)'}" de ${money(tx.amount)} excluida.`
+    }
+
+    if (name === 'delete_person_entry') {
+      const { personName, description: desc } = input as { personName: string; description?: string }
+      const person = await db.person.findFirst({ where: { userId, name: { contains: personName, mode: 'insensitive' } } })
+      if (!person) return `Nao encontrei a pessoa "${personName}".`
+      const entry = await db.personEntry.findFirst({
+        where: { userId, personId: person.id, ...(desc ? { description: { contains: desc, mode: 'insensitive' } } : {}) },
+        orderBy: { createdAt: 'desc' },
+      })
+      if (!entry) return `Nao encontrei lancamento${desc ? ` "${desc}"` : ''} para "${person.name}".`
+      await db.personEntry.deleteMany({ where: { id: entry.id, userId } })
+      if (entry.settledTransactionId) {
+        await db.transaction.deleteMany({ where: { id: entry.settledTransactionId, userId } })
+      }
+      return `Lancamento "${entry.description}" de ${money(entry.amount)} de "${person.name}" excluido.`
+    }
+
+    if (name === 'delete_goal') {
+      const { goalName } = input as { goalName: string }
+      const goal = await db.goal.findFirst({ where: { userId, name: { contains: goalName, mode: 'insensitive' } }, orderBy: { createdAt: 'desc' } })
+      if (!goal) return `Nao encontrei meta com nome "${goalName}".`
+      await db.transaction.deleteMany({ where: { userId, description: `Aporte — ${goal.name}` } })
+      await db.goal.deleteMany({ where: { id: goal.id, userId } })
+      return `Meta "${goal.name}" excluida.`
+    }
+
+    if (name === 'delete_income_source') {
+      const { name: sName } = input as { name: string }
+      const src = await db.incomeSource.findFirst({ where: { userId, name: { contains: sName, mode: 'insensitive' } }, orderBy: { createdAt: 'desc' } })
+      if (!src) return `Nao encontrei fonte de renda com nome "${sName}".`
+      await db.transaction.deleteMany({ where: { userId, type: 'INCOME', description: src.name } })
+      await db.incomeSource.deleteMany({ where: { id: src.id, userId } })
+      return `Fonte de renda "${src.name}" excluida.`
+    }
+
+    if (name === 'delete_recurring_bill') {
+      const { name: rbName } = input as { name: string }
+      const template = await db.recurringBill.findFirst({ where: { userId, name: { contains: rbName, mode: 'insensitive' } }, orderBy: { createdAt: 'desc' } })
+      if (!template) return `Nao encontrei conta recorrente com nome "${rbName}".`
+      await db.bill.deleteMany({ where: { recurringBillId: template.id, userId, isPaid: false } })
+      await db.recurringBill.deleteMany({ where: { id: template.id, userId } })
+      return `Conta recorrente "${template.name}" excluida.`
+    }
+
+    if (name === 'settle_person_entry') {
+      const { personName, description: desc } = input as { personName: string; description?: string }
+      const person = await db.person.findFirst({ where: { userId, name: { contains: personName, mode: 'insensitive' } } })
+      if (!person) return `Nao encontrei a pessoa "${personName}".`
+      const entry = await db.personEntry.findFirst({
+        where: { userId, personId: person.id, isSettled: false, ...(desc ? { description: { contains: desc, mode: 'insensitive' } } : {}) },
+        orderBy: { date: 'asc' },
+      })
+      if (!entry) return `Nao encontrei lancamento pendente${desc ? ` "${desc}"` : ''} para "${person.name}".`
+      const txType = entry.type === 'I_OWE_THEM' ? 'EXPENSE' : 'INCOME'
+      const categoryId = entry.categoryId ?? (await findCategory(userId))
+      if (!categoryId) return 'Erro: nenhuma categoria disponivel.'
+      const tx = await db.transaction.create({
+        data: { amount: entry.amount, type: txType, description: `${entry.description} (${person.name})`, date: new Date(), userId, categoryId },
+      })
+      await db.personEntry.update({ where: { id: entry.id }, data: { isSettled: true, settledAt: new Date(), settledTransactionId: tx.id } })
+      const label = entry.type === 'THEY_OWE_ME' ? `${person.name} te pagou` : `Voce pagou ${person.name}`
+      return `Quitado: ${label} ${money(entry.amount)} (${entry.description}).`
+    }
+
+    if (name === 'update_bill') {
+      const { billName, newName, amount, dueDate, categoryName } = input as { billName: string; newName?: string; amount?: number; dueDate?: string; categoryName?: string }
+      const bill = await db.bill.findFirst({ where: { userId, name: { contains: billName, mode: 'insensitive' } }, orderBy: { createdAt: 'desc' } })
+      if (!bill) return `Nao encontrei conta com nome "${billName}".`
+      const categoryId = categoryName ? (await findCategory(userId, categoryName)) : undefined
+      await db.bill.update({
+        where: { id: bill.id },
+        data: {
+          ...(newName !== undefined && { name: newName }),
+          ...(amount !== undefined && { amount: Math.abs(amount) }),
+          ...(dueDate !== undefined && { dueDate: parseISO(dueDate) }),
+          ...(categoryId ? { categoryId } : {}),
+        },
+      })
+      return `Conta "${newName ?? bill.name}" atualizada.`
+    }
+
+    if (name === 'update_transaction') {
+      const { description: desc, amount, newDescription, date, categoryName } = input as { description: string; amount?: number; newDescription?: string; date?: string; categoryName?: string }
+      const tx = await db.transaction.findFirst({ where: { userId, description: { contains: desc, mode: 'insensitive' } }, orderBy: { createdAt: 'desc' } })
+      if (!tx) return `Nao encontrei transacao com descricao "${desc}".`
+      const categoryId = categoryName ? (await findCategory(userId, categoryName)) : undefined
+      await db.transaction.update({
+        where: { id: tx.id },
+        data: {
+          ...(amount !== undefined && { amount: Math.abs(amount) }),
+          ...(newDescription !== undefined && { description: newDescription }),
+          ...(date !== undefined && { date: parseISO(date) }),
+          ...(categoryId ? { categoryId } : {}),
+        },
+      })
+      return `Transacao "${newDescription ?? tx.description ?? '(sem descricao)'}" atualizada.`
+    }
+
+    if (name === 'update_person_entry') {
+      const { personName, description: desc, amount, newDescription, type: eType, date } = input as { personName: string; description?: string; amount?: number; newDescription?: string; type?: string; date?: string }
+      const person = await db.person.findFirst({ where: { userId, name: { contains: personName, mode: 'insensitive' } } })
+      if (!person) return `Nao encontrei a pessoa "${personName}".`
+      const entry = await db.personEntry.findFirst({
+        where: { userId, personId: person.id, ...(desc ? { description: { contains: desc, mode: 'insensitive' } } : {}) },
+        orderBy: { createdAt: 'desc' },
+      })
+      if (!entry) return `Nao encontrei lancamento${desc ? ` "${desc}"` : ''} para "${person.name}".`
+      await db.personEntry.update({
+        where: { id: entry.id },
+        data: {
+          ...(amount !== undefined && { amount: Math.abs(amount) }),
+          ...(newDescription !== undefined && { description: newDescription }),
+          ...(eType !== undefined && { type: eType as 'THEY_OWE_ME' | 'I_OWE_THEM' }),
+          ...(date !== undefined && { date: parseISO(date) }),
+        },
+      })
+      return `Lancamento de "${person.name}" atualizado.`
+    }
+
+    if (name === 'unpay_bill') {
+      const { billName } = input as { billName: string }
+      const bill = await db.bill.findFirst({ where: { userId, isPaid: true, name: { contains: billName, mode: 'insensitive' } }, orderBy: { paidAt: 'desc' } })
+      if (!bill) return `Nao encontrei conta paga com nome "${billName}".`
+      if (bill.paidTransactionId) {
+        await db.transaction.deleteMany({ where: { id: bill.paidTransactionId, userId } })
+      }
+      await db.bill.update({ where: { id: bill.id }, data: { isPaid: false, paidAt: null, paidTransactionId: null } })
+      return `Conta "${bill.name}" voltou para pendente.`
+    }
+
+    if (name === 'withdraw_from_goal') {
+      const { goalName, amount } = input as { goalName: string; amount: number }
+      const goal = await db.goal.findFirst({ where: { userId, name: { contains: goalName, mode: 'insensitive' } } })
+      if (!goal) return `Nao encontrei meta com nome "${goalName}".`
+      const amt = Math.abs(amount)
+      const newAmount = Math.max(0, Number(goal.currentAmount) - amt)
+      const aportes = await db.transaction.findMany({
+        where: { userId, type: 'EXPENSE', description: `Aporte — ${goal.name}` },
+        orderBy: { date: 'desc' },
+      })
+      let remaining = amt
+      const toDelete: string[] = []
+      let toShrink: { id: string; newAmount: number } | null = null
+      for (const tx of aportes) {
+        if (remaining <= 0) break
+        const txAmt = Number(tx.amount)
+        if (txAmt <= remaining) { toDelete.push(tx.id); remaining -= txAmt }
+        else { toShrink = { id: tx.id, newAmount: txAmt - remaining }; remaining = 0 }
+      }
+      await db.$transaction([
+        db.goal.update({ where: { id: goal.id }, data: { currentAmount: newAmount, isCompleted: false, completedAt: null } }),
+        ...(toDelete.length ? [db.transaction.deleteMany({ where: { id: { in: toDelete }, userId } })] : []),
+        ...(toShrink ? [db.transaction.update({ where: { id: toShrink.id }, data: { amount: toShrink.newAmount } })] : []),
+        db.goalContribution.create({ data: { goalId: goal.id, amount: -amt, note: 'Retirada' } }),
+      ])
+      return `Retirada de ${money(amt)} da meta "${goal.name}". Saldo atual: ${money(newAmount)}.`
+    }
+
+    if (name === 'set_budget') {
+      const { categoryName, amount } = input as { categoryName: string; amount: number }
+      const categoryId = await findCategory(userId, categoryName)
+      if (!categoryId) return `Nao encontrei a categoria "${categoryName}".`
+      const month = format(now, 'yyyy-MM')
+      const cat = await db.category.findUnique({ where: { id: categoryId }, select: { name: true } })
+      await db.budget.upsert({
+        where: { userId_categoryId_month: { userId, categoryId, month } },
+        update: { amount: Math.abs(amount) },
+        create: { userId, categoryId, month, amount: Math.abs(amount) },
+      })
+      return `Orcamento de ${money(amount)} definido para "${cat?.name ?? categoryName}" neste mes.`
+    }
+
     if (name === 'navigate') {
       const { path, reason } = input as { path: string; reason: string }
       return JSON.stringify({ navigate: path, reason })
@@ -562,16 +989,13 @@ export function buildSystemPrompt(userName: string): string {
   return `Voce e o Rookinho, o touro azul mascote do Rook Money — assistente financeiro com personalidade.
 Usuario: ${userName}. Hoje: ${today} (${todayISO}).
 
-PERSONALIDADE (muito importante):
-Voce e debochado, bem-humorado e direto. Faz piadinhas sobre os gastos do usuario de forma leve e carinhosa, nunca ofensivo. Exemplos do seu jeito:
-- Quando gasta muito: "Eita ${userName}, ta gastando mais que deputado hein hahaha"
-- Delivery alto: "R$ 500 em iFood... ta alimentando o bairro inteiro?"
-- Economizou: "Opa, ta guardando dinheiro? To ate emocionado aqui"
-- Conta vencida: "Conta vencida de novo? Assim voce me deixa triste ein"
-- Pagou em dia: "Boa! Pagando certinho, to orgulhoso de voce"
-- Meta batida: "CONSEGUIU! Bora comemorar (mas sem gastar muito ne hahaha)"
-Misture sempre humor com as dicas. Zoe com carinho nos gastos, comemore as conquistas.
-NUNCA use girias como "mano", "ta ligado", "parça", "bro", "meu chapa", "firmeza". Fale de forma natural e acessivel, como um amigo educado que gosta de zoar.
+PERSONALIDADE E FOCO (muito importante):
+Voce e um ASSISTENTE FINANCEIRO, NAO um chatbot de bate-papo. Seu unico trabalho e ajudar a organizar as financas do usuario: contas, transacoes, metas, pessoas, orcamento, rendas e analise de gastos. Seja OBJETIVO, DIRETO e CURTO.
+Voce tem uma personalidade leve e simpatica — pode soltar UM comentario bem-humorado curto sobre um gasto quando couber (ex: "R$ 500 em iFood, hein — mas registrei aqui"), mas com moderacao: no maximo uma frase de humor, e nunca em toda resposta. Nao encha linguica, nao faca piada a toda hora, nao puxe assunto, nao pergunte "como voce esta". O usuario quer resolver a vida financeira rapido, nao conversar.
+NUNCA use girias como "mano", "ta ligado", "parça", "bro", "meu chapa", "firmeza".
+
+ESCOPO — voce SO trata de financas:
+Se o usuario tentar bater papo, pedir piada/historia/poema/jogo, perguntar sobre assunto fora de financas (clima, futebol, receita, programacao, conselho de vida, "quem e voce", etc.) ou tentar "brincar" com voce, RECUSE educadamente em UMA frase curta e traga de volta pro foco. Ex: "Haha, eu cuido so das suas financas — quer que eu organize alguma conta ou gasto?". Nao entre na brincadeira, nao gere o conteudo pedido fora de escopo, nao escreva textao. Uma frase e volta ao trabalho.
 
 FORMATO DE RESPOSTA (obrigatorio):
 - SEM markdown pesado (nada de asteriscos duplos, hashtags, blocos de codigo)
@@ -589,7 +1013,8 @@ Seu resumo de junho:
 Voce tem 2 contas vencidas, recomendo quitar logo!
 
 COMPORTAMENTO:
-- Portugues brasileiro, tom amigavel e zoeiro
+- Portugues brasileiro, tom amigavel e objetivo
+- Respostas CURTAS por padrao (1 a 3 frases). So use mais espaco quando for uma analise financeira que o usuario pediu
 - Sempre consulte os dados (get_summary, get_bills, etc) ANTES de responder sobre financas
 - Nunca invente dados
 - Datas sem especificacao = hoje (${todayISO})
@@ -615,6 +1040,24 @@ Quando o usuario quiser cadastrar algo mas nao der todas as informacoes, PERGUNT
 - "quero cadastrar conta fixa" -> use add_recurring_bill (gera automaticamente todo mes)
 Pergunte tudo que falta em UMA mensagem so, de forma natural. Nunca crie registros com dados inventados.
 Para contas parceladas, pergunte: valor total, numero de parcelas, quantas ja foram pagas, e data da proxima parcela.
+
+CONTAS (a pagar) vs PESSOAS (dividas) — leia com atencao, e onde mais se erra:
+Existem DUAS coisas diferentes que a palavra "conta" pode significar. NUNCA confunda:
+- add_bill / add_recurring_bill (aba CONTAS): boletos, faturas, mensalidades, parcelas, despesas que VOCE (usuario) tem que pagar a uma empresa/servico. Ex: "conta de luz", "fatura do cartao", "aluguel", "Netflix", "parcela do celular".
+- add_person_entry (aba PESSOAS): dividas e emprestimos entre o usuario e OUTRA PESSOA (alguem com nome). Ex: "o Joao me deve 50", "devo 200 pra Maria", "emprestei pro meu irmao", "paguei a conta do rodizio pra galera e cada um me deve".
+Regra pratica: se a mensagem cita o NOME de uma pessoa como quem deve ou a quem se deve, ou fala de emprestimo/divida entre pessoas, e SEMPRE add_person_entry (Pessoas) — NUNCA add_bill.
+Se o usuario disser explicitamente "coloca em Pessoas", "lanca em Pessoas" ou "isso e divida de pessoa", use add_person_entry mesmo que ele tenha usado a palavra "conta".
+Na duvida entre os dois, PERGUNTE antes de criar: "Isso e uma conta que voce paga (aba Contas) ou uma divida com alguem (aba Pessoas)?".
+
+CORRIGIR E EDITAR (voce CONSEGUE desfazer e alterar):
+- Excluir: delete_bill, delete_transaction, delete_person_entry, delete_goal, delete_income_source, delete_recurring_bill.
+- Editar (sem apagar e recriar): update_bill, update_transaction, update_person_entry. Prefira editar a apagar quando so muda um valor/data/nome.
+- Outras acoes: settle_person_entry (quitar divida de pessoa), unpay_bill (desmarcar conta paga), withdraw_from_goal (tirar de meta), set_budget (definir orcamento).
+Para "mover" algo de uma aba pra outra, exclua no lugar errado e recrie no lugar certo. NUNCA diga que o usuario precisa arrumar manualmente — voce tem as ferramentas pra corrigir.
+CONFIRMACAO antes de apagar: se for excluir UM item pontual que o usuario pediu claramente, apague direto. Mas se for apagar VARIOS itens de uma vez (uma serie/lote), ou se houver duvida sobre qual item, confirme antes numa frase curta ("Vou apagar essas 4 contas: X, Y, Z, W — confirma?") e so apague depois do OK.
+
+DICA PROATIVA DE RECORRENCIA:
+Se o usuario cadastrar/registrar algo que claramente se repete todo mes (aluguel, salario, streaming, internet, academia, plano de saude), ofereca transformar em recorrente (add_recurring_bill pra conta fixa, ou add_income_source recorrente pra renda) numa frase curta ao final. Nao force nem repita a oferta se ele recusar.
 
 IMAGENS, PDFs E COMPROVANTES:
 Quando o usuario enviar uma imagem ou PDF (comprovante, nota fiscal, boleto, extrato, recibo, fatura), analise o conteudo e:
@@ -644,11 +1087,20 @@ export async function processRookinhoChat(
 
   const tools = opts?.channel === 'whatsapp' ? TOOLS.filter(t => t.name !== 'navigate') : TOOLS
 
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 8; i++) {
     const response = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: ROOKINHO_MODEL,
       max_tokens: 1024,
-      system,
+      // Sonnet 5 roda "adaptive thinking" por padrao quando thinking e omitido —
+      // desligado aqui pra manter o chat rapido e barato (ganho de inteligencia
+      // do Sonnet vem do modelo, nao do thinking). Reative com {type:'adaptive'}
+      // se quiser raciocinio mais profundo em troca de latencia/custo.
+      thinking: { type: 'disabled' },
+      // Prompt caching: o prefixo estatico (tools + system, ~5k tokens) e
+      // reenviado em toda iteracao do loop e em toda mensagem. O breakpoint no
+      // ultimo bloco de system cacheia tools+system juntos (ordem de render:
+      // tools -> system -> messages). Leituras subsequentes custam ~10% do input.
+      system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
       tools,
       messages: currentMessages,
     })

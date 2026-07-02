@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '@/lib/db'
 import { isProPlus, getLimits } from '@/lib/plans'
-import { processRookinhoChat } from '@/lib/rookinho-core'
-import { sendTextMessage, markAsRead, downloadMedia } from '@/lib/whatsapp'
+import { processRookinhoChat, checkBurstLimit } from '@/lib/rookinho-core'
+import { sendTextMessage, markAsRead, downloadMedia, transcribeAudio } from '@/lib/whatsapp'
 import { format } from 'date-fns'
 import type Anthropic from '@anthropic-ai/sdk'
 
@@ -55,6 +55,7 @@ interface WhatsAppMessage {
   text?: { body: string }
   image?: { id: string; mime_type: string; caption?: string }
   document?: { id: string; mime_type: string; filename?: string; caption?: string }
+  audio?: { id: string; mime_type: string; voice?: boolean }
 }
 
 interface WhatsAppWebhookBody {
@@ -114,6 +115,19 @@ async function buildContentBlocks(msg: WhatsAppMessage): Promise<Anthropic.Conte
       }
     } else {
       blocks.push({ type: 'text', text: `[Arquivo "${msg.document.filename ?? 'documento'}" — formato não suportado no WhatsApp. Envie como imagem ou PDF.]` })
+    }
+  } else if (msg.type === 'audio' && msg.audio) {
+    try {
+      const { buffer, mimeType } = await downloadMedia(msg.audio.id, DOWNLOAD_TIMEOUT)
+      const text = await transcribeAudio(buffer, mimeType)
+      if (text) {
+        blocks.push({ type: 'text', text })
+      } else {
+        blocks.push({ type: 'text', text: 'O usuario mandou um audio, mas nao deu pra entender. Peca em UMA frase curta pra ele repetir ou mandar por texto.' })
+      }
+    } catch (err) {
+      console.error('[whatsapp] Failed to transcribe audio:', err)
+      blocks.push({ type: 'text', text: 'O usuario mandou um audio, mas a transcricao falhou. Peca em UMA frase curta pra ele repetir ou mandar por texto.' })
     }
   } else if (msg.type === 'text' && msg.text) {
     blocks.push({ type: 'text', text: msg.text.body })
@@ -203,6 +217,15 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
   if (limits.chat && chatCount >= limits.chat) {
     await sendTextMessage(msg.from,
       `Limite de ${limits.chat} mensagens/mês atingido. Renova no próximo mês!`
+    )
+    return
+  }
+
+  // Rate limit de rajada (anti-abuso) — não é limite mensal; PRO+ segue ilimitado.
+  const burst = checkBurstLimit(user.id)
+  if (!burst.allowed) {
+    await sendTextMessage(msg.from,
+      `Opa, muitas mensagens em pouco tempo! Espera uns ${burst.retryAfterMin} min que a gente continua. 😉`
     )
     return
   }
