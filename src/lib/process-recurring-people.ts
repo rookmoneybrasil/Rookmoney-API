@@ -10,7 +10,6 @@ import { Prisma } from '@/generated/prisma/client'
 // migration for the historical duplicate cleanup this replaces).
 export async function processRecurringPersonEntries(uid: string): Promise<void> {
   const now       = new Date()
-  const today     = now.getDate()
   const y         = now.getFullYear()
   const m         = now.getMonth()
   const yearMonth = `${y}-${String(m + 1).padStart(2, '0')}`
@@ -21,7 +20,13 @@ export async function processRecurringPersonEntries(uid: string): Promise<void> 
   if (templates.length === 0) return
 
   for (const t of templates) {
-    if (today < t.dayOfMonth) continue
+    // No day-of-month gate: generate at month start, same as processRecurringBills
+    // (CLAUDE.md: "Generation happens at month start … so all fixed bills are
+    // visible from day 1"). The balance/projection math already counts an active
+    // template's amount from day 1 whether or not its dayOfMonth has arrived, so
+    // gating generation by the day produced a phantom debt in "Você deve" with no
+    // Pendente card to pay it — exactly the state a deleted-then-reactivated
+    // recurring entry lands in (its lastMonth is stale so it never regenerated).
     await ensureMonthEntry(uid, t, y, m)
     await db.personEntryRecurring.update({ where: { id: t.id }, data: { lastMonth: yearMonth } })
   }

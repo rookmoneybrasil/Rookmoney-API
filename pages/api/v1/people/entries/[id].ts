@@ -105,6 +105,19 @@ export default withAuth(async (req, res, session) => {
       if (entry.settledTransactionId) {
         await db.transaction.deleteMany({ where: { id: entry.settledTransactionId, userId: session.userId } })
       }
+      // If this entry came from a recurring template, clear the template's
+      // lastMonth so processRecurringPersonEntries regenerates this month's
+      // Pendente card on the next load. Without this, lastMonth stays at the
+      // current month, the generator skips it, and the balance math still
+      // counts the template's amount — leaving a phantom debt in "Você deve"
+      // with no card to pay (the exact bug: pay → delete from history →
+      // toggle the card off/on → amount reappears but no Pendente is created).
+      if (entry.recurringEntryId) {
+        await db.personEntryRecurring.updateMany({
+          where: { id: entry.recurringEntryId, userId: session.userId },
+          data:  { lastMonth: null },
+        })
+      }
     }
     return noContent(res)
   }
