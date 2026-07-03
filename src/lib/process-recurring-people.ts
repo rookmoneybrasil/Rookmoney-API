@@ -31,7 +31,17 @@ export async function processRecurringPersonEntries(uid: string): Promise<void> 
   if (templates.length === 0) return
 
   for (const t of templates) {
-    await ensureMonthEntry(uid, t, y, m)
+    // Isolate each template: a failure on one must NOT abort healing the rest.
+    // The GET handlers call this inside a single .catch(), so before this an
+    // error on one legacy template threw out of the whole loop and left every
+    // other template for that user unhealed — the whole batch of old recurrings
+    // kept showing the phantom "Você deve" with no card. Per-template try/catch
+    // makes each one self-heal independently.
+    try {
+      await ensureMonthEntry(uid, t, y, m)
+    } catch (err) {
+      console.error(`[process-recurring-people] ensureMonthEntry failed for template ${t.id} (user ${uid}):`, err)
+    }
   }
 }
 

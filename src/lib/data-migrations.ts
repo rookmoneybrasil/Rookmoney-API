@@ -320,6 +320,39 @@ const MIGRATIONS: Migration[] = [
     // ambiguous) without deleting anything, closing that hole.
     run: (db) => backfillPersonRecurringFk(db, { tagSettledInAmbiguousGroups: true }),
   },
+
+  // ─── 2026-07-03d ────────────────────────────────────────────────────
+  {
+    id:  '2026-07-03d-heal-all-active-person-recurring',
+    // Proactively heal EVERY user with active recurring person debts, so no one
+    // has to open the app for the self-heal to kick in. The description-based
+    // backfills above only adopt an untagged entry when it matches exactly; this
+    // runs the real generator (processRecurringPersonEntries) for each user,
+    // which for every active template either adopts its current-month entry or
+    // CREATES a fresh Pendente — guaranteeing the "Você deve" amount always has
+    // a card behind it (no phantom), for existing users too, not just new ones.
+    run: async (db) => {
+      // Dynamic import to avoid the db.ts ⇄ data-migrations.ts ⇄
+      // process-recurring-people.ts import cycle at module load.
+      const { processRecurringPersonEntries } = await import('./process-recurring-people')
+      const rows = await db.personEntryRecurring.findMany({
+        where:  { isActive: true },
+        select: { userId: true },
+        distinct: ['userId'],
+      })
+      let ok = 0, failed = 0
+      for (const { userId } of rows) {
+        try {
+          await processRecurringPersonEntries(userId)
+          ok++
+        } catch (err) {
+          failed++
+          console.error(`[data-migration] heal-all: failed for user ${userId}:`, err)
+        }
+      }
+      console.log(`[data-migration] heal-all-active-person-recurring: healed ${ok} users, ${failed} failed`)
+    },
+  },
 ]
 
 async function backfillPersonRecurringFk(db: PrismaClient, opts: { tagSettledInAmbiguousGroups?: boolean } = {}) {
