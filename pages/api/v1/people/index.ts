@@ -13,7 +13,9 @@ export default withAuth(async (req, res, session) => {
     await processRecurringPersonEntries(session.userId).catch(err =>
       console.error('[people] processRecurringPersonEntries failed:', err))
 
-    const now    = new Date()
+    const now        = new Date()
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
     // Cutoff only for old-style recurring (installmentTotal >= 24) that haven't been migrated yet
     const cutoff = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000)
 
@@ -58,7 +60,13 @@ export default withAuth(async (req, res, session) => {
       const personRecurring = recurringAll.filter(r => r.personId === p.id)
 
       for (const r of personRecurring) {
-        const alreadyHasEntry = p.entries.some(e => e.recurringEntryId === r.id)
+        // Scoped to the current month — otherwise a past (already-settled)
+        // entry for this template would match and wrongly suppress this
+        // month's not-yet-generated amount.
+        const alreadyHasEntry = p.entries.some(e =>
+          e.recurringEntryId === r.id &&
+          new Date(e.date) >= monthStart && new Date(e.date) <= monthEnd
+        )
         if (alreadyHasEntry) continue // entry already counted above
         if (r.type === 'THEY_OWE_ME') theyOweMe += Number(r.amount)
         else                           iOweThem  += Number(r.amount)
