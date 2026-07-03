@@ -386,15 +386,13 @@ export async function getProjection(uid: string, months: number): Promise<Projec
         }
       }
 
-      // Recurring person entries (PersonEntryRecurring) projected for future months
+      // Recurring person entries (PersonEntryRecurring) projected for future months.
+      // Matched via the recurringEntryId FK (not description/type), which stays
+      // correct even if the template is later renamed.
       for (const r of personRecurringAll) {
         const alreadyHasEntry = allPersonEntries.some(e => {
           const ed = new Date(e.date)
-          return e.personId === r.personId &&
-            e.description === r.description &&
-            e.type === r.type &&
-            !e.installmentGroupId &&
-            ed >= mS && ed <= mE
+          return e.recurringEntryId === r.id && ed >= mS && ed <= mE
         })
         if (alreadyHasEntry) continue
         const item: ProjectionItem = {
