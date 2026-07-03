@@ -76,7 +76,7 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<void> 
       </div>
     </div>
 
-    <a href="https://app.rookmoney.com" style="display:block;text-align:center;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Acessar meu dashboard →</a>
+    <a href="https://rookmoney.com" style="display:block;text-align:center;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Acessar meu dashboard →</a>
   </div>
 
   <div style="padding:20px 32px;border-top:1px solid #1e2d4a;background:#060a16">
@@ -168,8 +168,8 @@ export async function sendBillReminderEmail(
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>
-  <a href="https://app.rookmoney.com/bills" style="display:inline-block;margin-top:24px;padding:12px 24px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Ver contas →</a>
-  <p style="color:#475569;font-size:12px;margin-top:24px">Você recebe este aviso porque ativou lembretes de contas. <a href="https://app.rookmoney.com/settings" style="color:#60a5fa">Gerenciar preferências</a></p>
+  <a href="https://rookmoney.com/bills" style="display:inline-block;margin-top:24px;padding:12px 24px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Ver contas →</a>
+  <p style="color:#475569;font-size:12px;margin-top:24px">Você recebe este aviso porque ativou lembretes de contas. <a href="https://rookmoney.com/settings" style="color:#60a5fa">Gerenciar preferências</a></p>
 </div>`,
   })
 }
@@ -197,7 +197,7 @@ export async function sendManualProExpiryWarningEmail(
     }
   </p>
   <p style="color:#94a3b8;margin:0 0 24px">Para continuar aproveitando todos os recursos PRO — relatórios avançados, metas ilimitadas, e muito mais — considere assinar o plano PRO.</p>
-  <a href="https://app.rookmoney.com/settings/billing" style="display:inline-block;padding:12px 24px;background:#d97706;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Ver planos →</a>
+  <a href="https://rookmoney.com/settings/billing" style="display:inline-block;padding:12px 24px;background:#d97706;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Ver planos →</a>
   <p style="color:#475569;font-size:12px;margin-top:24px">Você recebeu este aviso porque possui acesso PRO no Rook Money.</p>
 </div>`,
   })
@@ -234,8 +234,8 @@ export async function sendMonthlySummaryEmail(
     </div>
   </div>
   ${summary.savingsRate >= 0 ? `<p style="color:#94a3b8">Taxa de poupança: <strong style="color:#f1f5f9">${summary.savingsRate}%</strong></p>` : ''}
-  <a href="https://app.rookmoney.com/reports" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Ver relatórios completos →</a>
-  <p style="color:#475569;font-size:12px;margin-top:24px">Você recebe este resumo todo dia 1. <a href="https://app.rookmoney.com/settings" style="color:#60a5fa">Desativar</a></p>
+  <a href="https://rookmoney.com/reports" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Ver relatórios completos →</a>
+  <p style="color:#475569;font-size:12px;margin-top:24px">Você recebe este resumo todo dia 1. <a href="https://rookmoney.com/settings" style="color:#60a5fa">Desativar</a></p>
 </div>`,
   })
 }
@@ -251,7 +251,7 @@ export async function sendPaymentFailedEmail(
 <div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#080e1d;color:#f1f5f9;padding:32px;border-radius:16px">
   <h2 style="margin:0 0 8px;font-size:20px">Oi, ${name}! 👋</h2>
   <p style="color:#94a3b8;margin:0 0 24px">Houve um problema ao processar o pagamento da sua assinatura PRO. Atualize sua forma de pagamento para evitar a perda do acesso.</p>
-  <a href="https://app.rookmoney.com/billing" style="display:inline-block;padding:12px 24px;background:#d97706;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Atualizar pagamento →</a>
+  <a href="https://rookmoney.com/billing" style="display:inline-block;padding:12px 24px;background:#d97706;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Atualizar pagamento →</a>
   <p style="color:#475569;font-size:12px;margin-top:24px">Se você já resolveu, pode ignorar este e-mail.</p>
 </div>`,
   })
@@ -353,12 +353,12 @@ export async function sendUpgradeEmail(
     <p style="color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 16px;font-weight:600">Agora você tem acesso a</p>
     <table cellpadding="0" cellspacing="0" width="100%">${featureRows}</table>
 
-    <a href="https://app.rookmoney.com" style="display:block;text-align:center;margin-top:28px;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Explorar recursos ${planLabel} →</a>
+    <a href="https://rookmoney.com" style="display:block;text-align:center;margin-top:28px;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Explorar recursos ${planLabel} →</a>
   </div>
 
   <div style="padding:20px 32px;border-top:1px solid #1e2d4a;background:#060a16">
     <p style="margin:0;font-size:12px;color:#334155;text-align:center">
-      Gerencie sua assinatura em <a href="https://app.rookmoney.com/settings/billing" style="color:#60a5fa;text-decoration:none">Configurações</a>.
+      Gerencie sua assinatura em <a href="https://rookmoney.com/settings/billing" style="color:#60a5fa;text-decoration:none">Configurações</a>.
     </p>
   </div>
 </div>`,
@@ -399,7 +399,7 @@ export async function sendDowngradeEmail(
       Se mudou de ideia, você pode voltar ao ${planLabel} a qualquer momento — seus dados estão seguros.
     </p>
 
-    <a href="https://app.rookmoney.com/settings/billing" style="display:block;text-align:center;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Reativar meu plano →</a>
+    <a href="https://rookmoney.com/settings/billing" style="display:block;text-align:center;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Reativar meu plano →</a>
   </div>
 
   <div style="padding:20px 32px;border-top:1px solid #1e2d4a;background:#060a16">
@@ -442,12 +442,12 @@ export async function sendInactivityEmail(
       </p>
     </div>
 
-    <a href="https://app.rookmoney.com" style="display:block;text-align:center;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Voltar pro dashboard →</a>
+    <a href="https://rookmoney.com" style="display:block;text-align:center;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Voltar pro dashboard →</a>
   </div>
 
   <div style="padding:20px 32px;border-top:1px solid #1e2d4a;background:#060a16">
     <p style="margin:0;font-size:12px;color:#334155;text-align:center">
-      <a href="https://app.rookmoney.com/settings" style="color:#60a5fa;text-decoration:none">Gerenciar notificações</a>
+      <a href="https://rookmoney.com/settings" style="color:#60a5fa;text-decoration:none">Gerenciar notificações</a>
     </p>
   </div>
 </div>`,
@@ -483,7 +483,7 @@ export async function sendGoalCompletedEmail(
       Você mostrou disciplina e comprometimento. Isso é incrível! Que tal definir uma nova meta e continuar evoluindo?
     </p>
 
-    <a href="https://app.rookmoney.com/goals" style="display:block;text-align:center;padding:14px 28px;background:#059669;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Ver minhas metas →</a>
+    <a href="https://rookmoney.com/goals" style="display:block;text-align:center;padding:14px 28px;background:#059669;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Ver minhas metas →</a>
   </div>
 
   <div style="padding:20px 32px;border-top:1px solid #1e2d4a;background:#060a16">
@@ -517,12 +517,12 @@ export async function sendAchievementEmail(
       Parabéns, ${firstName}! Você desbloqueou uma nova conquista no Rook Money. Continue usando a plataforma para desbloquear mais!
     </p>
 
-    <a href="https://app.rookmoney.com/achievements" style="display:block;text-align:center;padding:14px 28px;background:#d97706;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Ver todas as conquistas →</a>
+    <a href="https://rookmoney.com/achievements" style="display:block;text-align:center;padding:14px 28px;background:#d97706;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Ver todas as conquistas →</a>
   </div>
 
   <div style="padding:20px 32px;border-top:1px solid #1e2d4a;background:#060a16">
     <p style="margin:0;font-size:12px;color:#334155;text-align:center">
-      <a href="https://app.rookmoney.com/settings" style="color:#60a5fa;text-decoration:none">Gerenciar notificações</a>
+      <a href="https://rookmoney.com/settings" style="color:#60a5fa;text-decoration:none">Gerenciar notificações</a>
     </p>
   </div>
 </div>`,
@@ -540,21 +540,21 @@ export async function sendDripOnboardingEmail(
       heading: 'Bora começar!',
       body: 'O primeiro passo pra organizar suas finanças é registrar seus gastos. Leva menos de 1 minuto — e o Rookinho te ajuda no caminho.',
       cta: 'Registrar meu primeiro gasto →',
-      ctaUrl: 'https://app.rookmoney.com/transactions',
+      ctaUrl: 'https://rookmoney.com/transactions',
     },
     3: {
       subject: `${firstName}, já definiu uma meta financeira?`,
       heading: 'Que tal uma meta?',
       body: 'Viagem, celular novo, reserva de emergência... Definir uma meta te dá um norte. E no Rook Money você acompanha cada aporte até chegar lá.',
       cta: 'Criar minha primeira meta →',
-      ctaUrl: 'https://app.rookmoney.com/goals',
+      ctaUrl: 'https://rookmoney.com/goals',
     },
     7: {
       subject: `${firstName}, conheça o Rookinho IA 🤖`,
       heading: 'Seu assistente financeiro',
       body: 'O Rookinho IA analisa seus gastos, responde dúvidas, cria transações por você e até lê extratos bancários. Tudo por conversa, como um amigo que entende de dinheiro.',
       cta: 'Conversar com o Rookinho →',
-      ctaUrl: 'https://app.rookmoney.com/chat',
+      ctaUrl: 'https://rookmoney.com/chat',
     },
   }
 
@@ -579,7 +579,7 @@ export async function sendDripOnboardingEmail(
 
   <div style="padding:20px 32px;border-top:1px solid #1e2d4a;background:#060a16">
     <p style="margin:0;font-size:12px;color:#334155;text-align:center">
-      Dica ${day}/3 do onboarding · <a href="https://app.rookmoney.com/settings" style="color:#60a5fa;text-decoration:none">Gerenciar notificações</a>
+      Dica ${day}/3 do onboarding · <a href="https://rookmoney.com/settings" style="color:#60a5fa;text-decoration:none">Gerenciar notificações</a>
     </p>
   </div>
 </div>`,
@@ -609,7 +609,7 @@ export async function sendAnniversaryEmail(
       Obrigado por confiar no Rook Money para organizar suas finanças. Cada transação registrada, cada meta atingida, cada conta paga em dia — tudo isso é mérito seu. O Rookinho só ajudou um pouquinho. 😄
     </p>
 
-    <a href="https://app.rookmoney.com" style="display:block;text-align:center;padding:14px 28px;background:#7c3aed;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Continuar evoluindo →</a>
+    <a href="https://rookmoney.com" style="display:block;text-align:center;padding:14px 28px;background:#7c3aed;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Continuar evoluindo →</a>
   </div>
 
   <div style="padding:20px 32px;border-top:1px solid #1e2d4a;background:#060a16">
@@ -683,7 +683,7 @@ export async function sendFreeToProEmail(
       </div>
     </div>
 
-    <a href="https://app.rookmoney.com/settings/billing" style="display:block;text-align:center;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Ver planos PRO →</a>
+    <a href="https://rookmoney.com/settings/billing" style="display:block;text-align:center;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Ver planos PRO →</a>
 
     <table cellpadding="0" cellspacing="0" width="100%" style="margin-top:24px">
       <tr>
@@ -703,7 +703,7 @@ export async function sendFreeToProEmail(
 
   <div style="padding:20px 32px;border-top:1px solid #1e2d4a;background:#060a16">
     <p style="margin:0;font-size:12px;color:#334155;text-align:center">
-      <a href="https://app.rookmoney.com/settings" style="color:#60a5fa;text-decoration:none">Gerenciar notificações</a>
+      <a href="https://rookmoney.com/settings" style="color:#60a5fa;text-decoration:none">Gerenciar notificações</a>
     </p>
   </div>
 </div>`,
@@ -745,12 +745,12 @@ export async function sendAnnualUpsellEmail(
       </div>
     </div>
 
-    <a href="https://app.rookmoney.com/settings/billing" style="display:block;text-align:center;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Mudar para anual →</a>
+    <a href="https://rookmoney.com/settings/billing" style="display:block;text-align:center;padding:14px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Mudar para anual →</a>
   </div>
 
   <div style="padding:20px 32px;border-top:1px solid #1e2d4a;background:#060a16">
     <p style="margin:0;font-size:12px;color:#334155;text-align:center">
-      <a href="https://app.rookmoney.com/settings" style="color:#60a5fa;text-decoration:none">Gerenciar assinatura</a>
+      <a href="https://rookmoney.com/settings" style="color:#60a5fa;text-decoration:none">Gerenciar assinatura</a>
     </p>
   </div>
 </div>`,
