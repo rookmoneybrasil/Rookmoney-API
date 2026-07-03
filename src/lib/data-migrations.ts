@@ -302,9 +302,27 @@ const MIGRATIONS: Migration[] = [
     // this just catches rows created in the gap before that fix landed.
     run: (db) => backfillPersonRecurringFk(db),
   },
+
+  // ─── 2026-07-03c ────────────────────────────────────────────────────
+  {
+    id:  '2026-07-03c-backfill-person-recurring-fk',
+    // Rounds 1-2 skipped any template+month group with 3+ unlinked candidate
+    // entries entirely — no recurringEntryId set on ANY of them, "needs manual
+    // review". That left the settled entry in those groups permanently
+    // invisible to the "does this template already have an entry this month"
+    // check: pausing a template hid it correctly (paused templates are
+    // excluded from the check altogether), but reactivating made its full
+    // amount get double-counted on top of the entry that's already sitting in
+    // Acertados, with no new card ever appearing (nothing was created — the
+    // existing entry just isn't tagged). Round 3 tags the settled entry in an
+    // ambiguous group (never the unsettled ones — which one of several
+    // pending entries is "the" recurring instance is still genuinely
+    // ambiguous) without deleting anything, closing that hole.
+    run: (db) => backfillPersonRecurringFk(db, { tagSettledInAmbiguousGroups: true }),
+  },
 ]
 
-async function backfillPersonRecurringFk(db: PrismaClient) {
+async function backfillPersonRecurringFk(db: PrismaClient, opts: { tagSettledInAmbiguousGroups?: boolean } = {}) {
   // PersonEntry gained a real recurringEntryId FK (mirrors Bill.recurringBillId)
   // to replace the description/type/date heuristic that matched entries to
   // their PersonEntryRecurring template. Backfill it for existing entries by
@@ -353,7 +371,19 @@ async function backfillPersonRecurringFk(db: PrismaClient) {
       // review and leave every entry untouched (no recurringEntryId tag
       // either, so nothing here risks misattributing an unrelated entry).
       if (group.length > 2) {
-        console.warn(`[data-migration] backfill-person-recurring-fk: skipping ambiguous group of ${group.length} entries for template ${t.id}, month ${monthKey} — needs manual review`)
+        // Never delete anything here (still too ambiguous which of several
+        // entries is "the" recurring instance) — but if exactly one of them
+        // is settled, tagging just that one is safe regardless of the
+        // ambiguity: a settled entry matching this template's person+
+        // description+type+month is unambiguously this month's payment for
+        // it, and tagging it doesn't touch or hide any of the other entries.
+        const settledOnes = group.filter(e => e.isSettled)
+        if (opts.tagSettledInAmbiguousGroups && settledOnes.length === 1) {
+          await db.personEntry.update({ where: { id: settledOnes[0].id }, data: { recurringEntryId: t.id, recurringMonth: monthKey } })
+          console.log(`[data-migration] backfill-person-recurring-fk: tagged settled entry in ambiguous group of ${group.length} for template ${t.id}, month ${monthKey} (others left untouched)`)
+        } else {
+          console.warn(`[data-migration] backfill-person-recurring-fk: skipping ambiguous group of ${group.length} entries for template ${t.id}, month ${monthKey} — needs manual review`)
+        }
         continue
       }
 
