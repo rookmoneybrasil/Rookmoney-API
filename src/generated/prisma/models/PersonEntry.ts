@@ -51,6 +51,8 @@ export type PersonEntryMinAggregateOutputType = {
   installmentCurrent: number | null
   installmentGroupId: string | null
   settledTransactionId: string | null
+  recurringEntryId: string | null
+  recurringMonth: string | null
   createdAt: Date | null
   updatedAt: Date | null
   personId: string | null
@@ -71,6 +73,8 @@ export type PersonEntryMaxAggregateOutputType = {
   installmentCurrent: number | null
   installmentGroupId: string | null
   settledTransactionId: string | null
+  recurringEntryId: string | null
+  recurringMonth: string | null
   createdAt: Date | null
   updatedAt: Date | null
   personId: string | null
@@ -91,6 +95,8 @@ export type PersonEntryCountAggregateOutputType = {
   installmentCurrent: number
   installmentGroupId: number
   settledTransactionId: number
+  recurringEntryId: number
+  recurringMonth: number
   createdAt: number
   updatedAt: number
   personId: number
@@ -125,6 +131,8 @@ export type PersonEntryMinAggregateInputType = {
   installmentCurrent?: true
   installmentGroupId?: true
   settledTransactionId?: true
+  recurringEntryId?: true
+  recurringMonth?: true
   createdAt?: true
   updatedAt?: true
   personId?: true
@@ -145,6 +153,8 @@ export type PersonEntryMaxAggregateInputType = {
   installmentCurrent?: true
   installmentGroupId?: true
   settledTransactionId?: true
+  recurringEntryId?: true
+  recurringMonth?: true
   createdAt?: true
   updatedAt?: true
   personId?: true
@@ -165,6 +175,8 @@ export type PersonEntryCountAggregateInputType = {
   installmentCurrent?: true
   installmentGroupId?: true
   settledTransactionId?: true
+  recurringEntryId?: true
+  recurringMonth?: true
   createdAt?: true
   updatedAt?: true
   personId?: true
@@ -272,6 +284,8 @@ export type PersonEntryGroupByOutputType = {
   installmentCurrent: number | null
   installmentGroupId: string | null
   settledTransactionId: string | null
+  recurringEntryId: string | null
+  recurringMonth: string | null
   createdAt: Date
   updatedAt: Date
   personId: string
@@ -315,6 +329,8 @@ export type PersonEntryWhereInput = {
   installmentCurrent?: Prisma.IntNullableFilter<"PersonEntry"> | number | null
   installmentGroupId?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
   settledTransactionId?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
+  recurringEntryId?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
+  recurringMonth?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PersonEntry"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PersonEntry"> | Date | string
   personId?: Prisma.StringFilter<"PersonEntry"> | string
@@ -323,6 +339,7 @@ export type PersonEntryWhereInput = {
   person?: Prisma.XOR<Prisma.PersonScalarRelationFilter, Prisma.PersonWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
+  recurringEntry?: Prisma.XOR<Prisma.PersonEntryRecurringNullableScalarRelationFilter, Prisma.PersonEntryRecurringWhereInput> | null
 }
 
 export type PersonEntryOrderByWithRelationInput = {
@@ -338,6 +355,8 @@ export type PersonEntryOrderByWithRelationInput = {
   installmentCurrent?: Prisma.SortOrderInput | Prisma.SortOrder
   installmentGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
   settledTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurringEntryId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurringMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   personId?: Prisma.SortOrder
@@ -346,10 +365,12 @@ export type PersonEntryOrderByWithRelationInput = {
   person?: Prisma.PersonOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   category?: Prisma.CategoryOrderByWithRelationInput
+  recurringEntry?: Prisma.PersonEntryRecurringOrderByWithRelationInput
 }
 
 export type PersonEntryWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  recurringEntryId_recurringMonth?: Prisma.PersonEntryRecurringEntryIdRecurringMonthCompoundUniqueInput
   AND?: Prisma.PersonEntryWhereInput | Prisma.PersonEntryWhereInput[]
   OR?: Prisma.PersonEntryWhereInput[]
   NOT?: Prisma.PersonEntryWhereInput | Prisma.PersonEntryWhereInput[]
@@ -364,6 +385,8 @@ export type PersonEntryWhereUniqueInput = Prisma.AtLeast<{
   installmentCurrent?: Prisma.IntNullableFilter<"PersonEntry"> | number | null
   installmentGroupId?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
   settledTransactionId?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
+  recurringEntryId?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
+  recurringMonth?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PersonEntry"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PersonEntry"> | Date | string
   personId?: Prisma.StringFilter<"PersonEntry"> | string
@@ -372,7 +395,8 @@ export type PersonEntryWhereUniqueInput = Prisma.AtLeast<{
   person?: Prisma.XOR<Prisma.PersonScalarRelationFilter, Prisma.PersonWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
-}, "id">
+  recurringEntry?: Prisma.XOR<Prisma.PersonEntryRecurringNullableScalarRelationFilter, Prisma.PersonEntryRecurringWhereInput> | null
+}, "id" | "recurringEntryId_recurringMonth">
 
 export type PersonEntryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -387,6 +411,8 @@ export type PersonEntryOrderByWithAggregationInput = {
   installmentCurrent?: Prisma.SortOrderInput | Prisma.SortOrder
   installmentGroupId?: Prisma.SortOrderInput | Prisma.SortOrder
   settledTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurringEntryId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurringMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   personId?: Prisma.SortOrder
@@ -415,6 +441,8 @@ export type PersonEntryScalarWhereWithAggregatesInput = {
   installmentCurrent?: Prisma.IntNullableWithAggregatesFilter<"PersonEntry"> | number | null
   installmentGroupId?: Prisma.StringNullableWithAggregatesFilter<"PersonEntry"> | string | null
   settledTransactionId?: Prisma.StringNullableWithAggregatesFilter<"PersonEntry"> | string | null
+  recurringEntryId?: Prisma.StringNullableWithAggregatesFilter<"PersonEntry"> | string | null
+  recurringMonth?: Prisma.StringNullableWithAggregatesFilter<"PersonEntry"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PersonEntry"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PersonEntry"> | Date | string
   personId?: Prisma.StringWithAggregatesFilter<"PersonEntry"> | string
@@ -435,11 +463,13 @@ export type PersonEntryCreateInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   person: Prisma.PersonCreateNestedOneWithoutEntriesInput
   user: Prisma.UserCreateNestedOneWithoutPersonEntriesInput
   category?: Prisma.CategoryCreateNestedOneWithoutPersonEntriesInput
+  recurringEntry?: Prisma.PersonEntryRecurringCreateNestedOneWithoutEntriesInput
 }
 
 export type PersonEntryUncheckedCreateInput = {
@@ -455,6 +485,8 @@ export type PersonEntryUncheckedCreateInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringEntryId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -475,11 +507,13 @@ export type PersonEntryUpdateInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   person?: Prisma.PersonUpdateOneRequiredWithoutEntriesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutPersonEntriesNestedInput
   category?: Prisma.CategoryUpdateOneWithoutPersonEntriesNestedInput
+  recurringEntry?: Prisma.PersonEntryRecurringUpdateOneWithoutEntriesNestedInput
 }
 
 export type PersonEntryUncheckedUpdateInput = {
@@ -495,6 +529,8 @@ export type PersonEntryUncheckedUpdateInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringEntryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -515,6 +551,8 @@ export type PersonEntryCreateManyInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringEntryId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -535,6 +573,7 @@ export type PersonEntryUpdateManyMutationInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -552,6 +591,8 @@ export type PersonEntryUncheckedUpdateManyInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringEntryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -569,6 +610,11 @@ export type PersonEntryOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type PersonEntryRecurringEntryIdRecurringMonthCompoundUniqueInput = {
+  recurringEntryId: string
+  recurringMonth: string
+}
+
 export type PersonEntryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
@@ -582,6 +628,8 @@ export type PersonEntryCountOrderByAggregateInput = {
   installmentCurrent?: Prisma.SortOrder
   installmentGroupId?: Prisma.SortOrder
   settledTransactionId?: Prisma.SortOrder
+  recurringEntryId?: Prisma.SortOrder
+  recurringMonth?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   personId?: Prisma.SortOrder
@@ -608,6 +656,8 @@ export type PersonEntryMaxOrderByAggregateInput = {
   installmentCurrent?: Prisma.SortOrder
   installmentGroupId?: Prisma.SortOrder
   settledTransactionId?: Prisma.SortOrder
+  recurringEntryId?: Prisma.SortOrder
+  recurringMonth?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   personId?: Prisma.SortOrder
@@ -628,6 +678,8 @@ export type PersonEntryMinOrderByAggregateInput = {
   installmentCurrent?: Prisma.SortOrder
   installmentGroupId?: Prisma.SortOrder
   settledTransactionId?: Prisma.SortOrder
+  recurringEntryId?: Prisma.SortOrder
+  recurringMonth?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   personId?: Prisma.SortOrder
@@ -767,6 +819,48 @@ export type PersonEntryUncheckedUpdateManyWithoutPersonNestedInput = {
   deleteMany?: Prisma.PersonEntryScalarWhereInput | Prisma.PersonEntryScalarWhereInput[]
 }
 
+export type PersonEntryCreateNestedManyWithoutRecurringEntryInput = {
+  create?: Prisma.XOR<Prisma.PersonEntryCreateWithoutRecurringEntryInput, Prisma.PersonEntryUncheckedCreateWithoutRecurringEntryInput> | Prisma.PersonEntryCreateWithoutRecurringEntryInput[] | Prisma.PersonEntryUncheckedCreateWithoutRecurringEntryInput[]
+  connectOrCreate?: Prisma.PersonEntryCreateOrConnectWithoutRecurringEntryInput | Prisma.PersonEntryCreateOrConnectWithoutRecurringEntryInput[]
+  createMany?: Prisma.PersonEntryCreateManyRecurringEntryInputEnvelope
+  connect?: Prisma.PersonEntryWhereUniqueInput | Prisma.PersonEntryWhereUniqueInput[]
+}
+
+export type PersonEntryUncheckedCreateNestedManyWithoutRecurringEntryInput = {
+  create?: Prisma.XOR<Prisma.PersonEntryCreateWithoutRecurringEntryInput, Prisma.PersonEntryUncheckedCreateWithoutRecurringEntryInput> | Prisma.PersonEntryCreateWithoutRecurringEntryInput[] | Prisma.PersonEntryUncheckedCreateWithoutRecurringEntryInput[]
+  connectOrCreate?: Prisma.PersonEntryCreateOrConnectWithoutRecurringEntryInput | Prisma.PersonEntryCreateOrConnectWithoutRecurringEntryInput[]
+  createMany?: Prisma.PersonEntryCreateManyRecurringEntryInputEnvelope
+  connect?: Prisma.PersonEntryWhereUniqueInput | Prisma.PersonEntryWhereUniqueInput[]
+}
+
+export type PersonEntryUpdateManyWithoutRecurringEntryNestedInput = {
+  create?: Prisma.XOR<Prisma.PersonEntryCreateWithoutRecurringEntryInput, Prisma.PersonEntryUncheckedCreateWithoutRecurringEntryInput> | Prisma.PersonEntryCreateWithoutRecurringEntryInput[] | Prisma.PersonEntryUncheckedCreateWithoutRecurringEntryInput[]
+  connectOrCreate?: Prisma.PersonEntryCreateOrConnectWithoutRecurringEntryInput | Prisma.PersonEntryCreateOrConnectWithoutRecurringEntryInput[]
+  upsert?: Prisma.PersonEntryUpsertWithWhereUniqueWithoutRecurringEntryInput | Prisma.PersonEntryUpsertWithWhereUniqueWithoutRecurringEntryInput[]
+  createMany?: Prisma.PersonEntryCreateManyRecurringEntryInputEnvelope
+  set?: Prisma.PersonEntryWhereUniqueInput | Prisma.PersonEntryWhereUniqueInput[]
+  disconnect?: Prisma.PersonEntryWhereUniqueInput | Prisma.PersonEntryWhereUniqueInput[]
+  delete?: Prisma.PersonEntryWhereUniqueInput | Prisma.PersonEntryWhereUniqueInput[]
+  connect?: Prisma.PersonEntryWhereUniqueInput | Prisma.PersonEntryWhereUniqueInput[]
+  update?: Prisma.PersonEntryUpdateWithWhereUniqueWithoutRecurringEntryInput | Prisma.PersonEntryUpdateWithWhereUniqueWithoutRecurringEntryInput[]
+  updateMany?: Prisma.PersonEntryUpdateManyWithWhereWithoutRecurringEntryInput | Prisma.PersonEntryUpdateManyWithWhereWithoutRecurringEntryInput[]
+  deleteMany?: Prisma.PersonEntryScalarWhereInput | Prisma.PersonEntryScalarWhereInput[]
+}
+
+export type PersonEntryUncheckedUpdateManyWithoutRecurringEntryNestedInput = {
+  create?: Prisma.XOR<Prisma.PersonEntryCreateWithoutRecurringEntryInput, Prisma.PersonEntryUncheckedCreateWithoutRecurringEntryInput> | Prisma.PersonEntryCreateWithoutRecurringEntryInput[] | Prisma.PersonEntryUncheckedCreateWithoutRecurringEntryInput[]
+  connectOrCreate?: Prisma.PersonEntryCreateOrConnectWithoutRecurringEntryInput | Prisma.PersonEntryCreateOrConnectWithoutRecurringEntryInput[]
+  upsert?: Prisma.PersonEntryUpsertWithWhereUniqueWithoutRecurringEntryInput | Prisma.PersonEntryUpsertWithWhereUniqueWithoutRecurringEntryInput[]
+  createMany?: Prisma.PersonEntryCreateManyRecurringEntryInputEnvelope
+  set?: Prisma.PersonEntryWhereUniqueInput | Prisma.PersonEntryWhereUniqueInput[]
+  disconnect?: Prisma.PersonEntryWhereUniqueInput | Prisma.PersonEntryWhereUniqueInput[]
+  delete?: Prisma.PersonEntryWhereUniqueInput | Prisma.PersonEntryWhereUniqueInput[]
+  connect?: Prisma.PersonEntryWhereUniqueInput | Prisma.PersonEntryWhereUniqueInput[]
+  update?: Prisma.PersonEntryUpdateWithWhereUniqueWithoutRecurringEntryInput | Prisma.PersonEntryUpdateWithWhereUniqueWithoutRecurringEntryInput[]
+  updateMany?: Prisma.PersonEntryUpdateManyWithWhereWithoutRecurringEntryInput | Prisma.PersonEntryUpdateManyWithWhereWithoutRecurringEntryInput[]
+  deleteMany?: Prisma.PersonEntryScalarWhereInput | Prisma.PersonEntryScalarWhereInput[]
+}
+
 export type PersonEntryCreateWithoutUserInput = {
   id?: string
   type: $Enums.PersonEntryType
@@ -780,10 +874,12 @@ export type PersonEntryCreateWithoutUserInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   person: Prisma.PersonCreateNestedOneWithoutEntriesInput
   category?: Prisma.CategoryCreateNestedOneWithoutPersonEntriesInput
+  recurringEntry?: Prisma.PersonEntryRecurringCreateNestedOneWithoutEntriesInput
 }
 
 export type PersonEntryUncheckedCreateWithoutUserInput = {
@@ -799,6 +895,8 @@ export type PersonEntryUncheckedCreateWithoutUserInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringEntryId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -847,6 +945,8 @@ export type PersonEntryScalarWhereInput = {
   installmentCurrent?: Prisma.IntNullableFilter<"PersonEntry"> | number | null
   installmentGroupId?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
   settledTransactionId?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
+  recurringEntryId?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
+  recurringMonth?: Prisma.StringNullableFilter<"PersonEntry"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PersonEntry"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PersonEntry"> | Date | string
   personId?: Prisma.StringFilter<"PersonEntry"> | string
@@ -867,10 +967,12 @@ export type PersonEntryCreateWithoutCategoryInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   person: Prisma.PersonCreateNestedOneWithoutEntriesInput
   user: Prisma.UserCreateNestedOneWithoutPersonEntriesInput
+  recurringEntry?: Prisma.PersonEntryRecurringCreateNestedOneWithoutEntriesInput
 }
 
 export type PersonEntryUncheckedCreateWithoutCategoryInput = {
@@ -886,6 +988,8 @@ export type PersonEntryUncheckedCreateWithoutCategoryInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringEntryId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -931,10 +1035,12 @@ export type PersonEntryCreateWithoutPersonInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPersonEntriesInput
   category?: Prisma.CategoryCreateNestedOneWithoutPersonEntriesInput
+  recurringEntry?: Prisma.PersonEntryRecurringCreateNestedOneWithoutEntriesInput
 }
 
 export type PersonEntryUncheckedCreateWithoutPersonInput = {
@@ -950,6 +1056,8 @@ export type PersonEntryUncheckedCreateWithoutPersonInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringEntryId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -982,6 +1090,74 @@ export type PersonEntryUpdateManyWithWhereWithoutPersonInput = {
   data: Prisma.XOR<Prisma.PersonEntryUpdateManyMutationInput, Prisma.PersonEntryUncheckedUpdateManyWithoutPersonInput>
 }
 
+export type PersonEntryCreateWithoutRecurringEntryInput = {
+  id?: string
+  type: $Enums.PersonEntryType
+  description: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  date: Date | string
+  isSettled?: boolean
+  settledAt?: Date | string | null
+  notes?: string | null
+  installmentTotal?: number | null
+  installmentCurrent?: number | null
+  installmentGroupId?: string | null
+  settledTransactionId?: string | null
+  recurringMonth?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  person: Prisma.PersonCreateNestedOneWithoutEntriesInput
+  user: Prisma.UserCreateNestedOneWithoutPersonEntriesInput
+  category?: Prisma.CategoryCreateNestedOneWithoutPersonEntriesInput
+}
+
+export type PersonEntryUncheckedCreateWithoutRecurringEntryInput = {
+  id?: string
+  type: $Enums.PersonEntryType
+  description: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  date: Date | string
+  isSettled?: boolean
+  settledAt?: Date | string | null
+  notes?: string | null
+  installmentTotal?: number | null
+  installmentCurrent?: number | null
+  installmentGroupId?: string | null
+  settledTransactionId?: string | null
+  recurringMonth?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  personId: string
+  userId: string
+  categoryId?: string | null
+}
+
+export type PersonEntryCreateOrConnectWithoutRecurringEntryInput = {
+  where: Prisma.PersonEntryWhereUniqueInput
+  create: Prisma.XOR<Prisma.PersonEntryCreateWithoutRecurringEntryInput, Prisma.PersonEntryUncheckedCreateWithoutRecurringEntryInput>
+}
+
+export type PersonEntryCreateManyRecurringEntryInputEnvelope = {
+  data: Prisma.PersonEntryCreateManyRecurringEntryInput | Prisma.PersonEntryCreateManyRecurringEntryInput[]
+  skipDuplicates?: boolean
+}
+
+export type PersonEntryUpsertWithWhereUniqueWithoutRecurringEntryInput = {
+  where: Prisma.PersonEntryWhereUniqueInput
+  update: Prisma.XOR<Prisma.PersonEntryUpdateWithoutRecurringEntryInput, Prisma.PersonEntryUncheckedUpdateWithoutRecurringEntryInput>
+  create: Prisma.XOR<Prisma.PersonEntryCreateWithoutRecurringEntryInput, Prisma.PersonEntryUncheckedCreateWithoutRecurringEntryInput>
+}
+
+export type PersonEntryUpdateWithWhereUniqueWithoutRecurringEntryInput = {
+  where: Prisma.PersonEntryWhereUniqueInput
+  data: Prisma.XOR<Prisma.PersonEntryUpdateWithoutRecurringEntryInput, Prisma.PersonEntryUncheckedUpdateWithoutRecurringEntryInput>
+}
+
+export type PersonEntryUpdateManyWithWhereWithoutRecurringEntryInput = {
+  where: Prisma.PersonEntryScalarWhereInput
+  data: Prisma.XOR<Prisma.PersonEntryUpdateManyMutationInput, Prisma.PersonEntryUncheckedUpdateManyWithoutRecurringEntryInput>
+}
+
 export type PersonEntryCreateManyUserInput = {
   id?: string
   type: $Enums.PersonEntryType
@@ -995,6 +1171,8 @@ export type PersonEntryCreateManyUserInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringEntryId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -1014,10 +1192,12 @@ export type PersonEntryUpdateWithoutUserInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   person?: Prisma.PersonUpdateOneRequiredWithoutEntriesNestedInput
   category?: Prisma.CategoryUpdateOneWithoutPersonEntriesNestedInput
+  recurringEntry?: Prisma.PersonEntryRecurringUpdateOneWithoutEntriesNestedInput
 }
 
 export type PersonEntryUncheckedUpdateWithoutUserInput = {
@@ -1033,6 +1213,8 @@ export type PersonEntryUncheckedUpdateWithoutUserInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringEntryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1052,6 +1234,8 @@ export type PersonEntryUncheckedUpdateManyWithoutUserInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringEntryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1071,6 +1255,8 @@ export type PersonEntryCreateManyCategoryInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringEntryId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -1090,10 +1276,12 @@ export type PersonEntryUpdateWithoutCategoryInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   person?: Prisma.PersonUpdateOneRequiredWithoutEntriesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutPersonEntriesNestedInput
+  recurringEntry?: Prisma.PersonEntryRecurringUpdateOneWithoutEntriesNestedInput
 }
 
 export type PersonEntryUncheckedUpdateWithoutCategoryInput = {
@@ -1109,6 +1297,8 @@ export type PersonEntryUncheckedUpdateWithoutCategoryInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringEntryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1128,6 +1318,8 @@ export type PersonEntryUncheckedUpdateManyWithoutCategoryInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringEntryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1147,6 +1339,8 @@ export type PersonEntryCreateManyPersonInput = {
   installmentCurrent?: number | null
   installmentGroupId?: string | null
   settledTransactionId?: string | null
+  recurringEntryId?: string | null
+  recurringMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -1166,10 +1360,12 @@ export type PersonEntryUpdateWithoutPersonInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPersonEntriesNestedInput
   category?: Prisma.CategoryUpdateOneWithoutPersonEntriesNestedInput
+  recurringEntry?: Prisma.PersonEntryRecurringUpdateOneWithoutEntriesNestedInput
 }
 
 export type PersonEntryUncheckedUpdateWithoutPersonInput = {
@@ -1185,6 +1381,8 @@ export type PersonEntryUncheckedUpdateWithoutPersonInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringEntryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1204,8 +1402,94 @@ export type PersonEntryUncheckedUpdateManyWithoutPersonInput = {
   installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringEntryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type PersonEntryCreateManyRecurringEntryInput = {
+  id?: string
+  type: $Enums.PersonEntryType
+  description: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  date: Date | string
+  isSettled?: boolean
+  settledAt?: Date | string | null
+  notes?: string | null
+  installmentTotal?: number | null
+  installmentCurrent?: number | null
+  installmentGroupId?: string | null
+  settledTransactionId?: string | null
+  recurringMonth?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  personId: string
+  userId: string
+  categoryId?: string | null
+}
+
+export type PersonEntryUpdateWithoutRecurringEntryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumPersonEntryTypeFieldUpdateOperationsInput | $Enums.PersonEntryType
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isSettled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  person?: Prisma.PersonUpdateOneRequiredWithoutEntriesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutPersonEntriesNestedInput
+  category?: Prisma.CategoryUpdateOneWithoutPersonEntriesNestedInput
+}
+
+export type PersonEntryUncheckedUpdateWithoutRecurringEntryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumPersonEntryTypeFieldUpdateOperationsInput | $Enums.PersonEntryType
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isSettled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  personId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type PersonEntryUncheckedUpdateManyWithoutRecurringEntryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumPersonEntryTypeFieldUpdateOperationsInput | $Enums.PersonEntryType
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isSettled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  installmentTotal?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentCurrent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  installmentGroupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  settledTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurringMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  personId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
@@ -1225,6 +1509,8 @@ export type PersonEntrySelect<ExtArgs extends runtime.Types.Extensions.InternalA
   installmentCurrent?: boolean
   installmentGroupId?: boolean
   settledTransactionId?: boolean
+  recurringEntryId?: boolean
+  recurringMonth?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   personId?: boolean
@@ -1233,6 +1519,7 @@ export type PersonEntrySelect<ExtArgs extends runtime.Types.Extensions.InternalA
   person?: boolean | Prisma.PersonDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.PersonEntry$categoryArgs<ExtArgs>
+  recurringEntry?: boolean | Prisma.PersonEntry$recurringEntryArgs<ExtArgs>
 }, ExtArgs["result"]["personEntry"]>
 
 export type PersonEntrySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1248,6 +1535,8 @@ export type PersonEntrySelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   installmentCurrent?: boolean
   installmentGroupId?: boolean
   settledTransactionId?: boolean
+  recurringEntryId?: boolean
+  recurringMonth?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   personId?: boolean
@@ -1256,6 +1545,7 @@ export type PersonEntrySelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   person?: boolean | Prisma.PersonDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.PersonEntry$categoryArgs<ExtArgs>
+  recurringEntry?: boolean | Prisma.PersonEntry$recurringEntryArgs<ExtArgs>
 }, ExtArgs["result"]["personEntry"]>
 
 export type PersonEntrySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1271,6 +1561,8 @@ export type PersonEntrySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   installmentCurrent?: boolean
   installmentGroupId?: boolean
   settledTransactionId?: boolean
+  recurringEntryId?: boolean
+  recurringMonth?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   personId?: boolean
@@ -1279,6 +1571,7 @@ export type PersonEntrySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   person?: boolean | Prisma.PersonDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.PersonEntry$categoryArgs<ExtArgs>
+  recurringEntry?: boolean | Prisma.PersonEntry$recurringEntryArgs<ExtArgs>
 }, ExtArgs["result"]["personEntry"]>
 
 export type PersonEntrySelectScalar = {
@@ -1294,6 +1587,8 @@ export type PersonEntrySelectScalar = {
   installmentCurrent?: boolean
   installmentGroupId?: boolean
   settledTransactionId?: boolean
+  recurringEntryId?: boolean
+  recurringMonth?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   personId?: boolean
@@ -1301,21 +1596,24 @@ export type PersonEntrySelectScalar = {
   categoryId?: boolean
 }
 
-export type PersonEntryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "description" | "amount" | "date" | "isSettled" | "settledAt" | "notes" | "installmentTotal" | "installmentCurrent" | "installmentGroupId" | "settledTransactionId" | "createdAt" | "updatedAt" | "personId" | "userId" | "categoryId", ExtArgs["result"]["personEntry"]>
+export type PersonEntryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "description" | "amount" | "date" | "isSettled" | "settledAt" | "notes" | "installmentTotal" | "installmentCurrent" | "installmentGroupId" | "settledTransactionId" | "recurringEntryId" | "recurringMonth" | "createdAt" | "updatedAt" | "personId" | "userId" | "categoryId", ExtArgs["result"]["personEntry"]>
 export type PersonEntryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   person?: boolean | Prisma.PersonDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.PersonEntry$categoryArgs<ExtArgs>
+  recurringEntry?: boolean | Prisma.PersonEntry$recurringEntryArgs<ExtArgs>
 }
 export type PersonEntryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   person?: boolean | Prisma.PersonDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.PersonEntry$categoryArgs<ExtArgs>
+  recurringEntry?: boolean | Prisma.PersonEntry$recurringEntryArgs<ExtArgs>
 }
 export type PersonEntryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   person?: boolean | Prisma.PersonDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.PersonEntry$categoryArgs<ExtArgs>
+  recurringEntry?: boolean | Prisma.PersonEntry$recurringEntryArgs<ExtArgs>
 }
 
 export type $PersonEntryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1324,6 +1622,7 @@ export type $PersonEntryPayload<ExtArgs extends runtime.Types.Extensions.Interna
     person: Prisma.$PersonPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
     category: Prisma.$CategoryPayload<ExtArgs> | null
+    recurringEntry: Prisma.$PersonEntryRecurringPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1338,6 +1637,8 @@ export type $PersonEntryPayload<ExtArgs extends runtime.Types.Extensions.Interna
     installmentCurrent: number | null
     installmentGroupId: string | null
     settledTransactionId: string | null
+    recurringEntryId: string | null
+    recurringMonth: string | null
     createdAt: Date
     updatedAt: Date
     personId: string
@@ -1740,6 +2041,7 @@ export interface Prisma__PersonEntryClient<T, Null = never, ExtArgs extends runt
   person<T extends Prisma.PersonDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PersonDefaultArgs<ExtArgs>>): Prisma.Prisma__PersonClient<runtime.Types.Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   category<T extends Prisma.PersonEntry$categoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PersonEntry$categoryArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  recurringEntry<T extends Prisma.PersonEntry$recurringEntryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PersonEntry$recurringEntryArgs<ExtArgs>>): Prisma.Prisma__PersonEntryRecurringClient<runtime.Types.Result.GetResult<Prisma.$PersonEntryRecurringPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1781,6 +2083,8 @@ export interface PersonEntryFieldRefs {
   readonly installmentCurrent: Prisma.FieldRef<"PersonEntry", 'Int'>
   readonly installmentGroupId: Prisma.FieldRef<"PersonEntry", 'String'>
   readonly settledTransactionId: Prisma.FieldRef<"PersonEntry", 'String'>
+  readonly recurringEntryId: Prisma.FieldRef<"PersonEntry", 'String'>
+  readonly recurringMonth: Prisma.FieldRef<"PersonEntry", 'String'>
   readonly createdAt: Prisma.FieldRef<"PersonEntry", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PersonEntry", 'DateTime'>
   readonly personId: Prisma.FieldRef<"PersonEntry", 'String'>
@@ -2203,6 +2507,25 @@ export type PersonEntry$categoryArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   include?: Prisma.CategoryInclude<ExtArgs> | null
   where?: Prisma.CategoryWhereInput
+}
+
+/**
+ * PersonEntry.recurringEntry
+ */
+export type PersonEntry$recurringEntryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PersonEntryRecurring
+   */
+  select?: Prisma.PersonEntryRecurringSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PersonEntryRecurring
+   */
+  omit?: Prisma.PersonEntryRecurringOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PersonEntryRecurringInclude<ExtArgs> | null
+  where?: Prisma.PersonEntryRecurringWhereInput
 }
 
 /**

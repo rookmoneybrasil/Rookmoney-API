@@ -3,11 +3,17 @@ import { db } from '@/lib/db'
 import { ok, created, planLimit } from '@/lib/respond'
 import { getLimits } from '@/lib/plans'
 import { checkAchievements } from '@/lib/achievement-checker'
+import { processRecurringPersonEntries } from '@/lib/process-recurring-people'
 
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
-    const now      = new Date()
-    const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    // Best-effort: a transient failure here shouldn't stop the user from
+    // seeing their existing data (mirrors the Promise.allSettled tolerance
+    // the dashboard's equivalent auto-process calls already have).
+    await processRecurringPersonEntries(session.userId).catch(err =>
+      console.error('[people] processRecurringPersonEntries failed:', err))
+
+    const now    = new Date()
     // Cutoff only for old-style recurring (installmentTotal >= 24) that haven't been migrated yet
     const cutoff = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000)
 
@@ -17,16 +23,14 @@ export default withAuth(async (req, res, session) => {
         orderBy: { name: 'asc' },
         include: {
           entries: {
-            // Include current-month entries (settled or not) to detect recurring duplicates
-            // Balance loop below only sums unsettled; settled ones are used only for duplicate detection
-            select: { type: true, amount: true, date: true, installmentTotal: true, installmentGroupId: true, isSettled: true, description: true },
+            select: { type: true, amount: true, date: true, installmentTotal: true, installmentGroupId: true, isSettled: true, recurringEntryId: true },
           },
           _count: { select: { entries: { where: { isSettled: false } } } },
         },
       }),
       db.personEntryRecurring.findMany({
         where:  { userId: session.userId, isActive: true },
-        select: { personId: true, type: true, amount: true, description: true, lastMonth: true },
+        select: { id: true, personId: true, type: true, amount: true },
       }),
     ])
 
@@ -47,20 +51,14 @@ export default withAuth(async (req, res, session) => {
         else                           iOweThem  += Number(e.amount)
       }
 
-      // Add recurring templates only when no PersonEntry already exists for them this month
-      // Use description+type match (same as detail page) — lastMonth alone misses manually-created entries
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-      const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
+      // Add recurring templates only when no PersonEntry has been generated for
+      // them yet this month (processRecurringPersonEntries above creates one as
+      // soon as dayOfMonth passes) — matched via the recurringEntryId FK, not a
+      // description/type/date heuristic.
       const personRecurring = recurringAll.filter(r => r.personId === p.id)
 
       for (const r of personRecurring) {
-        const alreadyHasEntry = p.entries.some(e =>
-          e.description === r.description &&
-          e.type        === r.type &&
-          !e.installmentGroupId &&
-          new Date(e.date) >= monthStart &&
-          new Date(e.date) <= monthEnd
-        )
+        const alreadyHasEntry = p.entries.some(e => e.recurringEntryId === r.id)
         if (alreadyHasEntry) continue // entry already counted above
         if (r.type === 'THEY_OWE_ME') theyOweMe += Number(r.amount)
         else                           iOweThem  += Number(r.amount)

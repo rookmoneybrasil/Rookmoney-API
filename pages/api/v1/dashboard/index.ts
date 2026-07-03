@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { ok } from '@/lib/respond'
 import { startOfMonth, endOfMonth, subMonths, addDays, subDays, format } from 'date-fns'
 import { getProjection, type ProjectionItem } from '@/lib/projection'
+import { processRecurringPersonEntries } from '@/lib/process-recurring-people'
 
 async function processAutoIncome(uid: string) {
   const now       = new Date()
@@ -72,6 +73,7 @@ export default withAuth(async (req, res, session) => {
     processAutoIncome(uid),
     processAutoRecurring(uid),
     processRecurringBills(uid),
+    processRecurringPersonEntries(uid),
   ])
 
   const mS  = startOfMonth(now)

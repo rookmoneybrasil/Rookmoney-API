@@ -1,6 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, notFound } from '@/lib/respond'
+import { settlePersonEntry } from '@/lib/process-recurring-people'
 
 export default withAuth(async (req, res, session) => {
   const id    = req.query.id as string
@@ -16,39 +17,12 @@ export default withAuth(async (req, res, session) => {
     const isSettle = action === 'settle'
 
     if (isSettle && !entry.isSettled) {
-      // Create a transaction to reflect the cash movement
-      const txType = entry.type === 'I_OWE_THEM' ? 'EXPENSE' : 'INCOME'
-
-      const categoryId = entry.categoryId ?? (
-        await db.category.findFirst({
-          where:   { OR: [{ isDefault: true }, { userId: session.userId }] },
-          orderBy: { isDefault: 'desc' },
-        })
-      )?.id ?? null
-
-      const personName = (entry as typeof entry & { person: { name: string } }).person?.name
-      const txDescription = personName
-        ? `${entry.description} (${personName})`
-        : entry.description
-
-      if (!categoryId) return res.status(400).json({ ok: false, error: 'Nenhuma categoria encontrada. Configure uma categoria padrão.' })
-
-      const tx = await db.transaction.create({
-        data: {
-          amount:      entry.amount,
-          type:        txType,
-          description: txDescription,
-          date:        new Date(),
-          userId:      session.userId,
-          categoryId,
-        },
-      })
-
-      const updated = await db.personEntry.update({
-        where: { id },
-        data:  { isSettled: true, settledAt: new Date(), settledTransactionId: tx.id },
-      })
-      return ok(res, updated)
+      try {
+        const updated = await settlePersonEntry(session.userId, id)
+        return ok(res, updated)
+      } catch (err) {
+        return res.status(400).json({ ok: false, error: err instanceof Error ? err.message : 'Não foi possível acertar.' })
+      }
     }
 
     if (!isSettle && entry.isSettled) {

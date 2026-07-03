@@ -283,6 +283,85 @@ const MIGRATIONS: Migration[] = [
       }
     },
   },
+
+  // ─── 2026-07-03 ─────────────────────────────────────────────────────
+  {
+    id:  '2026-07-03-backfill-person-recurring-fk',
+    run: async (db) => {
+      // PersonEntry gained a real recurringEntryId FK (mirrors Bill.recurringBillId)
+      // to replace the description/type/date heuristic that matched entries to
+      // their PersonEntryRecurring template. Backfill it for existing entries by
+      // running that same heuristic ONE LAST TIME here. Where the old heuristic
+      // finds more than one entry for the same template+month (the exact
+      // duplicate-creation bug that 2026-06-03-dedup-recurring-person-entries
+      // cleaned up once already — the button and the cron could each create
+      // their own entry since neither checked for an existing one), keep one
+      // and delete the rest — but NEVER delete a settled entry: unlike the
+      // pending duplicates this is cleaning up, a settled entry has a real
+      // Transaction behind it, and if two happen to exist (e.g. paid twice by
+      // mistake before this fix) deleting either one would silently erase real
+      // payment history. Only unsettled duplicates are ever removed.
+      const templates = await db.personEntryRecurring.findMany()
+
+      for (const t of templates) {
+        const candidates = await db.personEntry.findMany({
+          where: {
+            userId:      t.userId,
+            personId:    t.personId,
+            description: t.description,
+            type:        t.type,
+            installmentGroupId: null,
+            recurringEntryId:   null,
+          },
+          orderBy: { createdAt: 'asc' },
+        })
+        if (candidates.length === 0) continue
+
+        const byMonth = new Map<string, typeof candidates>()
+        for (const e of candidates) {
+          const d   = new Date(e.date)
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+          const arr = byMonth.get(key) ?? []
+          arr.push(e)
+          byMonth.set(key, arr)
+        }
+
+        for (const [monthKey, group] of byMonth.entries()) {
+          // The known bug (button + cron both creating an entry, neither
+          // checking for an existing one) always produces exactly 2 matches
+          // for a given template+month. 3+ matches is no longer that specific
+          // signature — more likely an unrelated one-off entry that happens to
+          // share the same person+description+type coincidentally mixed in.
+          // Don't guess which to delete in that case; just log it for manual
+          // review and leave every entry untouched (no recurringEntryId tag
+          // either, so nothing here risks misattributing an unrelated entry).
+          if (group.length > 2) {
+            console.warn(`[data-migration] backfill-person-recurring-fk: skipping ambiguous group of ${group.length} entries for template ${t.id}, month ${monthKey} — needs manual review`)
+            continue
+          }
+
+          const keep = group.find(e => e.isSettled) ?? group[0]
+          // Only ever delete unsettled duplicates — settled entries (and their
+          // real Transaction) are left untouched even if more than one exists.
+          const toDelete = group.filter(e => e.id !== keep.id && !e.isSettled)
+
+          // Also set recurringMonth (not just recurringEntryId) so the unique
+          // constraint that prevents future duplicates actually covers this
+          // backfilled row too.
+          await db.personEntry.update({ where: { id: keep.id }, data: { recurringEntryId: t.id, recurringMonth: monthKey } })
+
+          if (toDelete.length > 0) {
+            const txIds = toDelete.map(e => e.settledTransactionId).filter((id): id is string => Boolean(id))
+            await db.personEntry.deleteMany({ where: { id: { in: toDelete.map(e => e.id) } } })
+            if (txIds.length > 0) {
+              await db.transaction.deleteMany({ where: { id: { in: txIds } } })
+            }
+            console.log(`[data-migration] backfill-person-recurring-fk: removed ${toDelete.length} duplicate(s) for template ${t.id}`)
+          }
+        }
+      }
+    },
+  },
 ]
 
 // ─── Runner ──────────────────────────────────────────────────────────────────

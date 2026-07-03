@@ -4,6 +4,7 @@ import { format, addDays, startOfMonth, endOfMonth, subMonths } from 'date-fns'
 import { sendBillReminderEmail, sendMonthlySummaryEmail, sendManualProExpiryWarningEmail, sendChurnAlertEmail, sendInactivityEmail, sendDripOnboardingEmail, sendAnniversaryEmail, sendAnnualUpsellEmail, sendFreeToProEmail } from '@/lib/email'
 import { cleanupExpiredLimits } from '@/lib/rate-limit'
 import { sendPush, isValidPushToken } from '@/lib/push'
+import { processRecurringPersonEntries } from '@/lib/process-recurring-people'
 
 async function migrateOldRecurring(userId: string) {
   const now = new Date()
@@ -57,37 +58,6 @@ async function processAutoIncome(userId: string) {
     await db.$transaction([
       db.transaction.create({ data: { amount: src.amount, type: 'INCOME', description: src.name, date: new Date(now.getFullYear(), now.getMonth(), src.dayOfMonth), userId, categoryId: src.categoryId } }),
       db.incomeSource.update({ where: { id: src.id }, data: { lastAutoPayMonth: yearMonth } }),
-    ])
-  }
-}
-
-async function processPersonEntryRecurring(userId: string) {
-  const now       = new Date()
-  const today     = now.getDate()
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-
-  const items = await db.personEntryRecurring.findMany({ where: { userId, isActive: true } })
-
-  for (const item of items) {
-    if (item.lastMonth === yearMonth) continue
-    if (today < item.dayOfMonth) continue
-
-    const entryDate = new Date(now.getFullYear(), now.getMonth(), item.dayOfMonth)
-
-    await db.$transaction([
-      db.personEntry.create({
-        data: {
-          personId:   item.personId,
-          userId,
-          type:       item.type,
-          description: item.description,
-          amount:     item.amount,
-          date:       entryDate,
-          notes:      item.notes,
-          categoryId: item.categoryId,
-        },
-      }),
-      db.personEntryRecurring.update({ where: { id: item.id }, data: { lastMonth: yearMonth } }),
     ])
   }
 }
@@ -683,7 +653,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await migrateOldRecurring(user.id)
       await processAutoIncome(user.id)
       await processAutoRecurring(user.id)
-      await processPersonEntryRecurring(user.id)
+      await processRecurringPersonEntries(user.id)
       await processRecurringBills(user.id)
       processed++
     } catch (err) {

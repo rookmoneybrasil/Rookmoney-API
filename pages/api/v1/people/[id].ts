@@ -2,11 +2,17 @@ import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, created, notFound } from '@/lib/respond'
 import { checkAchievements } from '@/lib/achievement-checker'
+import { processRecurringPersonEntries } from '@/lib/process-recurring-people'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
 
   if (req.method === 'GET') {
+    // Best-effort: a transient failure here shouldn't stop the user from
+    // seeing this person's existing data.
+    await processRecurringPersonEntries(session.userId).catch(err =>
+      console.error('[people/id] processRecurringPersonEntries failed:', err))
+
     const person = await db.person.findFirst({
       where:   { id, userId: session.userId },
       include: { entries: { include: { category: { select: { id: true, name: true, icon: true, color: true } } }, orderBy: { date: 'desc' } } },

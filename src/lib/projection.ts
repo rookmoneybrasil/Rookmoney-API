@@ -66,7 +66,7 @@ export async function getProjection(uid: string, months: number): Promise<Projec
     }),
     db.personEntry.findMany({
       where:  { userId: uid, date: { gte: curMS, lte: curME } },
-      select: { personId: true, type: true, description: true, installmentGroupId: true },
+      select: { personId: true, type: true, installmentGroupId: true, recurringEntryId: true },
     }),
     // all unpaid bills due in the projection window
     db.bill.findMany({
@@ -230,12 +230,7 @@ export async function getProjection(uid: string, months: number): Promise<Projec
         // Recurring person entries (PersonEntryRecurring) without an entry this month yet
         for (const r of personRecurringAll) {
           if (r.lastMonth === curKey) continue
-          const alreadyHasEntry = currentMonthPersonEntries.some(e =>
-            e.personId === r.personId &&
-            e.description === r.description &&
-            e.type === r.type &&
-            !e.installmentGroupId
-          )
+          const alreadyHasEntry = currentMonthPersonEntries.some(e => e.recurringEntryId === r.id)
           if (alreadyHasEntry) continue
           const item: ProjectionItem = {
             id:     `person-recurring-${r.id}`,

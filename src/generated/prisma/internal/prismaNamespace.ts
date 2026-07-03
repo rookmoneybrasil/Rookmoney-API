@@ -2495,6 +2495,8 @@ export const PersonEntryScalarFieldEnum = {
   installmentCurrent: 'installmentCurrent',
   installmentGroupId: 'installmentGroupId',
   settledTransactionId: 'settledTransactionId',
+  recurringEntryId: 'recurringEntryId',
+  recurringMonth: 'recurringMonth',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   personId: 'personId',
