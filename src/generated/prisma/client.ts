@@ -142,6 +142,11 @@ export type UserAchievement = Prisma.UserAchievementModel
  */
 export type PushLog = Prisma.PushLogModel
 /**
+ * Model ChatUsageLog
+ * 
+ */
+export type ChatUsageLog = Prisma.ChatUsageLogModel
+/**
  * Model BlogPost
  * 
  */

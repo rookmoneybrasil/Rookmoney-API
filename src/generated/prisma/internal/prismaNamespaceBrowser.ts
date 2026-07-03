@@ -71,6 +71,7 @@ export const ModelName = {
   AppSetting: 'AppSetting',
   UserAchievement: 'UserAchievement',
   PushLog: 'PushLog',
+  ChatUsageLog: 'ChatUsageLog',
   BlogPost: 'BlogPost',
   NewsletterSubscriber: 'NewsletterSubscriber',
   PluggyItem: 'PluggyItem'
@@ -428,6 +429,21 @@ export const PushLogScalarFieldEnum = {
 } as const
 
 export type PushLogScalarFieldEnum = (typeof PushLogScalarFieldEnum)[keyof typeof PushLogScalarFieldEnum]
+
+
+export const ChatUsageLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  channel: 'channel',
+  inputTokens: 'inputTokens',
+  outputTokens: 'outputTokens',
+  cacheReadTokens: 'cacheReadTokens',
+  cacheWriteTokens: 'cacheWriteTokens',
+  costUsd: 'costUsd',
+  createdAt: 'createdAt'
+} as const
+
+export type ChatUsageLogScalarFieldEnum = (typeof ChatUsageLogScalarFieldEnum)[keyof typeof ChatUsageLogScalarFieldEnum]
 
 
 export const BlogPostScalarFieldEnum = {

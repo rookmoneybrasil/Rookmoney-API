@@ -9,6 +9,24 @@ import { ptBR } from 'date-fns/locale'
 // 31/08/2026, depois $3/$15. Pra voltar pro Haiku: 'claude-haiku-4-5-20251001'.
 export const ROOKINHO_MODEL = 'claude-sonnet-5'
 
+// Preco por MTok (USD) — promocional ate 31/08/2026, ver comentario acima. Cache
+// read custa ~10% do input normal; cache write (5min TTL) custa ~25% a mais que
+// input normal na Anthropic, mas fica dentro da margem de erro pro nosso uso —
+// aproximado como preco de input cheio pra simplificar.
+const PRICE_PER_MTOK_INTRO = { input: 2, output: 10 }
+const PRICE_PER_MTOK_STANDARD = { input: 3, output: 15 }
+const PRICE_CUTOVER = new Date('2026-08-31T23:59:59Z')
+
+function estimateCostUsd(usage: { input: number; output: number; cacheRead: number; cacheWrite: number }): number {
+  const price = new Date() <= PRICE_CUTOVER ? PRICE_PER_MTOK_INTRO : PRICE_PER_MTOK_STANDARD
+  const cost =
+    (usage.input * price.input) / 1_000_000 +
+    (usage.output * price.output) / 1_000_000 +
+    (usage.cacheRead * price.input * 0.1) / 1_000_000 +
+    (usage.cacheWrite * price.input) / 1_000_000
+  return Math.round(cost * 10_000) / 10_000
+}
+
 // ── Rate limit de rajada (anti-abuso) ───────────────────────────────────────
 // PRO+ tem mensagens ILIMITADAS/mes (promessa). Isso aqui NAO e um limite mensal
 // — so barra rajada absurda (spam, bot, ou usuario "brincando" com a IA), que e
@@ -1156,6 +1174,7 @@ export async function processRookinhoChat(
   const tools = opts?.channel === 'whatsapp' ? TOOLS.filter(t => t.name !== 'navigate') : TOOLS
 
   let lastText = ''
+  const usage = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }
 
   for (let i = 0; i < 8; i++) {
     const response = await client.messages.create({
@@ -1179,6 +1198,11 @@ export async function processRookinhoChat(
       messages: currentMessages,
     })
 
+    usage.input += response.usage.input_tokens
+    usage.output += response.usage.output_tokens
+    usage.cacheRead += response.usage.cache_read_input_tokens ?? 0
+    usage.cacheWrite += response.usage.cache_creation_input_tokens ?? 0
+
     const text = response.content.find(b => b.type === 'text')?.text
     if (text) lastText = text
 
@@ -1187,6 +1211,7 @@ export async function processRookinhoChat(
     // Sem tool calls = resposta final. (Reage a PRESENCA de tool_use, nao ao
     // stop_reason, pra sobreviver a stop_reason='max_tokens' num turno com tools.)
     if (toolUseBlocks.length === 0) {
+      await logChatUsage(userId, opts?.channel ?? 'web', usage)
       return { message: lastText || 'Feito!', navigate: navigationSuggestion }
     }
 
@@ -1209,8 +1234,35 @@ export async function processRookinhoChat(
 
   // Estourou as 8 iteracoes ainda com tool calls pendentes (lote gigante). O que
   // deu pra executar ja foi feito — devolve o ultimo texto ou um aviso claro.
+  await logChatUsage(userId, opts?.channel ?? 'web', usage)
   return {
     message: lastText || 'Registrei o que consegui, mas foram muitos itens de uma vez. Confere se lançou tudo (ou me manda em partes menores).',
     navigate: navigationSuggestion,
+  }
+}
+
+// Uma linha por chamada de processRookinhoChat (nao por iteracao do loop de 8x)
+// — cobre custo total do turno, incluindo idas e vindas de tool_use. Nunca deve
+// quebrar o chat se o log falhar.
+async function logChatUsage(
+  userId: string,
+  channel: 'web' | 'whatsapp',
+  usage: { input: number; output: number; cacheRead: number; cacheWrite: number },
+): Promise<void> {
+  if (usage.input === 0 && usage.output === 0) return
+  try {
+    await db.chatUsageLog.create({
+      data: {
+        userId,
+        channel,
+        inputTokens: usage.input,
+        outputTokens: usage.output,
+        cacheReadTokens: usage.cacheRead,
+        cacheWriteTokens: usage.cacheWrite,
+        costUsd: estimateCostUsd(usage),
+      },
+    })
+  } catch (e) {
+    console.error('logChatUsage failed', e)
   }
 }

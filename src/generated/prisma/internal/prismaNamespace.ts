@@ -404,6 +404,7 @@ export const ModelName = {
   AppSetting: 'AppSetting',
   UserAchievement: 'UserAchievement',
   PushLog: 'PushLog',
+  ChatUsageLog: 'ChatUsageLog',
   BlogPost: 'BlogPost',
   NewsletterSubscriber: 'NewsletterSubscriber',
   PluggyItem: 'PluggyItem'
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "transaction" | "recurringTransaction" | "goal" | "goalContribution" | "budget" | "incomeSource" | "bill" | "recurringBill" | "person" | "personEntryRecurring" | "personEntry" | "feedback" | "dataMigration" | "rateLimit" | "adminLog" | "appSetting" | "userAchievement" | "pushLog" | "blogPost" | "newsletterSubscriber" | "pluggyItem"
+    modelProps: "user" | "category" | "transaction" | "recurringTransaction" | "goal" | "goalContribution" | "budget" | "incomeSource" | "bill" | "recurringBill" | "person" | "personEntryRecurring" | "personEntry" | "feedback" | "dataMigration" | "rateLimit" | "adminLog" | "appSetting" | "userAchievement" | "pushLog" | "chatUsageLog" | "blogPost" | "newsletterSubscriber" | "pluggyItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1906,6 +1907,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ChatUsageLog: {
+      payload: Prisma.$ChatUsageLogPayload<ExtArgs>
+      fields: Prisma.ChatUsageLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ChatUsageLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUsageLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ChatUsageLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUsageLogPayload>
+        }
+        findFirst: {
+          args: Prisma.ChatUsageLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUsageLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ChatUsageLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUsageLogPayload>
+        }
+        findMany: {
+          args: Prisma.ChatUsageLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUsageLogPayload>[]
+        }
+        create: {
+          args: Prisma.ChatUsageLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUsageLogPayload>
+        }
+        createMany: {
+          args: Prisma.ChatUsageLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ChatUsageLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUsageLogPayload>[]
+        }
+        delete: {
+          args: Prisma.ChatUsageLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUsageLogPayload>
+        }
+        update: {
+          args: Prisma.ChatUsageLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUsageLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.ChatUsageLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ChatUsageLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ChatUsageLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUsageLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.ChatUsageLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUsageLogPayload>
+        }
+        aggregate: {
+          args: Prisma.ChatUsageLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateChatUsageLog>
+        }
+        groupBy: {
+          args: Prisma.ChatUsageLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChatUsageLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ChatUsageLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChatUsageLogCountAggregateOutputType> | number
+        }
+      }
+    }
     BlogPost: {
       payload: Prisma.$BlogPostPayload<ExtArgs>
       fields: Prisma.BlogPostFieldRefs
@@ -2505,6 +2580,21 @@ export const PushLogScalarFieldEnum = {
 export type PushLogScalarFieldEnum = (typeof PushLogScalarFieldEnum)[keyof typeof PushLogScalarFieldEnum]
 
 
+export const ChatUsageLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  channel: 'channel',
+  inputTokens: 'inputTokens',
+  outputTokens: 'outputTokens',
+  cacheReadTokens: 'cacheReadTokens',
+  cacheWriteTokens: 'cacheWriteTokens',
+  costUsd: 'costUsd',
+  createdAt: 'createdAt'
+} as const
+
+export type ChatUsageLogScalarFieldEnum = (typeof ChatUsageLogScalarFieldEnum)[keyof typeof ChatUsageLogScalarFieldEnum]
+
+
 export const BlogPostScalarFieldEnum = {
   id: 'id',
   slug: 'slug',
@@ -2843,6 +2933,7 @@ export type GlobalOmitConfig = {
   appSetting?: Prisma.AppSettingOmit
   userAchievement?: Prisma.UserAchievementOmit
   pushLog?: Prisma.PushLogOmit
+  chatUsageLog?: Prisma.ChatUsageLogOmit
   blogPost?: Prisma.BlogPostOmit
   newsletterSubscriber?: Prisma.NewsletterSubscriberOmit
   pluggyItem?: Prisma.PluggyItemOmit

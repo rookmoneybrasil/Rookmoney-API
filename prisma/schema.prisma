@@ -83,6 +83,7 @@ model User {
   pluggyItems           PluggyItem[]
   achievements          UserAchievement[]
   pushLogs              PushLog[]
+  chatUsageLogs         ChatUsageLog[]
 }
 
 // ─── Category ───────────────────────────────────────────────────────
@@ -467,6 +468,26 @@ model PushLog {
   createdAt DateTime @default(now())
 
   @@index([userId, createdAt])
+}
+
+// ─── ChatUsageLog ──────────────────────────────────────────────────────────
+// Tracks token usage/cost per Rookinho AI call (web + WhatsApp), for backoffice
+// cost monitoring — PRO_PLUS has unlimited messages, so this is the only signal
+// before it shows up as an Anthropic invoice surprise.
+model ChatUsageLog {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel          String   // 'web' | 'whatsapp'
+  inputTokens      Int
+  outputTokens     Int
+  cacheReadTokens  Int      @default(0)
+  cacheWriteTokens Int      @default(0)
+  costUsd          Decimal  @db.Decimal(10, 4)
+  createdAt        DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
 }
 
 // ─── BlogPost ─────────────────────────────────────────────────────────────────
