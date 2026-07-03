@@ -79,31 +79,11 @@ async function ensureMonthEntry(
   }
 }
 
-// Used by the "pay recurring template" endpoint: guarantees the month's
-// entry exists (creating it if the day-of-month gate hasn't been hit yet by
-// the cron/dashboard auto-process), marks lastMonth so it isn't re-created
-// later, and settles it — same effect as the old "create ad-hoc entry + settle"
-// button flow, but through the FK so there's never more than one entry per
-// template per month.
-export async function payRecurringPersonEntry(uid: string, recurringId: string) {
-  const t = await db.personEntryRecurring.findFirst({ where: { id: recurringId, userId: uid } })
-  if (!t) return null
-
-  const now       = new Date()
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-
-  const entry = await ensureMonthEntry(uid, t, now.getFullYear(), now.getMonth())
-  if (t.lastMonth !== yearMonth) {
-    await db.personEntryRecurring.update({ where: { id: t.id }, data: { lastMonth: yearMonth } })
-  }
-  if (entry.isSettled) return entry
-
-  return settlePersonEntry(uid, entry.id)
-}
-
-// Same settle logic as POST /people/entries/[id]?action=settle — extracted so
-// payRecurringPersonEntry can reuse it without duplicating the Transaction
-// creation + category-fallback logic.
+// Same settle logic as POST /people/entries/[id]?action=settle — extracted to
+// its own function so it's reusable without duplicating the Transaction
+// creation + category-fallback logic (the recurring template's own entry, once
+// generated, is settled through the normal entry the same way any other
+// PersonEntry is — there's no separate "pay recurring template" path).
 export async function settlePersonEntry(uid: string, entryId: string) {
   const entry = await db.personEntry.findFirst({
     where:   { id: entryId, userId: uid },
