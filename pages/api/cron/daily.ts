@@ -430,9 +430,9 @@ async function sendNotifications(): Promise<number> {
           const titles = dueSoon.map(b => b.name).slice(0, 2).join(', ')
           const extra  = dueSoon.length > 2 ? ` +${dueSoon.length - 2}` : ''
           const billMsgs = [
-            { title: `🐦 Ei ${firstName}, bora pagar?`, body: `${titles}${extra} vence${dueSoon.length > 1 ? 'm' : ''} em breve. Não me faz passar vergonha!` },
-            { title: '🐦 Rookinho aqui, ó', body: `Conta de ${titles}${extra} tá chegando. Paga logo antes que eu fique nervoso!` },
-            { title: `🐦 ${firstName}! Conta batendo na porta`, body: `${titles}${extra} vence${dueSoon.length > 1 ? 'm' : ''} nos próximos dias. Bora resolver isso?` },
+            { title: `📄 Ei ${firstName}, bora pagar?`, body: `${titles}${extra} vence${dueSoon.length > 1 ? 'm' : ''} em breve. Não me faz passar vergonha!` },
+            { title: '📄 Rookinho aqui, ó', body: `Conta de ${titles}${extra} tá chegando. Paga logo antes que eu fique nervoso!` },
+            { title: `📄 ${firstName}! Conta batendo na porta`, body: `${titles}${extra} vence${dueSoon.length > 1 ? 'm' : ''} nos próximos dias. Bora resolver isso?` },
           ]
           pushes.push({ ...billMsgs[slot % billMsgs.length], screen: 'bills' })
         }
@@ -466,9 +466,9 @@ async function sendNotifications(): Promise<number> {
           if (overBudget.length > 0) {
             const cat = overBudget[0]
             const budgetMsgs = [
-              { title: '🐦 Para de gastar!', body: `${cat} tá estourando o orçamento. Eu avisei, ${firstName}!` },
-              { title: `🐦 ${firstName}, calma aí`, body: `${cat} já passou de 80% do limite. Segura a mão!` },
-              { title: '🐦 Alerta do Rookinho', body: `Orçamento de ${cat} no limite. Quer ficar no vermelho? Acho que não né.` },
+              { title: '💸 Para de gastar!', body: `${cat} tá estourando o orçamento. Eu avisei, ${firstName}!` },
+              { title: `💸 ${firstName}, calma aí`, body: `${cat} já passou de 80% do limite. Segura a mão!` },
+              { title: '💸 Alerta do Rookinho', body: `Orçamento de ${cat} no limite. Quer ficar no vermelho? Acho que não né.` },
             ]
             pushes.push({ ...budgetMsgs[slot % budgetMsgs.length], screen: 'budget' })
           }
@@ -485,8 +485,8 @@ async function sendNotifications(): Promise<number> {
         const pct = Number(g.targetAmount) > 0 ? Math.round((Number(g.currentAmount) / Number(g.targetAmount)) * 100) : 0
         const days = Math.ceil((new Date(g.deadline!).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
         const goalMsgs = [
-          { title: '🐦 Cadê o dinheiro da meta?', body: `"${g.name}" tá em ${pct}% e faltam ${days} dia${days !== 1 ? 's' : ''}. Bora, ${firstName}!` },
-          { title: `🐦 ${firstName}, a meta tá chorando`, body: `"${g.name}" precisa de atenção — ${pct}% com ${days} dia${days !== 1 ? 's' : ''} restantes.` },
+          { title: '🎯 Cadê o dinheiro da meta?', body: `"${g.name}" tá em ${pct}% e faltam ${days} dia${days !== 1 ? 's' : ''}. Bora, ${firstName}!` },
+          { title: `🎯 ${firstName}, a meta tá chorando`, body: `"${g.name}" precisa de atenção — ${pct}% com ${days} dia${days !== 1 ? 's' : ''} restantes.` },
         ]
         pushes.push({ ...goalMsgs[slot % goalMsgs.length], screen: 'goals' })
       }
@@ -503,12 +503,12 @@ async function sendNotifications(): Promise<number> {
       if (spent > 0 && pushes.length === 0) {
         const spendMsgs = spent > 200
           ? [
-              { title: '🐦 Eita, gastou hein!', body: `R$ ${spent.toFixed(2)} ontem em ${yesterdaySpent._count} transaç${yesterdaySpent._count === 1 ? 'ão' : 'ões'}. Tá rico, ${firstName}?` },
-              { title: `🐦 ${firstName}, cê tá bem?`, body: `R$ ${spent.toFixed(2)} voaram ontem. O Rookinho ficou preocupado.` },
+              { title: '📊 Eita, gastou hein!', body: `R$ ${spent.toFixed(2)} ontem em ${yesterdaySpent._count} transaç${yesterdaySpent._count === 1 ? 'ão' : 'ões'}. Tá rico, ${firstName}?` },
+              { title: `📊 ${firstName}, cê tá bem?`, body: `R$ ${spent.toFixed(2)} voaram ontem. O Rookinho ficou preocupado.` },
             ]
           : [
-              { title: '🐦 Resuminho de ontem', body: `Gastou R$ ${spent.toFixed(2)} ontem. Tá controlado, ${firstName}? Eu tô de olho!` },
-              { title: '🐦 Boa, controlado!', body: `R$ ${spent.toFixed(2)} ontem. Nada mal! Continua assim que o Rookinho aprova.` },
+              { title: '📊 Resuminho de ontem', body: `Gastou R$ ${spent.toFixed(2)} ontem. Tá controlado, ${firstName}? Eu tô de olho!` },
+              { title: '📊 Boa, controlado!', body: `R$ ${spent.toFixed(2)} ontem. Nada mal! Continua assim que o Rookinho aprova.` },
             ]
         pushes.push({ ...spendMsgs[slot % spendMsgs.length], screen: 'transactions' })
       }
@@ -520,28 +520,28 @@ async function sendNotifications(): Promise<number> {
           let msg: { title: string; body: string }
           if (daysSince <= 3) {
             const pool = [
-              { title: `🐦 ${firstName}, sumiu?`, body: `Faz ${daysSince} dias que não te vejo. Suas contas não se pagam sozinhas!` },
-              { title: `🐦 Oi ${firstName}!`, body: `${daysSince} dias sem registrar nada. Bora atualizar rapidinho?` },
+              { title: `👋 ${firstName}, sumiu?`, body: `Faz ${daysSince} dias que não te vejo. Suas contas não se pagam sozinhas!` },
+              { title: `👋 Oi ${firstName}!`, body: `${daysSince} dias sem registrar nada. Bora atualizar rapidinho?` },
             ]
             msg = pool[daysSince % pool.length]
           } else if (daysSince <= 7) {
             const pool = [
-              { title: '🐦 Alô?? Tem alguém aí?', body: `${daysSince} dias sem abrir o app. O Rookinho tá aqui sozinho e triste.` },
-              { title: `🐦 ${firstName}, volta aqui!`, body: `Faz ${daysSince} dias! Tô juntando poeira aqui. Bora organizar essas finanças?` },
-              { title: '🐦 O Rookinho tá bravo', body: `${daysSince} dias sem registrar nada? Assim não dá. Abre o app!` },
+              { title: '👋 Alô?? Tem alguém aí?', body: `${daysSince} dias sem abrir o app. O Rookinho tá aqui sozinho e triste.` },
+              { title: `👋 ${firstName}, volta aqui!`, body: `Faz ${daysSince} dias! Tô juntando poeira aqui. Bora organizar essas finanças?` },
+              { title: '👋 O Rookinho tá bravo', body: `${daysSince} dias sem registrar nada? Assim não dá. Abre o app!` },
             ]
             msg = pool[daysSince % pool.length]
           } else if (daysSince <= 14) {
             const pool = [
-              { title: `🐦 ${firstName}, tô preocupado`, body: `Já são ${daysSince} dias. Suas finanças tão largadas. O Rookinho não dorme em paz assim.` },
-              { title: '🐦 Cadê você??', body: `${daysSince} dias, ${firstName}. Eu sei que a vida é corrida, mas 2 minutinhos resolve. Volta!` },
+              { title: `👋 ${firstName}, tô preocupado`, body: `Já são ${daysSince} dias. Suas finanças tão largadas. O Rookinho não dorme em paz assim.` },
+              { title: '👋 Cadê você??', body: `${daysSince} dias, ${firstName}. Eu sei que a vida é corrida, mas 2 minutinhos resolve. Volta!` },
             ]
             msg = pool[daysSince % pool.length]
           } else {
             const pool = [
-              { title: `🐦 ${firstName}... ainda tô aqui`, body: `${daysSince} dias sem te ver. Se precisar, o Rookinho tá esperando. Sempre.` },
-              { title: '🐦 Saudades de você', body: `Faz ${daysSince} dias. O app tá igualzinho, te esperando. Bora voltar, ${firstName}?` },
-              { title: `🐦 Oi ${firstName}, lembra de mim?`, body: `Sou o Rookinho! Faz ${daysSince} dias. Suas finanças sentem sua falta.` },
+              { title: `👋 ${firstName}... ainda tô aqui`, body: `${daysSince} dias sem te ver. Se precisar, o Rookinho tá esperando. Sempre.` },
+              { title: '👋 Saudades de você', body: `Faz ${daysSince} dias. O app tá igualzinho, te esperando. Bora voltar, ${firstName}?` },
+              { title: `👋 Oi ${firstName}, lembra de mim?`, body: `Sou o Rookinho! Faz ${daysSince} dias. Suas finanças sentem sua falta.` },
             ]
             msg = pool[daysSince % pool.length]
           }
@@ -554,9 +554,9 @@ async function sendNotifications(): Promise<number> {
         const daysSinceSignup = Math.floor((now.getTime() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
         if (daysSinceSignup >= 1) {
           const pool = [
-            { title: `🐦 Ei ${firstName}!`, body: 'Você criou sua conta mas ainda não começou. Bora registrar seu primeiro gasto?' },
-            { title: `🐦 ${firstName}, tô te esperando!`, body: 'Cadastrou mas não voltou? O Rookinho tá aqui pronto pra te ajudar!' },
-            { title: '🐦 Primeira vez é de graça', body: `${firstName}, abre o app e registra um gasto. Leva 10 segundos, prometo!` },
+            { title: `✨ Ei ${firstName}!`, body: 'Você criou sua conta mas ainda não começou. Bora registrar seu primeiro gasto?' },
+            { title: `✨ ${firstName}, tô te esperando!`, body: 'Cadastrou mas não voltou? O Rookinho tá aqui pronto pra te ajudar!' },
+            { title: '✨ Primeira vez é de graça', body: `${firstName}, abre o app e registra um gasto. Leva 10 segundos, prometo!` },
           ]
           pushes.push({ ...pool[daysSinceSignup % pool.length], screen: '/(tabs)' })
         }
@@ -568,23 +568,23 @@ async function sendNotifications(): Promise<number> {
         if (dayOfWeek === 2 || dayOfWeek === 6) {
           const proPool = [
             // FOMO / exclusividade
-            { title: '🐦 Tá perdendo coisa boa', body: `${firstName}, os PRO têm orçamento ilimitado, relatórios e o Rookinho IA. Você tá de fora!`, screen: 'settings' },
-            { title: `🐦 ${firstName}, sério mesmo?`, body: 'Ainda no grátis? Quem é PRO já tá controlando tudo. Não fica pra trás!', screen: 'settings' },
+            { title: '👑 Tá perdendo coisa boa', body: `${firstName}, os PRO têm orçamento ilimitado, relatórios e o Rookinho IA. Você tá de fora!`, screen: 'settings' },
+            { title: `👑 ${firstName}, sério mesmo?`, body: 'Ainda no grátis? Quem é PRO já tá controlando tudo. Não fica pra trás!', screen: 'settings' },
             // Rookinho IA
-            { title: '🐦 Quer falar comigo?', body: `${firstName}, no PRO eu viro seu assistente financeiro pessoal. Posso analisar seus gastos, criar contas, dar dicas... Bora?`, screen: 'ai-chat' },
-            { title: `🐦 ${firstName}, eu sou mais esperto do que pareço`, body: 'No PRO eu leio seus extratos, respondo dúvidas e até crio transações por você. Experimenta!', screen: 'ai-chat' },
+            { title: '👑 Quer falar comigo?', body: `${firstName}, no PRO eu viro seu assistente financeiro pessoal. Posso analisar seus gastos, criar contas, dar dicas... Bora?`, screen: 'ai-chat' },
+            { title: `👑 ${firstName}, eu sou mais esperto do que pareço`, body: 'No PRO eu leio seus extratos, respondo dúvidas e até crio transações por você. Experimenta!', screen: 'ai-chat' },
             // Limites
-            { title: '🐦 Limite é pra quem quer', body: `${firstName}, no grátis você tem limite de contas e metas. No PRO? Ilimitado. Sem frescura.`, screen: 'settings' },
-            { title: `🐦 Ei ${firstName}`, body: 'Sabia que no FREE você só pode ter 5 contas por mês? No PRO é infinito. Pensa nisso.', screen: 'settings' },
+            { title: '👑 Limite é pra quem quer', body: `${firstName}, no grátis você tem limite de contas e metas. No PRO? Ilimitado. Sem frescura.`, screen: 'settings' },
+            { title: `👑 Ei ${firstName}`, body: 'Sabia que no FREE você só pode ter 5 contas por mês? No PRO é infinito. Pensa nisso.', screen: 'settings' },
             // Provocação direta
-            { title: '🐦 Rookinho sincerão', body: `${firstName}, cê quer organizar suas finanças de verdade ou só de brincadeira? PRO é pra quem leva a sério.`, screen: 'settings' },
-            { title: `🐦 ${firstName}, posso ser honesto?`, body: 'O plano grátis é bom, mas o PRO é outro nível. Orçamento, relatórios, IA... R$19,90/mês. Menos que um iFood.', screen: 'settings' },
+            { title: '👑 Rookinho sincerão', body: `${firstName}, cê quer organizar suas finanças de verdade ou só de brincadeira? PRO é pra quem leva a sério.`, screen: 'settings' },
+            { title: `👑 ${firstName}, posso ser honesto?`, body: 'O plano grátis é bom, mas o PRO é outro nível. Orçamento, relatórios, IA... R$19,90/mês. Menos que um iFood.', screen: 'settings' },
             // Social proof
-            { title: '🐦 Todo mundo tá virando PRO', body: `${firstName}, quem assina o PRO não volta pro grátis. Será que sabem de algo que você não sabe?`, screen: 'settings' },
-            { title: `🐦 ${firstName}, confia no Rookinho`, body: 'Já ajudei muita gente a sair do vermelho com o PRO. Bora ser o próximo?', screen: 'settings' },
+            { title: '👑 Todo mundo tá virando PRO', body: `${firstName}, quem assina o PRO não volta pro grátis. Será que sabem de algo que você não sabe?`, screen: 'settings' },
+            { title: `👑 ${firstName}, confia no Rookinho`, body: 'Já ajudei muita gente a sair do vermelho com o PRO. Bora ser o próximo?', screen: 'settings' },
             // Urgência / preço
-            { title: '🐦 Faz as contas', body: `R$19,90 por mês = R$0,66 por dia. ${firstName}, isso é menos que um café. E muda sua vida financeira.`, screen: 'settings' },
-            { title: `🐦 ${firstName}, última chance?`, body: 'Brincadeira, não é última chance. Mas e se fosse? Ia continuar no grátis? Bora de PRO!', screen: 'settings' },
+            { title: '👑 Faz as contas', body: `R$19,90 por mês = R$0,66 por dia. ${firstName}, isso é menos que um café. E muda sua vida financeira.`, screen: 'settings' },
+            { title: `👑 ${firstName}, última chance?`, body: 'Brincadeira, não é última chance. Mas e se fosse? Ia continuar no grátis? Bora de PRO!', screen: 'settings' },
           ]
           const idx = (slot + now.getMonth()) % proPool.length
           pushes.push(proPool[idx])
@@ -613,9 +613,9 @@ async function sendNotifications(): Promise<number> {
         const bal = totalIncome - totalExpense
         const monthName = format(prevMonth, 'MMMM')
         if (bal >= 0) {
-          pushes.push({ title: `🐦 Mês fechado, ${firstName}!`, body: `${monthName}: sobrou R$ ${bal.toFixed(2)}. O Rookinho tá orgulhoso!`, screen: 'reports' })
+          pushes.push({ title: `🗓️ Mês fechado, ${firstName}!`, body: `${monthName}: sobrou R$ ${bal.toFixed(2)}. O Rookinho tá orgulhoso!`, screen: 'reports' })
         } else {
-          pushes.push({ title: `🐦 ${firstName}, precisamos conversar`, body: `${monthName}: ficou R$ ${Math.abs(bal).toFixed(2)} no vermelho. Bora ajustar esse mês?`, screen: 'reports' })
+          pushes.push({ title: `🗓️ ${firstName}, precisamos conversar`, body: `${monthName}: ficou R$ ${Math.abs(bal).toFixed(2)} no vermelho. Bora ajustar esse mês?`, screen: 'reports' })
         }
       }
 
@@ -623,20 +623,20 @@ async function sendNotifications(): Promise<number> {
       if (pushes.length === 0) {
         const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24))
         const tips = [
-          { title: `🐦 Dica do Rookinho`, body: `${firstName}, sabia que dá pra dividir uma conta em parcelas? Tenta lá em Contas!`, screen: 'bills' },
-          { title: `🐦 Ô ${firstName}`, body: 'Já criou seu orçamento do mês? Sem orçamento é igual dirigir sem GPS!', screen: 'budget' },
-          { title: '🐦 Rookinho ensina', body: `${firstName}, sabia que dá pra registrar quem te deve dinheiro? Vai em Pessoas!`, screen: 'people' },
-          { title: `🐦 E aí ${firstName}`, body: 'Já cadastrou suas metas financeiras? Viagem, celular novo, reserva... Bora sonhar!', screen: 'goals' },
-          { title: '🐦 Dica esperta', body: `${firstName}, cadastra suas rendas fixas e elas entram sozinhas todo mês. Magia!`, screen: 'income' },
-          { title: `🐦 Fala ${firstName}`, body: 'Sabia que dá pra ver relatórios completos dos seus gastos? Confere em Relatórios!', screen: 'reports' },
-          { title: '🐦 Psiu', body: `${firstName}, já experimentou o calendário financeiro? Vê tudo que entra e sai no mês!`, screen: 'calendar' },
-          { title: `🐦 Bom dia, ${firstName}!`, body: 'Registrar gastos todo dia é o segredo. 2 minutinhos e pronto. O Rookinho agradece!', screen: '/(tabs)' },
-          { title: '🐦 Rookinho avisa', body: `${firstName}, contas recorrentes tipo Netflix e internet podem ser automáticas. Já configurou?`, screen: 'recurring' },
-          { title: `🐦 Ei ${firstName}`, body: 'Quanto você gastou no iFood esse mês? Categoriza certinho que eu te mostro!', screen: 'transactions' },
-          { title: '🐦 Curiosidade', body: `${firstName}, a regra dos 50/30/20 é: 50% necessidades, 30% desejos, 20% poupança. Bora tentar?`, screen: 'budget' },
-          { title: `🐦 Opa ${firstName}`, body: 'Sabia que importar seu extrato bancário é rapidinho? Vai em Transações e tenta!', screen: 'transactions' },
-          { title: '🐦 Dica de ouro', body: `${firstName}, paga as contas assim que cair o salário. Futuro-você vai agradecer!`, screen: 'bills' },
-          { title: `🐦 ${firstName}!`, body: 'Já olhou quanto gastou por categoria esse mês? Às vezes a gente se assusta, mas é bom saber!', screen: 'reports' },
+          { title: `💡 Dica do Rookinho`, body: `${firstName}, sabia que dá pra dividir uma conta em parcelas? Tenta lá em Contas!`, screen: 'bills' },
+          { title: `💰 Ô ${firstName}`, body: 'Já criou seu orçamento do mês? Sem orçamento é igual dirigir sem GPS!', screen: 'budget' },
+          { title: '📝 Rookinho ensina', body: `${firstName}, sabia que dá pra registrar quem te deve dinheiro? Vai em Pessoas!`, screen: 'people' },
+          { title: `🎯 E aí ${firstName}`, body: 'Já cadastrou suas metas financeiras? Viagem, celular novo, reserva... Bora sonhar!', screen: 'goals' },
+          { title: '💵 Dica esperta', body: `${firstName}, cadastra suas rendas fixas e elas entram sozinhas todo mês. Magia!`, screen: 'income' },
+          { title: `📊 Fala ${firstName}`, body: 'Sabia que dá pra ver relatórios completos dos seus gastos? Confere em Relatórios!', screen: 'reports' },
+          { title: '📅 Psiu', body: `${firstName}, já experimentou o calendário financeiro? Vê tudo que entra e sai no mês!`, screen: 'calendar' },
+          { title: `🏠 Bom dia, ${firstName}!`, body: 'Registrar gastos todo dia é o segredo. 2 minutinhos e pronto. O Rookinho agradece!', screen: '/(tabs)' },
+          { title: '🔁 Rookinho avisa', body: `${firstName}, contas recorrentes tipo Netflix e internet podem ser automáticas. Já configurou?`, screen: 'recurring' },
+          { title: `💳 Ei ${firstName}`, body: 'Quanto você gastou no iFood esse mês? Categoriza certinho que eu te mostro!', screen: 'transactions' },
+          { title: '💡 Curiosidade', body: `${firstName}, a regra dos 50/30/20 é: 50% necessidades, 30% desejos, 20% poupança. Bora tentar?`, screen: 'budget' },
+          { title: `💳 Opa ${firstName}`, body: 'Sabia que importar seu extrato bancário é rapidinho? Vai em Transações e tenta!', screen: 'transactions' },
+          { title: '📄 Dica de ouro', body: `${firstName}, paga as contas assim que cair o salário. Futuro-você vai agradecer!`, screen: 'bills' },
+          { title: `📊 ${firstName}!`, body: 'Já olhou quanto gastou por categoria esse mês? Às vezes a gente se assusta, mas é bom saber!', screen: 'reports' },
         ]
         pushes.push(tips[(dayOfYear + hour) % tips.length])
       }
