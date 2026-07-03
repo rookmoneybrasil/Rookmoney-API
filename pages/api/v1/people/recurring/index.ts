@@ -60,7 +60,13 @@ export default withAuth(async (req, res, session) => {
       include: { person: { select: { id: true, name: true, color: true } }, category: { select: { id: true, name: true, icon: true, color: true } } },
     })
 
-    // Create the first PersonEntry immediately if firstDate is today or already passed
+    // Create the first PersonEntry immediately if firstDate is today or already passed.
+    // Must set recurringEntryId/recurringMonth — every balance calc (web, mobile,
+    // /people list) matches entries to templates via this FK to decide "already
+    // has an entry this month, don't add the template amount too". Without it,
+    // this entry was invisible to that check and the template's full amount got
+    // added on top of the entry itself, doubling the debt from the moment the
+    // recurring was created.
     if (shouldCreateFirst && firstDateObj) {
       await db.personEntry.create({
         data: {
@@ -72,6 +78,8 @@ export default withAuth(async (req, res, session) => {
           date:        firstDateObj,
           categoryId:  categoryId || null,
           notes:       notes || null,
+          recurringEntryId: item.id,
+          recurringMonth:   yearMonth,
         },
       })
     }
