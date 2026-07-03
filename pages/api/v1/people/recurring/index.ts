@@ -6,9 +6,14 @@ export default withAuth(async (req, res, session) => {
   const uid = session.userId
 
   if (req.method === 'GET') {
+    // Returns BOTH active and paused templates (like GET /bills/recurring
+    // does for RecurringBill) — the frontend needs paused ones to still show
+    // up with a "Pausada" badge instead of vanishing entirely. Balance/
+    // projection calculations elsewhere filter isActive themselves; this
+    // list is display-only.
     const personId = req.query.personId as string | undefined
     const items = await db.personEntryRecurring.findMany({
-      where:   { userId: uid, isActive: true, ...(personId ? { personId } : {}) },
+      where:   { userId: uid, ...(personId ? { personId } : {}) },
       include: { person: { select: { id: true, name: true, color: true } }, category: { select: { id: true, name: true, icon: true, color: true } } },
       orderBy: { createdAt: 'desc' },
     })
