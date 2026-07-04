@@ -335,6 +335,7 @@ model PersonEntryRecurring {
   isActive    Boolean         @default(true)
   notes       String?
   lastMonth   String?         // "YYYY-MM" — último mês processado
+  startMonth  String?         // "YYYY-MM" — 1º mês em que deve gerar (da 1ª data). null = começa imediatamente (legado)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 

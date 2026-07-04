@@ -45,6 +45,7 @@ export type PersonEntryRecurringMinAggregateOutputType = {
   isActive: boolean | null
   notes: string | null
   lastMonth: string | null
+  startMonth: string | null
   createdAt: Date | null
   updatedAt: Date | null
   personId: string | null
@@ -61,6 +62,7 @@ export type PersonEntryRecurringMaxAggregateOutputType = {
   isActive: boolean | null
   notes: string | null
   lastMonth: string | null
+  startMonth: string | null
   createdAt: Date | null
   updatedAt: Date | null
   personId: string | null
@@ -77,6 +79,7 @@ export type PersonEntryRecurringCountAggregateOutputType = {
   isActive: number
   notes: number
   lastMonth: number
+  startMonth: number
   createdAt: number
   updatedAt: number
   personId: number
@@ -105,6 +108,7 @@ export type PersonEntryRecurringMinAggregateInputType = {
   isActive?: true
   notes?: true
   lastMonth?: true
+  startMonth?: true
   createdAt?: true
   updatedAt?: true
   personId?: true
@@ -121,6 +125,7 @@ export type PersonEntryRecurringMaxAggregateInputType = {
   isActive?: true
   notes?: true
   lastMonth?: true
+  startMonth?: true
   createdAt?: true
   updatedAt?: true
   personId?: true
@@ -137,6 +142,7 @@ export type PersonEntryRecurringCountAggregateInputType = {
   isActive?: true
   notes?: true
   lastMonth?: true
+  startMonth?: true
   createdAt?: true
   updatedAt?: true
   personId?: true
@@ -240,6 +246,7 @@ export type PersonEntryRecurringGroupByOutputType = {
   isActive: boolean
   notes: string | null
   lastMonth: string | null
+  startMonth: string | null
   createdAt: Date
   updatedAt: Date
   personId: string
@@ -279,6 +286,7 @@ export type PersonEntryRecurringWhereInput = {
   isActive?: Prisma.BoolFilter<"PersonEntryRecurring"> | boolean
   notes?: Prisma.StringNullableFilter<"PersonEntryRecurring"> | string | null
   lastMonth?: Prisma.StringNullableFilter<"PersonEntryRecurring"> | string | null
+  startMonth?: Prisma.StringNullableFilter<"PersonEntryRecurring"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PersonEntryRecurring"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PersonEntryRecurring"> | Date | string
   personId?: Prisma.StringFilter<"PersonEntryRecurring"> | string
@@ -299,6 +307,7 @@ export type PersonEntryRecurringOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  startMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   personId?: Prisma.SortOrder
@@ -322,6 +331,7 @@ export type PersonEntryRecurringWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"PersonEntryRecurring"> | boolean
   notes?: Prisma.StringNullableFilter<"PersonEntryRecurring"> | string | null
   lastMonth?: Prisma.StringNullableFilter<"PersonEntryRecurring"> | string | null
+  startMonth?: Prisma.StringNullableFilter<"PersonEntryRecurring"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PersonEntryRecurring"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PersonEntryRecurring"> | Date | string
   personId?: Prisma.StringFilter<"PersonEntryRecurring"> | string
@@ -342,6 +352,7 @@ export type PersonEntryRecurringOrderByWithAggregationInput = {
   isActive?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  startMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   personId?: Prisma.SortOrder
@@ -366,6 +377,7 @@ export type PersonEntryRecurringScalarWhereWithAggregatesInput = {
   isActive?: Prisma.BoolWithAggregatesFilter<"PersonEntryRecurring"> | boolean
   notes?: Prisma.StringNullableWithAggregatesFilter<"PersonEntryRecurring"> | string | null
   lastMonth?: Prisma.StringNullableWithAggregatesFilter<"PersonEntryRecurring"> | string | null
+  startMonth?: Prisma.StringNullableWithAggregatesFilter<"PersonEntryRecurring"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PersonEntryRecurring"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PersonEntryRecurring"> | Date | string
   personId?: Prisma.StringWithAggregatesFilter<"PersonEntryRecurring"> | string
@@ -382,6 +394,7 @@ export type PersonEntryRecurringCreateInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   person: Prisma.PersonCreateNestedOneWithoutRecurringInput
@@ -399,6 +412,7 @@ export type PersonEntryRecurringUncheckedCreateInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -416,6 +430,7 @@ export type PersonEntryRecurringUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   person?: Prisma.PersonUpdateOneRequiredWithoutRecurringNestedInput
@@ -433,6 +448,7 @@ export type PersonEntryRecurringUncheckedUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -450,6 +466,7 @@ export type PersonEntryRecurringCreateManyInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -466,6 +483,7 @@ export type PersonEntryRecurringUpdateManyMutationInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -479,6 +497,7 @@ export type PersonEntryRecurringUncheckedUpdateManyInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -505,6 +524,7 @@ export type PersonEntryRecurringCountOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   lastMonth?: Prisma.SortOrder
+  startMonth?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   personId?: Prisma.SortOrder
@@ -526,6 +546,7 @@ export type PersonEntryRecurringMaxOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   lastMonth?: Prisma.SortOrder
+  startMonth?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   personId?: Prisma.SortOrder
@@ -542,6 +563,7 @@ export type PersonEntryRecurringMinOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   lastMonth?: Prisma.SortOrder
+  startMonth?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   personId?: Prisma.SortOrder
@@ -714,6 +736,7 @@ export type PersonEntryRecurringCreateWithoutUserInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   person: Prisma.PersonCreateNestedOneWithoutRecurringInput
@@ -730,6 +753,7 @@ export type PersonEntryRecurringUncheckedCreateWithoutUserInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -775,6 +799,7 @@ export type PersonEntryRecurringScalarWhereInput = {
   isActive?: Prisma.BoolFilter<"PersonEntryRecurring"> | boolean
   notes?: Prisma.StringNullableFilter<"PersonEntryRecurring"> | string | null
   lastMonth?: Prisma.StringNullableFilter<"PersonEntryRecurring"> | string | null
+  startMonth?: Prisma.StringNullableFilter<"PersonEntryRecurring"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PersonEntryRecurring"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PersonEntryRecurring"> | Date | string
   personId?: Prisma.StringFilter<"PersonEntryRecurring"> | string
@@ -791,6 +816,7 @@ export type PersonEntryRecurringCreateWithoutCategoryInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   person: Prisma.PersonCreateNestedOneWithoutRecurringInput
@@ -807,6 +833,7 @@ export type PersonEntryRecurringUncheckedCreateWithoutCategoryInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -849,6 +876,7 @@ export type PersonEntryRecurringCreateWithoutPersonInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPersonEntryRecurringInput
@@ -865,6 +893,7 @@ export type PersonEntryRecurringUncheckedCreateWithoutPersonInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -907,6 +936,7 @@ export type PersonEntryRecurringCreateWithoutEntriesInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   person: Prisma.PersonCreateNestedOneWithoutRecurringInput
@@ -923,6 +953,7 @@ export type PersonEntryRecurringUncheckedCreateWithoutEntriesInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -955,6 +986,7 @@ export type PersonEntryRecurringUpdateWithoutEntriesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   person?: Prisma.PersonUpdateOneRequiredWithoutRecurringNestedInput
@@ -971,6 +1003,7 @@ export type PersonEntryRecurringUncheckedUpdateWithoutEntriesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -987,6 +1020,7 @@ export type PersonEntryRecurringCreateManyUserInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -1002,6 +1036,7 @@ export type PersonEntryRecurringUpdateWithoutUserInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   person?: Prisma.PersonUpdateOneRequiredWithoutRecurringNestedInput
@@ -1018,6 +1053,7 @@ export type PersonEntryRecurringUncheckedUpdateWithoutUserInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1034,6 +1070,7 @@ export type PersonEntryRecurringUncheckedUpdateManyWithoutUserInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1049,6 +1086,7 @@ export type PersonEntryRecurringCreateManyCategoryInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   personId: string
@@ -1064,6 +1102,7 @@ export type PersonEntryRecurringUpdateWithoutCategoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   person?: Prisma.PersonUpdateOneRequiredWithoutRecurringNestedInput
@@ -1080,6 +1119,7 @@ export type PersonEntryRecurringUncheckedUpdateWithoutCategoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1096,6 +1136,7 @@ export type PersonEntryRecurringUncheckedUpdateManyWithoutCategoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   personId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1111,6 +1152,7 @@ export type PersonEntryRecurringCreateManyPersonInput = {
   isActive?: boolean
   notes?: string | null
   lastMonth?: string | null
+  startMonth?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -1126,6 +1168,7 @@ export type PersonEntryRecurringUpdateWithoutPersonInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPersonEntryRecurringNestedInput
@@ -1142,6 +1185,7 @@ export type PersonEntryRecurringUncheckedUpdateWithoutPersonInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1158,6 +1202,7 @@ export type PersonEntryRecurringUncheckedUpdateManyWithoutPersonInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1204,6 +1249,7 @@ export type PersonEntryRecurringSelect<ExtArgs extends runtime.Types.Extensions.
   isActive?: boolean
   notes?: boolean
   lastMonth?: boolean
+  startMonth?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   personId?: boolean
@@ -1225,6 +1271,7 @@ export type PersonEntryRecurringSelectCreateManyAndReturn<ExtArgs extends runtim
   isActive?: boolean
   notes?: boolean
   lastMonth?: boolean
+  startMonth?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   personId?: boolean
@@ -1244,6 +1291,7 @@ export type PersonEntryRecurringSelectUpdateManyAndReturn<ExtArgs extends runtim
   isActive?: boolean
   notes?: boolean
   lastMonth?: boolean
+  startMonth?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   personId?: boolean
@@ -1263,6 +1311,7 @@ export type PersonEntryRecurringSelectScalar = {
   isActive?: boolean
   notes?: boolean
   lastMonth?: boolean
+  startMonth?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   personId?: boolean
@@ -1270,7 +1319,7 @@ export type PersonEntryRecurringSelectScalar = {
   categoryId?: boolean
 }
 
-export type PersonEntryRecurringOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "description" | "amount" | "dayOfMonth" | "isActive" | "notes" | "lastMonth" | "createdAt" | "updatedAt" | "personId" | "userId" | "categoryId", ExtArgs["result"]["personEntryRecurring"]>
+export type PersonEntryRecurringOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "description" | "amount" | "dayOfMonth" | "isActive" | "notes" | "lastMonth" | "startMonth" | "createdAt" | "updatedAt" | "personId" | "userId" | "categoryId", ExtArgs["result"]["personEntryRecurring"]>
 export type PersonEntryRecurringInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   person?: boolean | Prisma.PersonDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1306,6 +1355,7 @@ export type $PersonEntryRecurringPayload<ExtArgs extends runtime.Types.Extension
     isActive: boolean
     notes: string | null
     lastMonth: string | null
+    startMonth: string | null
     createdAt: Date
     updatedAt: Date
     personId: string
@@ -1746,6 +1796,7 @@ export interface PersonEntryRecurringFieldRefs {
   readonly isActive: Prisma.FieldRef<"PersonEntryRecurring", 'Boolean'>
   readonly notes: Prisma.FieldRef<"PersonEntryRecurring", 'String'>
   readonly lastMonth: Prisma.FieldRef<"PersonEntryRecurring", 'String'>
+  readonly startMonth: Prisma.FieldRef<"PersonEntryRecurring", 'String'>
   readonly createdAt: Prisma.FieldRef<"PersonEntryRecurring", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PersonEntryRecurring", 'DateTime'>
   readonly personId: Prisma.FieldRef<"PersonEntryRecurring", 'String'>

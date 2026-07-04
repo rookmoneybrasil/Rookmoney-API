@@ -44,6 +44,15 @@ export default withAuth(async (req, res, session) => {
     const isInPast       = firstDateObj && firstDateObj <= now
     const shouldCreateFirst = isThisMonth && isInPast && categoryId
 
+    // startMonth = the month of the picked "1ª data" (or the current month when
+    // it's in the past / omitted). The generator and every balance/projection
+    // calc skip a template until its startMonth arrives — otherwise picking a
+    // future first date (e.g. Aug) still generated an entry for the current
+    // month (Jul) and counted it in "Você deve".
+    const startMonth = firstDateObj && firstDateObj > now
+      ? `${firstDateObj.getFullYear()}-${String(firstDateObj.getMonth() + 1).padStart(2, '0')}`
+      : yearMonth
+
     const item = await db.personEntryRecurring.create({
       data: {
         personId,
@@ -54,6 +63,7 @@ export default withAuth(async (req, res, session) => {
         dayOfMonth: parsedDay,
         notes:      notes || null,
         categoryId: categoryId || null,
+        startMonth,
         // Mark this month as processed if we're creating the first entry now
         lastMonth:  shouldCreateFirst ? yearMonth : null,
       },

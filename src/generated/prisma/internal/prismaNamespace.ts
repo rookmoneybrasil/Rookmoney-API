@@ -2472,6 +2472,7 @@ export const PersonEntryRecurringScalarFieldEnum = {
   isActive: 'isActive',
   notes: 'notes',
   lastMonth: 'lastMonth',
+  startMonth: 'startMonth',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   personId: 'personId',

@@ -14,6 +14,7 @@ export default withAuth(async (req, res, session) => {
       console.error('[people] processRecurringPersonEntries failed:', err))
 
     const now        = new Date()
+    const yearMonth  = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
     const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
     // Cutoff only for old-style recurring (installmentTotal >= 24) that haven't been migrated yet
@@ -32,7 +33,7 @@ export default withAuth(async (req, res, session) => {
       }),
       db.personEntryRecurring.findMany({
         where:  { userId: session.userId, isActive: true },
-        select: { id: true, personId: true, type: true, amount: true },
+        select: { id: true, personId: true, type: true, amount: true, startMonth: true },
       }),
     ])
 
@@ -60,6 +61,8 @@ export default withAuth(async (req, res, session) => {
       const personRecurring = recurringAll.filter(r => r.personId === p.id)
 
       for (const r of personRecurring) {
+        // Not started yet (future "1ª data") → don't count until its month.
+        if (r.startMonth && yearMonth < r.startMonth) continue
         // Scoped to the current month — otherwise a past (already-settled)
         // entry for this template would match and wrongly suppress this
         // month's not-yet-generated amount.

@@ -12,6 +12,7 @@ export async function processRecurringPersonEntries(uid: string): Promise<void> 
   const now = new Date()
   const y   = now.getFullYear()
   const m   = now.getMonth()
+  const yearMonth = `${y}-${String(m + 1).padStart(2, '0')}`
 
   // Process ALL active templates on every load — do NOT skip by lastMonth.
   // lastMonth (an "already generated this month" flag) goes stale the moment a
@@ -31,6 +32,11 @@ export async function processRecurringPersonEntries(uid: string): Promise<void> 
   if (templates.length === 0) return
 
   for (const t of templates) {
+    // Respect the template's start month: a recurring whose "1ª data" is in a
+    // future month must not generate (or be counted) until that month arrives.
+    // null startMonth = legacy template that starts immediately.
+    if (t.startMonth && yearMonth < t.startMonth) continue
+
     // Isolate each template: a failure on one must NOT abort healing the rest.
     // The GET handlers call this inside a single .catch(), so before this an
     // error on one legacy template threw out of the whole loop and left every

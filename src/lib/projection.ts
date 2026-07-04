@@ -229,6 +229,7 @@ export async function getProjection(uid: string, months: number): Promise<Projec
 
         // Recurring person entries (PersonEntryRecurring) without an entry this month yet
         for (const r of personRecurringAll) {
+          if (r.startMonth && curKey < r.startMonth) continue // not started yet (future 1ª data)
           if (r.lastMonth === curKey) continue
           const alreadyHasEntry = currentMonthPersonEntries.some(e => e.recurringEntryId === r.id)
           if (alreadyHasEntry) continue
@@ -390,6 +391,7 @@ export async function getProjection(uid: string, months: number): Promise<Projec
       // Matched via the recurringEntryId FK (not description/type), which stays
       // correct even if the template is later renamed.
       for (const r of personRecurringAll) {
+        if (r.startMonth && mKey < r.startMonth) continue // not started yet (future 1ª data)
         const alreadyHasEntry = allPersonEntries.some(e => {
           const ed = new Date(e.date)
           return e.recurringEntryId === r.id && ed >= mS && ed <= mE
