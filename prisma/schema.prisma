@@ -264,6 +264,7 @@ model Bill {
   installmentGroupId    String?
   paidTransactionId     String?
   recurringBillId       String?   // FK to RecurringBill template that generated this
+  recurringMonth        String?   // "YYYY-MM" this bill covers — with the unique below, prevents duplicate generation for the same template+month
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
@@ -273,6 +274,7 @@ model Bill {
   category        Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   recurringBill   RecurringBill? @relation(fields: [recurringBillId], references: [id], onDelete: SetNull)
 
+  @@unique([recurringBillId, recurringMonth])
   @@index([userId])
   @@index([userId, dueDate])
   @@index([installmentGroupId])
@@ -288,6 +290,7 @@ model RecurringBill {
   dayOfMonth    Int      // 1-31: day to generate bill each month (clamped to month length)
   isActive      Boolean  @default(true)
   lastAutoMonth String?  // "YYYY-MM": last month a Bill was generated
+  startMonth    String?  // "YYYY-MM": 1º mês em que deve gerar (da 1ª data). null = começa imediatamente (legado)
   notes         String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

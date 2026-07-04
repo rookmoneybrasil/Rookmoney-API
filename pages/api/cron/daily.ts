@@ -5,6 +5,7 @@ import { sendBillReminderEmail, sendMonthlySummaryEmail, sendManualProExpiryWarn
 import { cleanupExpiredLimits } from '@/lib/rate-limit'
 import { sendPush, isValidPushToken } from '@/lib/push'
 import { processRecurringPersonEntries } from '@/lib/process-recurring-people'
+import { processRecurringBills } from '@/lib/process-recurring-bills'
 
 async function migrateOldRecurring(userId: string) {
   const now = new Date()
@@ -81,43 +82,8 @@ async function processAutoRecurring(userId: string) {
 }
 
 
-async function processRecurringBills(userId: string) {
-  const now       = new Date()
-  const today     = now.getDate()
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-  const y = now.getFullYear()
-  const m = now.getMonth() // 0-based
-
-  const templates = await db.recurringBill.findMany({
-    where: { userId, isActive: true, OR: [{ lastAutoMonth: null }, { lastAutoMonth: { not: yearMonth } }] },
-  })
-  if (templates.length === 0) return
-
-  for (const t of templates) {
-    // No day-of-month gate — bills are generated at month start so users see them immediately.
-
-    const day     = Math.min(t.dayOfMonth, new Date(y, m + 1, 0).getDate())
-    const dueDate = new Date(Date.UTC(y, m, day, 12, 0, 0))
-
-    const monthStart = new Date(Date.UTC(y, m, 1))
-    const monthEnd   = new Date(Date.UTC(y, m + 1, 0, 23, 59, 59))
-
-    const exists = await db.bill.findFirst({
-      where: { userId, recurringBillId: t.id, dueDate: { gte: monthStart, lte: monthEnd } },
-    })
-    if (exists) {
-      await db.recurringBill.update({ where: { id: t.id }, data: { lastAutoMonth: yearMonth } })
-      continue
-    }
-
-    await db.$transaction([
-      db.bill.create({
-        data: { name: t.name, amount: t.amount, dueDate, isRecurring: false, userId, categoryId: t.categoryId ?? null, notes: t.notes ?? null, recurringBillId: t.id },
-      }),
-      db.recurringBill.update({ where: { id: t.id }, data: { lastAutoMonth: yearMonth } }),
-    ])
-  }
-}
+// processRecurringBills now lives in api/src/lib/process-recurring-bills.ts
+// (self-healing, shared with GET /bills and the dashboard auto-process).
 
 async function warnExpiringManualPro() {
   const now      = new Date()

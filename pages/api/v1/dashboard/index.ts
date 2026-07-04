@@ -4,6 +4,7 @@ import { ok } from '@/lib/respond'
 import { startOfMonth, endOfMonth, subMonths, addDays, subDays, format } from 'date-fns'
 import { getProjection, type ProjectionItem } from '@/lib/projection'
 import { processRecurringPersonEntries } from '@/lib/process-recurring-people'
+import { processRecurringBills } from '@/lib/process-recurring-bills'
 
 async function processAutoIncome(uid: string) {
   const now       = new Date()
@@ -42,25 +43,7 @@ async function processAutoRecurring(uid: string) {
 }
 
 // Data migrations are centralized in api/src/lib/data-migrations.ts
-
-async function processRecurringBills(uid: string) {
-  const now       = new Date()
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-  const y = now.getFullYear(), m = now.getMonth()
-  const templates = await db.recurringBill.findMany({
-    where: { userId: uid, isActive: true, OR: [{ lastAutoMonth: null }, { lastAutoMonth: { not: yearMonth } }] },
-  })
-  if (templates.length === 0) return
-  for (const t of templates) {
-    const day    = Math.min(t.dayOfMonth, new Date(y, m + 1, 0).getDate())
-    const dueDate = new Date(Date.UTC(y, m, day, 12, 0, 0))
-    const exists  = await db.bill.findFirst({ where: { userId: uid, recurringBillId: t.id, dueDate: { gte: new Date(Date.UTC(y, m, 1)), lte: new Date(Date.UTC(y, m + 1, 0, 23, 59, 59)) } } })
-    if (!exists) {
-      await db.bill.create({ data: { name: t.name, amount: t.amount, dueDate, isRecurring: false, userId: uid, categoryId: t.categoryId ?? null, notes: t.notes ?? null, recurringBillId: t.id } })
-    }
-    await db.recurringBill.update({ where: { id: t.id }, data: { lastAutoMonth: yearMonth } })
-  }
-}
+// processRecurringBills now lives in api/src/lib/process-recurring-bills.ts
 
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'GET') return res.status(405).end()

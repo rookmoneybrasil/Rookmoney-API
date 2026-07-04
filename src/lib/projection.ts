@@ -46,7 +46,7 @@ export async function getProjection(uid: string, months: number): Promise<Projec
     }),
     db.recurringBill.findMany({
       where:  { userId: uid, isActive: true },
-      select: { id: true, name: true, amount: true, dayOfMonth: true, lastAutoMonth: true },
+      select: { id: true, name: true, amount: true, dayOfMonth: true, lastAutoMonth: true, startMonth: true },
     }),
     db.recurringTransaction.findMany({
       where:  { userId: uid, isActive: true, frequency: 'MONTHLY' },
@@ -256,7 +256,7 @@ export async function getProjection(uid: string, months: number): Promise<Projec
             .map(b => b.recurringBillId)
         )
         for (const t of recurringBillTemplates) {
-          if (t.lastAutoMonth === curKey) continue
+          if (t.startMonth && curKey < t.startMonth) continue // not started yet (future 1ª data)
           if (generatedRecurringIds.has(t.id)) continue
           expenseItems.push({
             id:    `rbill-pending-${t.id}-${mKey}`,
@@ -320,6 +320,7 @@ export async function getProjection(uid: string, months: number): Promise<Projec
           .map(b => b.recurringBillId)
       )
       for (const t of recurringBillTemplates) {
+        if (t.startMonth && mKey < t.startMonth) continue // not started yet (future 1ª data)
         if (upcomingRecurringIds.has(t.id)) continue
         expenseItems.push({
           id:    `rbill-${t.id}-${mKey}`,

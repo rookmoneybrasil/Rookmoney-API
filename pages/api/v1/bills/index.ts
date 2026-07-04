@@ -5,32 +5,12 @@ import { addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { getLimits } from '@/lib/plans'
 import { checkAchievements } from '@/lib/achievement-checker'
-
-async function generateRecurringBillsThisMonth(userId: string) {
-  const now       = new Date()
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-  const y = now.getFullYear(), m = now.getMonth()
-  // Fix 2: only fetch templates that haven't run this month yet — fast-path avoids
-  // N queries when all templates are already processed.
-  const templates = await db.recurringBill.findMany({
-    where: { userId, isActive: true, OR: [{ lastAutoMonth: null }, { lastAutoMonth: { not: yearMonth } }] },
-  })
-  if (templates.length === 0) return
-  for (const t of templates) {
-    const day     = Math.min(t.dayOfMonth, new Date(y, m + 1, 0).getDate())
-    const dueDate = new Date(Date.UTC(y, m, day, 12, 0, 0))
-    const exists  = await db.bill.findFirst({ where: { userId, recurringBillId: t.id, dueDate: { gte: new Date(Date.UTC(y, m, 1)), lte: new Date(Date.UTC(y, m + 1, 0, 23, 59, 59)) } } })
-    if (!exists) {
-      await db.bill.create({ data: { name: t.name, amount: t.amount, dueDate, isRecurring: false, userId, categoryId: t.categoryId ?? null, notes: t.notes ?? null, recurringBillId: t.id } })
-    }
-    await db.recurringBill.update({ where: { id: t.id }, data: { lastAutoMonth: yearMonth } })
-  }
-}
+import { processRecurringBills } from '@/lib/process-recurring-bills'
 
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
     // Generate this month's bills from active templates before returning the list
-    await generateRecurringBillsThisMonth(session.userId).catch(() => {})
+    await processRecurringBills(session.userId).catch(() => {})
 
     const onlyPending = req.query.pending === 'true'
     const bills = await db.bill.findMany({

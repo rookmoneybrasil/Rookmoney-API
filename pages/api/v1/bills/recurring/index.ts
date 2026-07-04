@@ -31,6 +31,7 @@ async function generateForTemplate(
       categoryId:     template.categoryId ?? null,
       notes:          template.notes ?? null,
       recurringBillId: template.id,
+      recurringMonth: yearMonth,
     },
   })
 
@@ -53,13 +54,28 @@ export default withAuth(async (req, res, session) => {
 
   // ── POST — create template (optionally generate this month) ────────
   if (req.method === 'POST') {
-    const { name, amount, dayOfMonth, categoryId, notes, generateNow } = req.body
+    const { name, amount, dayOfMonth, categoryId, notes, generateNow, firstDate } = req.body
     if (!name || !amount || !dayOfMonth) return badRequest(res, 'Nome, valor e dia do mês são obrigatórios.')
     const parsedAmount = parseFloat(amount)
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
     const rawDay = parseInt(dayOfMonth)
     if (!Number.isFinite(rawDay) || rawDay < 1) return badRequest(res, 'Dia do mês inválido.')
     const day = Math.min(rawDay, 31)
+
+    const now       = new Date()
+    const yearMonth = format(now, 'yyyy-MM')
+
+    // startMonth = the month of the picked "1ª data" (or the current month when
+    // it's in the past / omitted). The generator and every KPI/projection skip a
+    // template until its startMonth arrives — mirrors PersonEntryRecurring.
+    const firstDateObj = firstDate ? new Date(firstDate) : null
+    const startMonth = firstDateObj && firstDateObj > now
+      ? format(firstDateObj, 'yyyy-MM')
+      : yearMonth
+    // Generate the first bill immediately only when the picked date is this month
+    // and already passed (or the legacy generateNow flag was sent with no date).
+    const isThisMonth = firstDateObj && firstDateObj.getFullYear() === now.getFullYear() && firstDateObj.getMonth() === now.getMonth()
+    const shouldGenerateNow = (isThisMonth && firstDateObj! <= now) || (!firstDateObj && generateNow)
 
     const template = await db.recurringBill.create({
       data: {
@@ -69,12 +85,12 @@ export default withAuth(async (req, res, session) => {
         userId:     uid,
         categoryId: categoryId ?? null,
         notes:      notes ?? null,
+        startMonth,
       },
       include: { category: { select: { id: true, name: true, icon: true, color: true } } },
     })
 
-    if (generateNow) {
-      const yearMonth = format(new Date(), 'yyyy-MM')
+    if (shouldGenerateNow) {
       await generateForTemplate(uid, template, yearMonth)
       const updated = await db.recurringBill.findUnique({ where: { id: template.id }, include: { category: { select: { id: true, name: true, icon: true, color: true } } } })
       checkAchievements(db, uid, 'create-recurring-bill').catch(() => {})

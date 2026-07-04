@@ -43,6 +43,7 @@ export type RecurringBillMinAggregateOutputType = {
   dayOfMonth: number | null
   isActive: boolean | null
   lastAutoMonth: string | null
+  startMonth: string | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -57,6 +58,7 @@ export type RecurringBillMaxAggregateOutputType = {
   dayOfMonth: number | null
   isActive: boolean | null
   lastAutoMonth: string | null
+  startMonth: string | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -71,6 +73,7 @@ export type RecurringBillCountAggregateOutputType = {
   dayOfMonth: number
   isActive: number
   lastAutoMonth: number
+  startMonth: number
   notes: number
   createdAt: number
   updatedAt: number
@@ -97,6 +100,7 @@ export type RecurringBillMinAggregateInputType = {
   dayOfMonth?: true
   isActive?: true
   lastAutoMonth?: true
+  startMonth?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -111,6 +115,7 @@ export type RecurringBillMaxAggregateInputType = {
   dayOfMonth?: true
   isActive?: true
   lastAutoMonth?: true
+  startMonth?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -125,6 +130,7 @@ export type RecurringBillCountAggregateInputType = {
   dayOfMonth?: true
   isActive?: true
   lastAutoMonth?: true
+  startMonth?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -226,6 +232,7 @@ export type RecurringBillGroupByOutputType = {
   dayOfMonth: number
   isActive: boolean
   lastAutoMonth: string | null
+  startMonth: string | null
   notes: string | null
   createdAt: Date
   updatedAt: Date
@@ -263,6 +270,7 @@ export type RecurringBillWhereInput = {
   dayOfMonth?: Prisma.IntFilter<"RecurringBill"> | number
   isActive?: Prisma.BoolFilter<"RecurringBill"> | boolean
   lastAutoMonth?: Prisma.StringNullableFilter<"RecurringBill"> | string | null
+  startMonth?: Prisma.StringNullableFilter<"RecurringBill"> | string | null
   notes?: Prisma.StringNullableFilter<"RecurringBill"> | string | null
   createdAt?: Prisma.DateTimeFilter<"RecurringBill"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecurringBill"> | Date | string
@@ -280,6 +288,7 @@ export type RecurringBillOrderByWithRelationInput = {
   dayOfMonth?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastAutoMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  startMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -300,6 +309,7 @@ export type RecurringBillWhereUniqueInput = Prisma.AtLeast<{
   dayOfMonth?: Prisma.IntFilter<"RecurringBill"> | number
   isActive?: Prisma.BoolFilter<"RecurringBill"> | boolean
   lastAutoMonth?: Prisma.StringNullableFilter<"RecurringBill"> | string | null
+  startMonth?: Prisma.StringNullableFilter<"RecurringBill"> | string | null
   notes?: Prisma.StringNullableFilter<"RecurringBill"> | string | null
   createdAt?: Prisma.DateTimeFilter<"RecurringBill"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecurringBill"> | Date | string
@@ -317,6 +327,7 @@ export type RecurringBillOrderByWithAggregationInput = {
   dayOfMonth?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastAutoMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  startMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -339,6 +350,7 @@ export type RecurringBillScalarWhereWithAggregatesInput = {
   dayOfMonth?: Prisma.IntWithAggregatesFilter<"RecurringBill"> | number
   isActive?: Prisma.BoolWithAggregatesFilter<"RecurringBill"> | boolean
   lastAutoMonth?: Prisma.StringNullableWithAggregatesFilter<"RecurringBill"> | string | null
+  startMonth?: Prisma.StringNullableWithAggregatesFilter<"RecurringBill"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"RecurringBill"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"RecurringBill"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"RecurringBill"> | Date | string
@@ -353,6 +365,7 @@ export type RecurringBillCreateInput = {
   dayOfMonth: number
   isActive?: boolean
   lastAutoMonth?: string | null
+  startMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -368,6 +381,7 @@ export type RecurringBillUncheckedCreateInput = {
   dayOfMonth: number
   isActive?: boolean
   lastAutoMonth?: string | null
+  startMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -383,6 +397,7 @@ export type RecurringBillUpdateInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -398,6 +413,7 @@ export type RecurringBillUncheckedUpdateInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -413,6 +429,7 @@ export type RecurringBillCreateManyInput = {
   dayOfMonth: number
   isActive?: boolean
   lastAutoMonth?: string | null
+  startMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -427,6 +444,7 @@ export type RecurringBillUpdateManyMutationInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -439,6 +457,7 @@ export type RecurringBillUncheckedUpdateManyInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -468,6 +487,7 @@ export type RecurringBillCountOrderByAggregateInput = {
   dayOfMonth?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastAutoMonth?: Prisma.SortOrder
+  startMonth?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -487,6 +507,7 @@ export type RecurringBillMaxOrderByAggregateInput = {
   dayOfMonth?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastAutoMonth?: Prisma.SortOrder
+  startMonth?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -501,6 +522,7 @@ export type RecurringBillMinOrderByAggregateInput = {
   dayOfMonth?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastAutoMonth?: Prisma.SortOrder
+  startMonth?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -620,6 +642,7 @@ export type RecurringBillCreateWithoutUserInput = {
   dayOfMonth: number
   isActive?: boolean
   lastAutoMonth?: string | null
+  startMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -634,6 +657,7 @@ export type RecurringBillUncheckedCreateWithoutUserInput = {
   dayOfMonth: number
   isActive?: boolean
   lastAutoMonth?: string | null
+  startMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -677,6 +701,7 @@ export type RecurringBillScalarWhereInput = {
   dayOfMonth?: Prisma.IntFilter<"RecurringBill"> | number
   isActive?: Prisma.BoolFilter<"RecurringBill"> | boolean
   lastAutoMonth?: Prisma.StringNullableFilter<"RecurringBill"> | string | null
+  startMonth?: Prisma.StringNullableFilter<"RecurringBill"> | string | null
   notes?: Prisma.StringNullableFilter<"RecurringBill"> | string | null
   createdAt?: Prisma.DateTimeFilter<"RecurringBill"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecurringBill"> | Date | string
@@ -691,6 +716,7 @@ export type RecurringBillCreateWithoutCategoryInput = {
   dayOfMonth: number
   isActive?: boolean
   lastAutoMonth?: string | null
+  startMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -705,6 +731,7 @@ export type RecurringBillUncheckedCreateWithoutCategoryInput = {
   dayOfMonth: number
   isActive?: boolean
   lastAutoMonth?: string | null
+  startMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -745,6 +772,7 @@ export type RecurringBillCreateWithoutBillsInput = {
   dayOfMonth: number
   isActive?: boolean
   lastAutoMonth?: string | null
+  startMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -759,6 +787,7 @@ export type RecurringBillUncheckedCreateWithoutBillsInput = {
   dayOfMonth: number
   isActive?: boolean
   lastAutoMonth?: string | null
+  startMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -789,6 +818,7 @@ export type RecurringBillUpdateWithoutBillsInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -803,6 +833,7 @@ export type RecurringBillUncheckedUpdateWithoutBillsInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -817,6 +848,7 @@ export type RecurringBillCreateManyUserInput = {
   dayOfMonth: number
   isActive?: boolean
   lastAutoMonth?: string | null
+  startMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -830,6 +862,7 @@ export type RecurringBillUpdateWithoutUserInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -844,6 +877,7 @@ export type RecurringBillUncheckedUpdateWithoutUserInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -858,6 +892,7 @@ export type RecurringBillUncheckedUpdateManyWithoutUserInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -871,6 +906,7 @@ export type RecurringBillCreateManyCategoryInput = {
   dayOfMonth: number
   isActive?: boolean
   lastAutoMonth?: string | null
+  startMonth?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -884,6 +920,7 @@ export type RecurringBillUpdateWithoutCategoryInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -898,6 +935,7 @@ export type RecurringBillUncheckedUpdateWithoutCategoryInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -912,6 +950,7 @@ export type RecurringBillUncheckedUpdateManyWithoutCategoryInput = {
   dayOfMonth?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastAutoMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -956,6 +995,7 @@ export type RecurringBillSelect<ExtArgs extends runtime.Types.Extensions.Interna
   dayOfMonth?: boolean
   isActive?: boolean
   lastAutoMonth?: boolean
+  startMonth?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -974,6 +1014,7 @@ export type RecurringBillSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   dayOfMonth?: boolean
   isActive?: boolean
   lastAutoMonth?: boolean
+  startMonth?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -990,6 +1031,7 @@ export type RecurringBillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   dayOfMonth?: boolean
   isActive?: boolean
   lastAutoMonth?: boolean
+  startMonth?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1006,6 +1048,7 @@ export type RecurringBillSelectScalar = {
   dayOfMonth?: boolean
   isActive?: boolean
   lastAutoMonth?: boolean
+  startMonth?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1013,7 +1056,7 @@ export type RecurringBillSelectScalar = {
   categoryId?: boolean
 }
 
-export type RecurringBillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "amount" | "dayOfMonth" | "isActive" | "lastAutoMonth" | "notes" | "createdAt" | "updatedAt" | "userId" | "categoryId", ExtArgs["result"]["recurringBill"]>
+export type RecurringBillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "amount" | "dayOfMonth" | "isActive" | "lastAutoMonth" | "startMonth" | "notes" | "createdAt" | "updatedAt" | "userId" | "categoryId", ExtArgs["result"]["recurringBill"]>
 export type RecurringBillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.RecurringBill$categoryArgs<ExtArgs>
@@ -1043,6 +1086,7 @@ export type $RecurringBillPayload<ExtArgs extends runtime.Types.Extensions.Inter
     dayOfMonth: number
     isActive: boolean
     lastAutoMonth: string | null
+    startMonth: string | null
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -1480,6 +1524,7 @@ export interface RecurringBillFieldRefs {
   readonly dayOfMonth: Prisma.FieldRef<"RecurringBill", 'Int'>
   readonly isActive: Prisma.FieldRef<"RecurringBill", 'Boolean'>
   readonly lastAutoMonth: Prisma.FieldRef<"RecurringBill", 'String'>
+  readonly startMonth: Prisma.FieldRef<"RecurringBill", 'String'>
   readonly notes: Prisma.FieldRef<"RecurringBill", 'String'>
   readonly createdAt: Prisma.FieldRef<"RecurringBill", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"RecurringBill", 'DateTime'>

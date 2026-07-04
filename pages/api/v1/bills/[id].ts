@@ -78,16 +78,12 @@ export default withAuth(async (req, res, session) => {
     }
     await db.bill.deleteMany({ where: { id, userId: session.userId } })
 
-    // Fix 3: if this bill was generated from a RecurringBill template, mark
-    // the template as "already handled this month" so it won't regenerate.
-    // Semantic: deleting = "skip this month, generate next month as usual."
-    if (bill.recurringBillId) {
-      const yearMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
-      await db.recurringBill.updateMany({
-        where: { id: bill.recurringBillId, userId: session.userId },
-        data:  { lastAutoMonth: yearMonth },
-      })
-    }
+    // NOTE: we intentionally do NOT touch the template's lastAutoMonth here.
+    // processRecurringBills no longer gates by lastAutoMonth — it checks the
+    // real Bill every load. So deleting THIS month's bill (e.g. undoing a
+    // payment from the recurring card) makes the next load recreate a pending
+    // one → the card reactivates. Deleting a PAST month's bill just removes it
+    // (the generator only ever touches the current month).
 
     return noContent(res)
   }

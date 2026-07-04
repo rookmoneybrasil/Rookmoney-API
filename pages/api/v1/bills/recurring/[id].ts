@@ -33,6 +33,20 @@ export default withAuth(async (req, res, session) => {
       },
       include: { category: { select: { id: true, name: true, icon: true, color: true } } },
     })
+
+    // Pausing a template removes THIS month's obligation (rule: "desativar para
+    // o mês atual e futuros"). Delete only the current-month UNPAID generated
+    // bill so it stops counting in every KPI — paid ones stay as history, and
+    // past-month overdue bills stay (independent "atrasos"). Reactivating lets
+    // the generator recreate a fresh pending one.
+    if (isActive === false) {
+      const now        = new Date()
+      const monthStart = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1))
+      const monthEnd   = new Date(Date.UTC(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59))
+      await db.bill.deleteMany({
+        where: { recurringBillId: id, userId: session.userId, isPaid: false, dueDate: { gte: monthStart, lte: monthEnd } },
+      })
+    }
     return ok(res, updated)
   }
 

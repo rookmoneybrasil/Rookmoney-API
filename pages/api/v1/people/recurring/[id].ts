@@ -27,6 +27,19 @@ export default withAuth(async (req, res, session) => {
         category: { select: { id: true, name: true, icon: true, color: true } },
       },
     })
+
+    // Pausing removes THIS month's obligation (rule: "desativar para o mês atual
+    // e futuros"). Delete only the current-month UNSETTLED generated entry so it
+    // stops counting everywhere — settled ones stay as history, past-month
+    // overdue entries stay (independent "atrasos"). Reactivating regenerates it.
+    if (isActive === false) {
+      const now        = new Date()
+      const monthStart = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1))
+      const monthEnd   = new Date(Date.UTC(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59))
+      await db.personEntry.deleteMany({
+        where: { recurringEntryId: id, userId: uid, isSettled: false, date: { gte: monthStart, lte: monthEnd } },
+      })
+    }
     return ok(res, updated)
   }
 
