@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { ok, created, badRequest } from '@/lib/respond'
 import { format, addMonths } from 'date-fns'
 import { checkAchievements } from '@/lib/achievement-checker'
+import { Prisma } from '@/generated/prisma/client'
 
 // Generate bill instances from a template for the current month
 async function generateForTemplate(
@@ -21,19 +22,30 @@ async function generateForTemplate(
   })
   if (existing) return existing
 
-  const bill = await db.bill.create({
-    data: {
-      name:           template.name,
-      amount:         template.amount as number,
-      dueDate,
-      isRecurring:    false,
-      userId,
-      categoryId:     template.categoryId ?? null,
-      notes:          template.notes ?? null,
-      recurringBillId: template.id,
-      recurringMonth: yearMonth,
-    },
-  })
+  let bill
+  try {
+    bill = await db.bill.create({
+      data: {
+        name:           template.name,
+        amount:         template.amount as number,
+        dueDate,
+        isRecurring:    false,
+        userId,
+        categoryId:     template.categoryId ?? null,
+        notes:          template.notes ?? null,
+        recurringBillId: template.id,
+        recurringMonth: yearMonth,
+      },
+    })
+  } catch (err) {
+    // Unique on (recurringBillId, recurringMonth) — the shared generator (running
+    // in a concurrent GET/dashboard for the same user) beat us to it. Use theirs.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      const winner = await db.bill.findFirst({ where: { userId, recurringBillId: template.id, recurringMonth: yearMonth } })
+      if (winner) return winner
+    }
+    throw err
+  }
 
   await db.recurringBill.update({ where: { id: template.id }, data: { lastAutoMonth: yearMonth } })
   return bill
