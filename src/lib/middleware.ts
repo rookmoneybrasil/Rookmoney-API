@@ -1,9 +1,32 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSessionFromRequest, type Session } from './auth'
-import { unauthorized, serverError, methodNotAllowed } from './respond'
+import { unauthorized, serverError, methodNotAllowed, forbidden } from './respond'
 import { db } from './db'
 
 type Methods = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+
+// ─── Backoffice admin identity ────────────────────────────────────────────────
+
+export type AdminRole = 'support' | 'superadmin'
+export interface BackofficeAdmin { email: string; role: AdminRole }
+export interface BackofficeRequest extends NextApiRequest { admin?: BackofficeAdmin }
+
+// Read the admin identity attached by withBackofficeAuth. Tokens issued before
+// the roles feature (and break-glass) resolve to superadmin so nobody is locked
+// out mid-session and legacy single-secret access keeps full power.
+export function getBackofficeAdmin(req: NextApiRequest): BackofficeAdmin {
+  return (req as BackofficeRequest).admin ?? { email: 'legacy', role: 'superadmin' }
+}
+
+// Guard for sensitive actions inside a handler. Returns false (and sends 403)
+// when the caller isn't a superadmin.
+export function requireSuperadmin(req: NextApiRequest, res: NextApiResponse): boolean {
+  if (getBackofficeAdmin(req).role !== 'superadmin') {
+    forbidden(res, 'Ação restrita a superadmin')
+    return false
+  }
+  return true
+}
 
 type AuthHandler = (
   req:     NextApiRequest,
@@ -96,7 +119,11 @@ export function withAdminAuth(handler: AuthHandler, methods?: Methods[]) {
 
 // ─── withBackofficeAuth — backoffice token only (no user session needed) ─────
 
-export function withBackofficeAuth(handler: (req: NextApiRequest, res: NextApiResponse) => Promise<unknown> | void, methods?: Methods[]) {
+export function withBackofficeAuth(
+  handler: (req: NextApiRequest, res: NextApiResponse) => Promise<unknown> | void,
+  methods?: Methods[],
+  opts?: { requireRole?: AdminRole },
+) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     setCORSHeaders(res, req)
     if (req.method === 'OPTIONS') return res.status(204).end()
@@ -115,6 +142,17 @@ export function withBackofficeAuth(handler: (req: NextApiRequest, res: NextApiRe
       const payload = await verifyToken(token) as Record<string, unknown> | null
       if (!payload || payload['admin'] !== true || payload['role'] !== 'backoffice') {
         return unauthorized(res, 'Token de backoffice inválido')
+      }
+
+      // Attach admin identity. Legacy/break-glass tokens have no adminRole →
+      // treated as superadmin (see getBackofficeAdmin).
+      const adminRole = (payload['adminRole'] === 'support' || payload['adminRole'] === 'superadmin')
+        ? payload['adminRole'] as AdminRole : 'superadmin'
+      const adminEmail = typeof payload['adminEmail'] === 'string' ? payload['adminEmail'] : 'legacy'
+      ;(req as BackofficeRequest).admin = { email: adminEmail, role: adminRole }
+
+      if (opts?.requireRole === 'superadmin' && adminRole !== 'superadmin') {
+        return forbidden(res, 'Ação restrita a superadmin')
       }
 
       await handler(req, res)

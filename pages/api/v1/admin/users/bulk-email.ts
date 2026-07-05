@@ -1,4 +1,4 @@
-import { withBackofficeAuth } from '@/lib/middleware'
+import { withBackofficeAuth, getBackofficeAdmin } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, badRequest } from '@/lib/respond'
 
@@ -52,6 +52,7 @@ export default withBackofficeAuth(async (req, res) => {
       action:   'send_email',
       targetId: 'bulk',
       details:  `Email em massa: "${subject}" — ${sent}/${users.length} enviados`,
+      actorEmail: getBackofficeAdmin(req).email,
     },
   })
 

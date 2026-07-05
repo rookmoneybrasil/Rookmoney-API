@@ -23,4 +23,4 @@ export default withBackofficeAuth(async (req, res) => {
     .sign(SECRET)
 
   return ok(res, { url: `${WEB_URL}/auth/impersonate?token=${token}`, user })
-}, ['POST'])
+}, ['POST'], { requireRole: 'superadmin' })

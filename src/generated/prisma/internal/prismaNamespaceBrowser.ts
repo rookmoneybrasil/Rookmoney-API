@@ -68,6 +68,7 @@ export const ModelName = {
   DataMigration: 'DataMigration',
   RateLimit: 'RateLimit',
   AdminLog: 'AdminLog',
+  AdminUser: 'AdminUser',
   AppSetting: 'AppSetting',
   UserAchievement: 'UserAchievement',
   PushLog: 'PushLog',
@@ -399,10 +400,25 @@ export const AdminLogScalarFieldEnum = {
   action: 'action',
   targetId: 'targetId',
   details: 'details',
+  actorEmail: 'actorEmail',
   createdAt: 'createdAt'
 } as const
 
 export type AdminLogScalarFieldEnum = (typeof AdminLogScalarFieldEnum)[keyof typeof AdminLogScalarFieldEnum]
+
+
+export const AdminUserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  passwordHash: 'passwordHash',
+  name: 'name',
+  role: 'role',
+  active: 'active',
+  lastLoginAt: 'lastLoginAt',
+  createdAt: 'createdAt'
+} as const
+
+export type AdminUserScalarFieldEnum = (typeof AdminUserScalarFieldEnum)[keyof typeof AdminUserScalarFieldEnum]
 
 
 export const AppSettingScalarFieldEnum = {

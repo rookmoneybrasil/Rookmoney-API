@@ -1,4 +1,4 @@
-import { withBackofficeAuth } from '@/lib/middleware'
+import { withBackofficeAuth, getBackofficeAdmin } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, badRequest, notFound } from '@/lib/respond'
 
@@ -46,7 +46,7 @@ export default withBackofficeAuth(async (req, res) => {
 
   // Log the action
   await db.adminLog.create({
-    data: { action: 'send_email', targetId: userId, details: `Email enviado para ${user.email}: "${subject}"` }
+    data: { action: 'send_email', targetId: userId, details: `Email enviado para ${user.email}: "${subject}"`, actorEmail: getBackofficeAdmin(req).email }
   })
 
   return ok(res, { message: 'Email enviado com sucesso.' })

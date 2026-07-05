@@ -430,14 +430,30 @@ model RateLimit {
 // Audit trail of backoffice admin actions.
 
 model AdminLog {
-  id        String   @id @default(cuid())
-  action    String   // "plan_change", "delete_user", "toggle_admin", "send_email"
-  targetId  String   // user id being acted upon
-  details   String   // human-readable description
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  action     String   // "plan_change", "delete_user", "toggle_admin", "send_email"
+  targetId   String   // user id being acted upon
+  details    String   // human-readable description
+  actorEmail String?  // backoffice admin who did it (null = system/automated/legacy)
+  createdAt  DateTime @default(now())
 
   @@index([targetId])
   @@index([createdAt])
+}
+
+// ─── AdminUser ────────────────────────────────────────────────────────────────
+// Backoffice operator accounts with roles. Replaces the single shared
+// ADMIN_SECRET (which stays as a break-glass fallback). 'support' = read + safe
+// actions; 'superadmin' = everything (delete account, plan change, impersonate).
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         String    @default("support") // 'support' | 'superadmin'
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
 }
 
 // ─── AppSetting ───────────────────────────────────────────────────────────────

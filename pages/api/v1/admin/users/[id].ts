@@ -1,4 +1,4 @@
-import { withBackofficeAuth } from '@/lib/middleware'
+import { withBackofficeAuth, getBackofficeAdmin, requireSuperadmin } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, notFound, badRequest } from '@/lib/respond'
 
@@ -94,6 +94,10 @@ export default withBackofficeAuth(async (req, res) => {
 
   if (req.method === 'PATCH') {
     const { plan, duration, reason, isAdmin, adminNotes } = req.body
+    const actorEmail = getBackofficeAdmin(req).email
+
+    // Plan changes and admin toggles are superadmin-only; adminNotes is fine for support.
+    if ((plan !== undefined || isAdmin !== undefined) && !requireSuperadmin(req, res)) return
 
     if (plan !== undefined) {
       if (plan === 'PRO' || plan === 'PRO_PLUS') {
@@ -136,6 +140,7 @@ export default withBackofficeAuth(async (req, res) => {
         await db.adminLog.create({ data: {
           action: 'plan_change', targetId: id,
           details: `${verb} ${durationLabel}${expiryText} — motivo: ${reason.trim()} (${user.email})`,
+          actorEmail,
         }})
       } else if (plan === 'FREE') {
         // Cancel active Stripe subscription to stop billing immediately
@@ -165,6 +170,7 @@ export default withBackofficeAuth(async (req, res) => {
         await db.adminLog.create({ data: {
           action: 'plan_change', targetId: id,
           details: `Plano alterado de ${user.plan} para FREE (${user.email})`,
+          actorEmail,
         }})
       }
     }
@@ -174,6 +180,7 @@ export default withBackofficeAuth(async (req, res) => {
       await db.adminLog.create({ data: {
         action: 'toggle_admin', targetId: id,
         details: `Admin ${isAdmin ? 'concedido' : 'removido'} de ${user.email}`,
+        actorEmail,
       }})
     }
 
@@ -189,7 +196,12 @@ export default withBackofficeAuth(async (req, res) => {
   }
 
   if (req.method === 'DELETE') {
-    await db.adminLog.create({ data: { action: 'delete_user', targetId: id, details: `Conta deletada: ${user.email} (${user.name})` } })
+    if (!requireSuperadmin(req, res)) return
+    await db.adminLog.create({ data: {
+      action: 'delete_user', targetId: id,
+      details: `Conta deletada: ${user.email} (${user.name})`,
+      actorEmail: getBackofficeAdmin(req).email,
+    }})
     await db.user.delete({ where: { id } })
     return noContent(res)
   }

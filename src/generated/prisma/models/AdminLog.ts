@@ -29,6 +29,7 @@ export type AdminLogMinAggregateOutputType = {
   action: string | null
   targetId: string | null
   details: string | null
+  actorEmail: string | null
   createdAt: Date | null
 }
 
@@ -37,6 +38,7 @@ export type AdminLogMaxAggregateOutputType = {
   action: string | null
   targetId: string | null
   details: string | null
+  actorEmail: string | null
   createdAt: Date | null
 }
 
@@ -45,6 +47,7 @@ export type AdminLogCountAggregateOutputType = {
   action: number
   targetId: number
   details: number
+  actorEmail: number
   createdAt: number
   _all: number
 }
@@ -55,6 +58,7 @@ export type AdminLogMinAggregateInputType = {
   action?: true
   targetId?: true
   details?: true
+  actorEmail?: true
   createdAt?: true
 }
 
@@ -63,6 +67,7 @@ export type AdminLogMaxAggregateInputType = {
   action?: true
   targetId?: true
   details?: true
+  actorEmail?: true
   createdAt?: true
 }
 
@@ -71,6 +76,7 @@ export type AdminLogCountAggregateInputType = {
   action?: true
   targetId?: true
   details?: true
+  actorEmail?: true
   createdAt?: true
   _all?: true
 }
@@ -152,6 +158,7 @@ export type AdminLogGroupByOutputType = {
   action: string
   targetId: string
   details: string
+  actorEmail: string | null
   createdAt: Date
   _count: AdminLogCountAggregateOutputType | null
   _min: AdminLogMinAggregateOutputType | null
@@ -181,6 +188,7 @@ export type AdminLogWhereInput = {
   action?: Prisma.StringFilter<"AdminLog"> | string
   targetId?: Prisma.StringFilter<"AdminLog"> | string
   details?: Prisma.StringFilter<"AdminLog"> | string
+  actorEmail?: Prisma.StringNullableFilter<"AdminLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AdminLog"> | Date | string
 }
 
@@ -189,6 +197,7 @@ export type AdminLogOrderByWithRelationInput = {
   action?: Prisma.SortOrder
   targetId?: Prisma.SortOrder
   details?: Prisma.SortOrder
+  actorEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -200,6 +209,7 @@ export type AdminLogWhereUniqueInput = Prisma.AtLeast<{
   action?: Prisma.StringFilter<"AdminLog"> | string
   targetId?: Prisma.StringFilter<"AdminLog"> | string
   details?: Prisma.StringFilter<"AdminLog"> | string
+  actorEmail?: Prisma.StringNullableFilter<"AdminLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AdminLog"> | Date | string
 }, "id">
 
@@ -208,6 +218,7 @@ export type AdminLogOrderByWithAggregationInput = {
   action?: Prisma.SortOrder
   targetId?: Prisma.SortOrder
   details?: Prisma.SortOrder
+  actorEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.AdminLogCountOrderByAggregateInput
   _max?: Prisma.AdminLogMaxOrderByAggregateInput
@@ -222,6 +233,7 @@ export type AdminLogScalarWhereWithAggregatesInput = {
   action?: Prisma.StringWithAggregatesFilter<"AdminLog"> | string
   targetId?: Prisma.StringWithAggregatesFilter<"AdminLog"> | string
   details?: Prisma.StringWithAggregatesFilter<"AdminLog"> | string
+  actorEmail?: Prisma.StringNullableWithAggregatesFilter<"AdminLog"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AdminLog"> | Date | string
 }
 
@@ -230,6 +242,7 @@ export type AdminLogCreateInput = {
   action: string
   targetId: string
   details: string
+  actorEmail?: string | null
   createdAt?: Date | string
 }
 
@@ -238,6 +251,7 @@ export type AdminLogUncheckedCreateInput = {
   action: string
   targetId: string
   details: string
+  actorEmail?: string | null
   createdAt?: Date | string
 }
 
@@ -246,6 +260,7 @@ export type AdminLogUpdateInput = {
   action?: Prisma.StringFieldUpdateOperationsInput | string
   targetId?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.StringFieldUpdateOperationsInput | string
+  actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -254,6 +269,7 @@ export type AdminLogUncheckedUpdateInput = {
   action?: Prisma.StringFieldUpdateOperationsInput | string
   targetId?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.StringFieldUpdateOperationsInput | string
+  actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -262,6 +278,7 @@ export type AdminLogCreateManyInput = {
   action: string
   targetId: string
   details: string
+  actorEmail?: string | null
   createdAt?: Date | string
 }
 
@@ -270,6 +287,7 @@ export type AdminLogUpdateManyMutationInput = {
   action?: Prisma.StringFieldUpdateOperationsInput | string
   targetId?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.StringFieldUpdateOperationsInput | string
+  actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -278,6 +296,7 @@ export type AdminLogUncheckedUpdateManyInput = {
   action?: Prisma.StringFieldUpdateOperationsInput | string
   targetId?: Prisma.StringFieldUpdateOperationsInput | string
   details?: Prisma.StringFieldUpdateOperationsInput | string
+  actorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -286,6 +305,7 @@ export type AdminLogCountOrderByAggregateInput = {
   action?: Prisma.SortOrder
   targetId?: Prisma.SortOrder
   details?: Prisma.SortOrder
+  actorEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -294,6 +314,7 @@ export type AdminLogMaxOrderByAggregateInput = {
   action?: Prisma.SortOrder
   targetId?: Prisma.SortOrder
   details?: Prisma.SortOrder
+  actorEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -302,6 +323,7 @@ export type AdminLogMinOrderByAggregateInput = {
   action?: Prisma.SortOrder
   targetId?: Prisma.SortOrder
   details?: Prisma.SortOrder
+  actorEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -312,6 +334,7 @@ export type AdminLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   action?: boolean
   targetId?: boolean
   details?: boolean
+  actorEmail?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["adminLog"]>
 
@@ -320,6 +343,7 @@ export type AdminLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   action?: boolean
   targetId?: boolean
   details?: boolean
+  actorEmail?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["adminLog"]>
 
@@ -328,6 +352,7 @@ export type AdminLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   action?: boolean
   targetId?: boolean
   details?: boolean
+  actorEmail?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["adminLog"]>
 
@@ -336,10 +361,11 @@ export type AdminLogSelectScalar = {
   action?: boolean
   targetId?: boolean
   details?: boolean
+  actorEmail?: boolean
   createdAt?: boolean
 }
 
-export type AdminLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "action" | "targetId" | "details" | "createdAt", ExtArgs["result"]["adminLog"]>
+export type AdminLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "action" | "targetId" | "details" | "actorEmail" | "createdAt", ExtArgs["result"]["adminLog"]>
 
 export type $AdminLogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AdminLog"
@@ -349,6 +375,7 @@ export type $AdminLogPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     action: string
     targetId: string
     details: string
+    actorEmail: string | null
     createdAt: Date
   }, ExtArgs["result"]["adminLog"]>
   composites: {}
@@ -777,6 +804,7 @@ export interface AdminLogFieldRefs {
   readonly action: Prisma.FieldRef<"AdminLog", 'String'>
   readonly targetId: Prisma.FieldRef<"AdminLog", 'String'>
   readonly details: Prisma.FieldRef<"AdminLog", 'String'>
+  readonly actorEmail: Prisma.FieldRef<"AdminLog", 'String'>
   readonly createdAt: Prisma.FieldRef<"AdminLog", 'DateTime'>
 }
     

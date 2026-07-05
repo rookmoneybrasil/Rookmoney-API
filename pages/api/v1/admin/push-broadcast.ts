@@ -1,4 +1,4 @@
-import { withBackofficeAuth } from '@/lib/middleware'
+import { withBackofficeAuth, getBackofficeAdmin } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, badRequest } from '@/lib/respond'
 import { sendPush, isValidPushToken } from '@/lib/push'
@@ -62,6 +62,7 @@ export default withBackofficeAuth(async (req, res) => {
   await db.adminLog.create({ data: {
     action: 'push_broadcast', targetId: 'broadcast',
     details: `Push broadcast enviado para ${sent} dispositivos (${audience}) — "${title.trim()}"`,
+    actorEmail: getBackofficeAdmin(req).email,
   }})
 
   return ok(res, { sent, total: messages.length })
