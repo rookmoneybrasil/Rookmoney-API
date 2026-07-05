@@ -72,6 +72,7 @@ export const ModelName = {
   UserAchievement: 'UserAchievement',
   PushLog: 'PushLog',
   ChatUsageLog: 'ChatUsageLog',
+  WhatsAppLog: 'WhatsAppLog',
   CronRun: 'CronRun',
   BlogPost: 'BlogPost',
   NewsletterSubscriber: 'NewsletterSubscriber',
@@ -450,6 +451,20 @@ export const ChatUsageLogScalarFieldEnum = {
 } as const
 
 export type ChatUsageLogScalarFieldEnum = (typeof ChatUsageLogScalarFieldEnum)[keyof typeof ChatUsageLogScalarFieldEnum]
+
+
+export const WhatsAppLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  phone: 'phone',
+  direction: 'direction',
+  status: 'status',
+  messageType: 'messageType',
+  error: 'error',
+  createdAt: 'createdAt'
+} as const
+
+export type WhatsAppLogScalarFieldEnum = (typeof WhatsAppLogScalarFieldEnum)[keyof typeof WhatsAppLogScalarFieldEnum]
 
 
 export const CronRunScalarFieldEnum = {

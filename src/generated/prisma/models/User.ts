@@ -648,6 +648,7 @@ export type UserWhereInput = {
   achievements?: Prisma.UserAchievementListRelationFilter
   pushLogs?: Prisma.PushLogListRelationFilter
   chatUsageLogs?: Prisma.ChatUsageLogListRelationFilter
+  whatsappLogs?: Prisma.WhatsAppLogListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -721,6 +722,7 @@ export type UserOrderByWithRelationInput = {
   achievements?: Prisma.UserAchievementOrderByRelationAggregateInput
   pushLogs?: Prisma.PushLogOrderByRelationAggregateInput
   chatUsageLogs?: Prisma.ChatUsageLogOrderByRelationAggregateInput
+  whatsappLogs?: Prisma.WhatsAppLogOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -797,6 +799,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   achievements?: Prisma.UserAchievementListRelationFilter
   pushLogs?: Prisma.PushLogListRelationFilter
   chatUsageLogs?: Prisma.ChatUsageLogListRelationFilter
+  whatsappLogs?: Prisma.WhatsAppLogListRelationFilter
 }, "id" | "email" | "googleId" | "appleId" | "whatsappPhone">
 
 export type UserOrderByWithAggregationInput = {
@@ -992,6 +995,7 @@ export type UserCreateInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -1065,6 +1069,7 @@ export type UserUncheckedCreateInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -1138,6 +1143,7 @@ export type UserUpdateInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -1211,6 +1217,7 @@ export type UserUncheckedUpdateInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1833,6 +1840,22 @@ export type UserUpdateOneRequiredWithoutChatUsageLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutChatUsageLogsInput, Prisma.UserUpdateWithoutChatUsageLogsInput>, Prisma.UserUncheckedUpdateWithoutChatUsageLogsInput>
 }
 
+export type UserCreateNestedOneWithoutWhatsappLogsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWhatsappLogsInput, Prisma.UserUncheckedCreateWithoutWhatsappLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWhatsappLogsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutWhatsappLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWhatsappLogsInput, Prisma.UserUncheckedCreateWithoutWhatsappLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWhatsappLogsInput
+  upsert?: Prisma.UserUpsertWithoutWhatsappLogsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWhatsappLogsInput, Prisma.UserUpdateWithoutWhatsappLogsInput>, Prisma.UserUncheckedUpdateWithoutWhatsappLogsInput>
+}
+
 export type UserCreateNestedOneWithoutPluggyItemsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutPluggyItemsInput, Prisma.UserUncheckedCreateWithoutPluggyItemsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutPluggyItemsInput
@@ -1917,6 +1940,7 @@ export type UserCreateWithoutCategoriesInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCategoriesInput = {
@@ -1989,6 +2013,7 @@ export type UserUncheckedCreateWithoutCategoriesInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCategoriesInput = {
@@ -2077,6 +2102,7 @@ export type UserUpdateWithoutCategoriesInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCategoriesInput = {
@@ -2149,6 +2175,7 @@ export type UserUncheckedUpdateWithoutCategoriesInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTransactionsInput = {
@@ -2221,6 +2248,7 @@ export type UserCreateWithoutTransactionsInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTransactionsInput = {
@@ -2293,6 +2321,7 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTransactionsInput = {
@@ -2381,6 +2410,7 @@ export type UserUpdateWithoutTransactionsInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTransactionsInput = {
@@ -2453,6 +2483,7 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRecurringTransactionsInput = {
@@ -2525,6 +2556,7 @@ export type UserCreateWithoutRecurringTransactionsInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
@@ -2597,6 +2629,7 @@ export type UserUncheckedCreateWithoutRecurringTransactionsInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRecurringTransactionsInput = {
@@ -2685,6 +2718,7 @@ export type UserUpdateWithoutRecurringTransactionsInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
@@ -2757,6 +2791,7 @@ export type UserUncheckedUpdateWithoutRecurringTransactionsInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGoalsInput = {
@@ -2829,6 +2864,7 @@ export type UserCreateWithoutGoalsInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGoalsInput = {
@@ -2901,6 +2937,7 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGoalsInput = {
@@ -2989,6 +3026,7 @@ export type UserUpdateWithoutGoalsInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGoalsInput = {
@@ -3061,6 +3099,7 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBudgetsInput = {
@@ -3133,6 +3172,7 @@ export type UserCreateWithoutBudgetsInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBudgetsInput = {
@@ -3205,6 +3245,7 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBudgetsInput = {
@@ -3293,6 +3334,7 @@ export type UserUpdateWithoutBudgetsInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBudgetsInput = {
@@ -3365,6 +3407,7 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutIncomeSourcesInput = {
@@ -3437,6 +3480,7 @@ export type UserCreateWithoutIncomeSourcesInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutIncomeSourcesInput = {
@@ -3509,6 +3553,7 @@ export type UserUncheckedCreateWithoutIncomeSourcesInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutIncomeSourcesInput = {
@@ -3597,6 +3642,7 @@ export type UserUpdateWithoutIncomeSourcesInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
@@ -3669,6 +3715,7 @@ export type UserUncheckedUpdateWithoutIncomeSourcesInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBillsInput = {
@@ -3741,6 +3788,7 @@ export type UserCreateWithoutBillsInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBillsInput = {
@@ -3813,6 +3861,7 @@ export type UserUncheckedCreateWithoutBillsInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBillsInput = {
@@ -3901,6 +3950,7 @@ export type UserUpdateWithoutBillsInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBillsInput = {
@@ -3973,6 +4023,7 @@ export type UserUncheckedUpdateWithoutBillsInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRecurringBillsInput = {
@@ -4045,6 +4096,7 @@ export type UserCreateWithoutRecurringBillsInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRecurringBillsInput = {
@@ -4117,6 +4169,7 @@ export type UserUncheckedCreateWithoutRecurringBillsInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRecurringBillsInput = {
@@ -4205,6 +4258,7 @@ export type UserUpdateWithoutRecurringBillsInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecurringBillsInput = {
@@ -4277,6 +4331,7 @@ export type UserUncheckedUpdateWithoutRecurringBillsInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPeopleInput = {
@@ -4349,6 +4404,7 @@ export type UserCreateWithoutPeopleInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPeopleInput = {
@@ -4421,6 +4477,7 @@ export type UserUncheckedCreateWithoutPeopleInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPeopleInput = {
@@ -4509,6 +4566,7 @@ export type UserUpdateWithoutPeopleInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPeopleInput = {
@@ -4581,6 +4639,7 @@ export type UserUncheckedUpdateWithoutPeopleInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPersonEntryRecurringInput = {
@@ -4653,6 +4712,7 @@ export type UserCreateWithoutPersonEntryRecurringInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
@@ -4725,6 +4785,7 @@ export type UserUncheckedCreateWithoutPersonEntryRecurringInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPersonEntryRecurringInput = {
@@ -4813,6 +4874,7 @@ export type UserUpdateWithoutPersonEntryRecurringInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
@@ -4885,6 +4947,7 @@ export type UserUncheckedUpdateWithoutPersonEntryRecurringInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPersonEntriesInput = {
@@ -4957,6 +5020,7 @@ export type UserCreateWithoutPersonEntriesInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPersonEntriesInput = {
@@ -5029,6 +5093,7 @@ export type UserUncheckedCreateWithoutPersonEntriesInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPersonEntriesInput = {
@@ -5117,6 +5182,7 @@ export type UserUpdateWithoutPersonEntriesInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPersonEntriesInput = {
@@ -5189,6 +5255,7 @@ export type UserUncheckedUpdateWithoutPersonEntriesInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFeedbacksInput = {
@@ -5261,6 +5328,7 @@ export type UserCreateWithoutFeedbacksInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFeedbacksInput = {
@@ -5333,6 +5401,7 @@ export type UserUncheckedCreateWithoutFeedbacksInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFeedbacksInput = {
@@ -5421,6 +5490,7 @@ export type UserUpdateWithoutFeedbacksInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFeedbacksInput = {
@@ -5493,6 +5563,7 @@ export type UserUncheckedUpdateWithoutFeedbacksInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAchievementsInput = {
@@ -5565,6 +5636,7 @@ export type UserCreateWithoutAchievementsInput = {
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAchievementsInput = {
@@ -5637,6 +5709,7 @@ export type UserUncheckedCreateWithoutAchievementsInput = {
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAchievementsInput = {
@@ -5725,6 +5798,7 @@ export type UserUpdateWithoutAchievementsInput = {
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAchievementsInput = {
@@ -5797,6 +5871,7 @@ export type UserUncheckedUpdateWithoutAchievementsInput = {
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPushLogsInput = {
@@ -5869,6 +5944,7 @@ export type UserCreateWithoutPushLogsInput = {
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPushLogsInput = {
@@ -5941,6 +6017,7 @@ export type UserUncheckedCreateWithoutPushLogsInput = {
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPushLogsInput = {
@@ -6029,6 +6106,7 @@ export type UserUpdateWithoutPushLogsInput = {
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPushLogsInput = {
@@ -6101,6 +6179,7 @@ export type UserUncheckedUpdateWithoutPushLogsInput = {
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutChatUsageLogsInput = {
@@ -6173,6 +6252,7 @@ export type UserCreateWithoutChatUsageLogsInput = {
   pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutChatUsageLogsInput = {
@@ -6245,6 +6325,7 @@ export type UserUncheckedCreateWithoutChatUsageLogsInput = {
   pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutChatUsageLogsInput = {
@@ -6333,6 +6414,7 @@ export type UserUpdateWithoutChatUsageLogsInput = {
   pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChatUsageLogsInput = {
@@ -6405,6 +6487,315 @@ export type UserUncheckedUpdateWithoutChatUsageLogsInput = {
   pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutWhatsappLogsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  appleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  pushToken?: string | null
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  stripeCancelAtPeriodEnd?: boolean
+  stripeCurrentPeriodEnd?: Date | string | null
+  googlePlayToken?: string | null
+  googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
+  subscriptionSource?: string | null
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
+  tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  platform?: string | null
+  lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
+  notificationsReadAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
+  chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutWhatsappLogsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  appleId?: string | null
+  hasOnboarded?: boolean
+  plan?: string
+  isAdmin?: boolean
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  whatsappPhone?: string | null
+  profileImage?: string | null
+  bio?: string | null
+  city?: string | null
+  occupation?: string | null
+  birthdate?: Date | string | null
+  notifBillReminder?: boolean
+  notifCategoryLimit?: boolean
+  notifMonthlyEmail?: boolean
+  pushToken?: string | null
+  currency?: string
+  dateFormat?: string
+  chatUsageMonth?: string | null
+  chatUsageCount?: number
+  chatFileMonth?: string | null
+  chatFileCount?: number
+  chatAnalysisMonth?: string | null
+  chatAnalysisCount?: number
+  scannerUsageMonth?: string | null
+  scannerUsageCount?: number
+  stripeCancelAtPeriodEnd?: boolean
+  stripeCurrentPeriodEnd?: Date | string | null
+  googlePlayToken?: string | null
+  googlePlayOrderId?: string | null
+  appleOriginalTransactionId?: string | null
+  subscriptionSource?: string | null
+  proPlanExpiresAt?: Date | string | null
+  proPlanReason?: string | null
+  adminNotes?: string | null
+  tokenVersion?: number
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  platform?: string | null
+  lastActiveAt?: Date | string | null
+  lastDripEmailDay?: number | null
+  lastInactivityEmail?: Date | string | null
+  lastPromoEmailDay?: number | null
+  notificationsReadAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutUserInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutUserInput
+  budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
+  incomeSources?: Prisma.IncomeSourceUncheckedCreateNestedManyWithoutUserInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedCreateNestedManyWithoutUserInput
+  people?: Prisma.PersonUncheckedCreateNestedManyWithoutUserInput
+  personEntries?: Prisma.PersonEntryUncheckedCreateNestedManyWithoutUserInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedCreateNestedManyWithoutUserInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutUserInput
+  recurringBills?: Prisma.RecurringBillUncheckedCreateNestedManyWithoutUserInput
+  pluggyItems?: Prisma.PluggyItemUncheckedCreateNestedManyWithoutUserInput
+  achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
+  pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
+  chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutWhatsappLogsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutWhatsappLogsInput, Prisma.UserUncheckedCreateWithoutWhatsappLogsInput>
+}
+
+export type UserUpsertWithoutWhatsappLogsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutWhatsappLogsInput, Prisma.UserUncheckedUpdateWithoutWhatsappLogsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWhatsappLogsInput, Prisma.UserUncheckedCreateWithoutWhatsappLogsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutWhatsappLogsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutWhatsappLogsInput, Prisma.UserUncheckedUpdateWithoutWhatsappLogsInput>
+}
+
+export type UserUpdateWithoutWhatsappLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  notificationsReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
+  chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutWhatsappLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  plan?: Prisma.StringFieldUpdateOperationsInput | string
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  whatsappPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifBillReminder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifCategoryLimit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMonthlyEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  dateFormat?: Prisma.StringFieldUpdateOperationsInput | string
+  chatUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatFileMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatFileCount?: Prisma.IntFieldUpdateOperationsInput | number
+  chatAnalysisMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chatAnalysisCount?: Prisma.IntFieldUpdateOperationsInput | number
+  scannerUsageMonth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scannerUsageCount?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stripeCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  googlePlayToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googlePlayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appleOriginalTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proPlanExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  proPlanReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  adminNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platform?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastActiveAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastDripEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastInactivityEmail?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastPromoEmailDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  notificationsReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutUserNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutUserNestedInput
+  budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
+  incomeSources?: Prisma.IncomeSourceUncheckedUpdateManyWithoutUserNestedInput
+  recurringTransactions?: Prisma.RecurringTransactionUncheckedUpdateManyWithoutUserNestedInput
+  people?: Prisma.PersonUncheckedUpdateManyWithoutUserNestedInput
+  personEntries?: Prisma.PersonEntryUncheckedUpdateManyWithoutUserNestedInput
+  personEntryRecurring?: Prisma.PersonEntryRecurringUncheckedUpdateManyWithoutUserNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutUserNestedInput
+  recurringBills?: Prisma.RecurringBillUncheckedUpdateManyWithoutUserNestedInput
+  pluggyItems?: Prisma.PluggyItemUncheckedUpdateManyWithoutUserNestedInput
+  achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+  pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
+  chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPluggyItemsInput = {
@@ -6477,6 +6868,7 @@ export type UserCreateWithoutPluggyItemsInput = {
   achievements?: Prisma.UserAchievementCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPluggyItemsInput = {
@@ -6549,6 +6941,7 @@ export type UserUncheckedCreateWithoutPluggyItemsInput = {
   achievements?: Prisma.UserAchievementUncheckedCreateNestedManyWithoutUserInput
   pushLogs?: Prisma.PushLogUncheckedCreateNestedManyWithoutUserInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedCreateNestedManyWithoutUserInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPluggyItemsInput = {
@@ -6637,6 +7030,7 @@ export type UserUpdateWithoutPluggyItemsInput = {
   achievements?: Prisma.UserAchievementUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPluggyItemsInput = {
@@ -6709,6 +7103,7 @@ export type UserUncheckedUpdateWithoutPluggyItemsInput = {
   achievements?: Prisma.UserAchievementUncheckedUpdateManyWithoutUserNestedInput
   pushLogs?: Prisma.PushLogUncheckedUpdateManyWithoutUserNestedInput
   chatUsageLogs?: Prisma.ChatUsageLogUncheckedUpdateManyWithoutUserNestedInput
+  whatsappLogs?: Prisma.WhatsAppLogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -6733,6 +7128,7 @@ export type UserCountOutputType = {
   achievements: number
   pushLogs: number
   chatUsageLogs: number
+  whatsappLogs: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -6752,6 +7148,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   achievements?: boolean | UserCountOutputTypeCountAchievementsArgs
   pushLogs?: boolean | UserCountOutputTypeCountPushLogsArgs
   chatUsageLogs?: boolean | UserCountOutputTypeCountChatUsageLogsArgs
+  whatsappLogs?: boolean | UserCountOutputTypeCountWhatsappLogsArgs
 }
 
 /**
@@ -6876,6 +7273,13 @@ export type UserCountOutputTypeCountChatUsageLogsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.ChatUsageLogWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountWhatsappLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WhatsAppLogWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -6948,6 +7352,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   achievements?: boolean | Prisma.User$achievementsArgs<ExtArgs>
   pushLogs?: boolean | Prisma.User$pushLogsArgs<ExtArgs>
   chatUsageLogs?: boolean | Prisma.User$chatUsageLogsArgs<ExtArgs>
+  whatsappLogs?: boolean | Prisma.User$whatsappLogsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -7140,6 +7545,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   achievements?: boolean | Prisma.User$achievementsArgs<ExtArgs>
   pushLogs?: boolean | Prisma.User$pushLogsArgs<ExtArgs>
   chatUsageLogs?: boolean | Prisma.User$chatUsageLogsArgs<ExtArgs>
+  whatsappLogs?: boolean | Prisma.User$whatsappLogsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -7164,6 +7570,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     achievements: Prisma.$UserAchievementPayload<ExtArgs>[]
     pushLogs: Prisma.$PushLogPayload<ExtArgs>[]
     chatUsageLogs: Prisma.$ChatUsageLogPayload<ExtArgs>[]
+    whatsappLogs: Prisma.$WhatsAppLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -7630,6 +8037,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   achievements<T extends Prisma.User$achievementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$achievementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pushLogs<T extends Prisma.User$pushLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pushLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PushLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chatUsageLogs<T extends Prisma.User$chatUsageLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$chatUsageLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatUsageLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  whatsappLogs<T extends Prisma.User$whatsappLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$whatsappLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WhatsAppLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8487,6 +8895,30 @@ export type User$chatUsageLogsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.ChatUsageLogScalarFieldEnum | Prisma.ChatUsageLogScalarFieldEnum[]
+}
+
+/**
+ * User.whatsappLogs
+ */
+export type User$whatsappLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WhatsAppLog
+   */
+  select?: Prisma.WhatsAppLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WhatsAppLog
+   */
+  omit?: Prisma.WhatsAppLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WhatsAppLogInclude<ExtArgs> | null
+  where?: Prisma.WhatsAppLogWhereInput
+  orderBy?: Prisma.WhatsAppLogOrderByWithRelationInput | Prisma.WhatsAppLogOrderByWithRelationInput[]
+  cursor?: Prisma.WhatsAppLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WhatsAppLogScalarFieldEnum | Prisma.WhatsAppLogScalarFieldEnum[]
 }
 
 /**

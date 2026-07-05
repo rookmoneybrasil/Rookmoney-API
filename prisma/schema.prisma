@@ -84,6 +84,7 @@ model User {
   achievements          UserAchievement[]
   pushLogs              PushLog[]
   chatUsageLogs         ChatUsageLog[]
+  whatsappLogs          WhatsAppLog[]
 }
 
 // ─── Category ───────────────────────────────────────────────────────
@@ -497,6 +498,26 @@ model ChatUsageLog {
   createdAt        DateTime @default(now())
 
   @@index([userId, createdAt])
+  @@index([createdAt])
+}
+
+// ─── WhatsAppLog ────────────────────────────────────────────────────────────
+// Metadata-only log of WhatsApp Rookinho traffic (never the message text, for
+// privacy) — inbound received + outbound sent/failed, so the backoffice can see
+// delivery failures, invalid/blocked numbers and volume per user.
+model WhatsAppLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  phone       String
+  direction   String   // 'inbound' | 'outbound'
+  status      String   // 'received' | 'sent' | 'failed'
+  messageType String   // 'text' | 'image' | 'audio' | 'document' | 'unsupported'
+  error       String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([phone, createdAt])
   @@index([createdAt])
 }
 

@@ -123,6 +123,11 @@ export type PushLog = Prisma.PushLogModel
  */
 export type ChatUsageLog = Prisma.ChatUsageLogModel
 /**
+ * Model WhatsAppLog
+ * 
+ */
+export type WhatsAppLog = Prisma.WhatsAppLogModel
+/**
  * Model CronRun
  * 
  */

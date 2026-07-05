@@ -84,6 +84,45 @@ function extractMessages(body: WhatsAppWebhookBody): WhatsAppMessage[] {
   return messages
 }
 
+// ── WhatsApp logging (metadata only, never the message text) ──
+
+function classifyType(type: string): string {
+  return ['text', 'image', 'document', 'audio'].includes(type) ? type : 'unsupported'
+}
+
+function normalizePhone(from: string): string {
+  return from.startsWith('+') ? from : `+${from}`
+}
+
+async function logWhatsApp(data: {
+  userId?: string | null; phone: string
+  direction: 'inbound' | 'outbound'; status: string
+  messageType: string; error?: string
+}): Promise<void> {
+  await db.whatsAppLog.create({
+    data: {
+      userId: data.userId ?? null,
+      phone: data.phone,
+      direction: data.direction,
+      status: data.status,
+      messageType: data.messageType,
+      error: data.error ?? null,
+    },
+  }).catch(e => console.error('[whatsapp-log] failed:', e))
+}
+
+// Wraps sendTextMessage + records the outbound result. Use everywhere we reply.
+async function sendAndLog(to: string, text: string, userId: string | null, messageType = 'text') {
+  const result = await sendTextMessage(to, text)
+  await logWhatsApp({
+    userId, phone: normalizePhone(to),
+    direction: 'outbound',
+    status: result.ok ? 'sent' : 'failed',
+    messageType, error: result.error,
+  })
+  return result
+}
+
 // ── Media download with timeout ──
 
 const DOWNLOAD_TIMEOUT = 30_000
@@ -177,6 +216,9 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
     },
   })
 
+  const msgType = classifyType(msg.type)
+  await logWhatsApp({ userId: user?.id ?? null, phone, direction: 'inbound', status: 'received', messageType: msgType })
+
   if (!user) {
     // Rate limit unlinked phones
     const now = Date.now()
@@ -188,22 +230,24 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
       unlinkedRateLimit.set(msg.from, { count: 1, windowStart: now })
     }
 
-    await sendTextMessage(msg.from,
+    await sendAndLog(msg.from,
       'Oi! Sou o Rookinho, assistente financeiro do Rook Money 🐦\n\n' +
       'Não encontrei uma conta vinculada a esse número.\n\n' +
       'Pra usar o Rookinho no WhatsApp:\n' +
       '1. Tenha uma conta no Rook Money (rookmoney.com)\n' +
       '2. Assine o plano PRO+\n' +
       '3. Vincule seu WhatsApp em Configurações no app\n\n' +
-      'Te espero lá! 😉'
+      'Te espero lá! 😉',
+      null,
     )
     return
   }
 
   if (!isProPlus(user.plan)) {
-    await sendTextMessage(msg.from,
+    await sendAndLog(msg.from,
       'Oi, ' + user.name + '! O Rookinho no WhatsApp é exclusivo do plano PRO+ 😎\n\n' +
-      'Faça upgrade em rookmoney.com/billing pra desbloquear!'
+      'Faça upgrade em rookmoney.com/billing pra desbloquear!',
+      user.id,
     )
     return
   }
@@ -215,8 +259,9 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
   let analysisCount = user.chatAnalysisMonth === yearMonth ? user.chatAnalysisCount : 0
 
   if (limits.chat && chatCount >= limits.chat) {
-    await sendTextMessage(msg.from,
-      `Limite de ${limits.chat} mensagens/mês atingido. Renova no próximo mês!`
+    await sendAndLog(msg.from,
+      `Limite de ${limits.chat} mensagens/mês atingido. Renova no próximo mês!`,
+      user.id,
     )
     return
   }
@@ -224,23 +269,25 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
   // Rate limit de rajada (anti-abuso) — não é limite mensal; PRO+ segue ilimitado.
   const burst = checkBurstLimit(user.id)
   if (!burst.allowed) {
-    await sendTextMessage(msg.from,
-      `Opa, muitas mensagens em pouco tempo! Espera uns ${burst.retryAfterMin} min que a gente continua. 😉`
+    await sendAndLog(msg.from,
+      `Opa, muitas mensagens em pouco tempo! Espera uns ${burst.retryAfterMin} min que a gente continua. 😉`,
+      user.id,
     )
     return
   }
 
   const hasFile = msg.type === 'image' || msg.type === 'document'
   if (hasFile && limits.chatFiles && fileCount >= limits.chatFiles) {
-    await sendTextMessage(msg.from,
-      `Limite de ${limits.chatFiles} arquivos/mês atingido.`
+    await sendAndLog(msg.from,
+      `Limite de ${limits.chatFiles} arquivos/mês atingido.`,
+      user.id,
     )
     return
   }
 
   const contentBlocks = await buildContentBlocks(msg)
   if (contentBlocks.length === 0) {
-    await sendTextMessage(msg.from, 'Esse tipo de mensagem não é suportado. Envie texto, foto ou PDF.')
+    await sendAndLog(msg.from, 'Esse tipo de mensagem não é suportado. Envie texto, foto ou PDF.', user.id, msgType)
     return
   }
 
@@ -274,11 +321,11 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
       // Store text-only version in history
       const userTextContent = msg.text?.body ?? (msg.image?.caption ?? (msg.document?.caption ?? '[arquivo]'))
       appendHistory(user.id, { role: 'user', content: userTextContent }, result.message)
-      await sendTextMessage(msg.from, result.message)
+      await sendAndLog(msg.from, result.message, user.id, msgType)
     }
   } catch (err) {
     console.error('[whatsapp] Rookinho error:', err)
-    await sendTextMessage(msg.from, 'Ops, tive um probleminha aqui. Tenta de novo daqui a pouco! 🐦')
+    await sendAndLog(msg.from, 'Ops, tive um probleminha aqui. Tenta de novo daqui a pouco! 🐦', user.id, msgType)
   }
 }
 

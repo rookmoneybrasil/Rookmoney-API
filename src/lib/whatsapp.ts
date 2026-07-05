@@ -7,28 +7,44 @@ function getConfig() {
   return { token, phoneId }
 }
 
-export async function sendTextMessage(to: string, text: string): Promise<void> {
-  const { token, phoneId } = getConfig()
+export interface SendResult { ok: boolean; error?: string }
+
+export async function sendTextMessage(to: string, text: string): Promise<SendResult> {
+  let token: string, phoneId: string
+  try {
+    ({ token, phoneId } = getConfig())
+  } catch (e) {
+    console.error('[whatsapp] sendTextMessage config error:', e)
+    return { ok: false, error: e instanceof Error ? e.message : String(e) }
+  }
 
   // WhatsApp has a 4096 char limit per text message — split if needed
   const chunks = splitMessage(text, 4000)
 
+  let failure: string | undefined
   for (const chunk of chunks) {
-    const res = await fetch(`${GRAPH_API}/${phoneId}/messages`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to,
-        type: 'text',
-        text: { body: chunk },
-      }),
-    })
-    if (!res.ok) {
-      const err = await res.text()
-      console.error('[whatsapp] sendTextMessage failed:', err)
+    try {
+      const res = await fetch(`${GRAPH_API}/${phoneId}/messages`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to,
+          type: 'text',
+          text: { body: chunk },
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.text()
+        console.error('[whatsapp] sendTextMessage failed:', err)
+        failure = `${res.status}: ${err.slice(0, 300)}`
+      }
+    } catch (e) {
+      console.error('[whatsapp] sendTextMessage network error:', e)
+      failure = e instanceof Error ? e.message : String(e)
     }
   }
+  return failure ? { ok: false, error: failure } : { ok: true }
 }
 
 export async function markAsRead(messageId: string): Promise<void> {

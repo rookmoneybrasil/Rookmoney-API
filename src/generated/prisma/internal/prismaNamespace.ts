@@ -405,6 +405,7 @@ export const ModelName = {
   UserAchievement: 'UserAchievement',
   PushLog: 'PushLog',
   ChatUsageLog: 'ChatUsageLog',
+  WhatsAppLog: 'WhatsAppLog',
   CronRun: 'CronRun',
   BlogPost: 'BlogPost',
   NewsletterSubscriber: 'NewsletterSubscriber',
@@ -424,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "transaction" | "recurringTransaction" | "goal" | "goalContribution" | "budget" | "incomeSource" | "bill" | "recurringBill" | "person" | "personEntryRecurring" | "personEntry" | "feedback" | "dataMigration" | "rateLimit" | "adminLog" | "appSetting" | "userAchievement" | "pushLog" | "chatUsageLog" | "cronRun" | "blogPost" | "newsletterSubscriber" | "pluggyItem"
+    modelProps: "user" | "category" | "transaction" | "recurringTransaction" | "goal" | "goalContribution" | "budget" | "incomeSource" | "bill" | "recurringBill" | "person" | "personEntryRecurring" | "personEntry" | "feedback" | "dataMigration" | "rateLimit" | "adminLog" | "appSetting" | "userAchievement" | "pushLog" | "chatUsageLog" | "whatsAppLog" | "cronRun" | "blogPost" | "newsletterSubscriber" | "pluggyItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1982,6 +1983,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WhatsAppLog: {
+      payload: Prisma.$WhatsAppLogPayload<ExtArgs>
+      fields: Prisma.WhatsAppLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WhatsAppLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhatsAppLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WhatsAppLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhatsAppLogPayload>
+        }
+        findFirst: {
+          args: Prisma.WhatsAppLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhatsAppLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WhatsAppLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhatsAppLogPayload>
+        }
+        findMany: {
+          args: Prisma.WhatsAppLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhatsAppLogPayload>[]
+        }
+        create: {
+          args: Prisma.WhatsAppLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhatsAppLogPayload>
+        }
+        createMany: {
+          args: Prisma.WhatsAppLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WhatsAppLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhatsAppLogPayload>[]
+        }
+        delete: {
+          args: Prisma.WhatsAppLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhatsAppLogPayload>
+        }
+        update: {
+          args: Prisma.WhatsAppLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhatsAppLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.WhatsAppLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WhatsAppLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WhatsAppLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhatsAppLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.WhatsAppLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhatsAppLogPayload>
+        }
+        aggregate: {
+          args: Prisma.WhatsAppLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWhatsAppLog>
+        }
+        groupBy: {
+          args: Prisma.WhatsAppLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WhatsAppLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WhatsAppLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WhatsAppLogCountAggregateOutputType> | number
+        }
+      }
+    }
     CronRun: {
       payload: Prisma.$CronRunPayload<ExtArgs>
       fields: Prisma.CronRunFieldRefs
@@ -2675,6 +2750,20 @@ export const ChatUsageLogScalarFieldEnum = {
 export type ChatUsageLogScalarFieldEnum = (typeof ChatUsageLogScalarFieldEnum)[keyof typeof ChatUsageLogScalarFieldEnum]
 
 
+export const WhatsAppLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  phone: 'phone',
+  direction: 'direction',
+  status: 'status',
+  messageType: 'messageType',
+  error: 'error',
+  createdAt: 'createdAt'
+} as const
+
+export type WhatsAppLogScalarFieldEnum = (typeof WhatsAppLogScalarFieldEnum)[keyof typeof WhatsAppLogScalarFieldEnum]
+
+
 export const CronRunScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -3059,6 +3148,7 @@ export type GlobalOmitConfig = {
   userAchievement?: Prisma.UserAchievementOmit
   pushLog?: Prisma.PushLogOmit
   chatUsageLog?: Prisma.ChatUsageLogOmit
+  whatsAppLog?: Prisma.WhatsAppLogOmit
   cronRun?: Prisma.CronRunOmit
   blogPost?: Prisma.BlogPostOmit
   newsletterSubscriber?: Prisma.NewsletterSubscriberOmit
