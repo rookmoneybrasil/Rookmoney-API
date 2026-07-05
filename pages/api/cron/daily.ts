@@ -6,6 +6,7 @@ import { cleanupExpiredLimits } from '@/lib/rate-limit'
 import { sendPush, isValidPushToken } from '@/lib/push'
 import { processRecurringPersonEntries } from '@/lib/process-recurring-people'
 import { processRecurringBills } from '@/lib/process-recurring-bills'
+import { trackCronRun } from '@/lib/cron-tracking'
 
 async function migrateOldRecurring(userId: string) {
   const now = new Date()
@@ -609,54 +610,62 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
-  const users = await db.user.findMany({ select: { id: true } })
-
-  let processed = 0
-  const errors: string[] = []
-
-  for (const user of users) {
-    try {
-      await migrateOldRecurring(user.id)
-      await processAutoIncome(user.id)
-      await processAutoRecurring(user.id)
-      await processRecurringPersonEntries(user.id)
-      await processRecurringBills(user.id)
-      processed++
-    } catch (err) {
-      errors.push(`${user.id}: ${String(err)}`)
-    }
-  }
-
-  await warnExpiringManualPro().catch(e => console.error('[expire-warn] fatal:', e))
-  await expireManualPro().catch(e => console.error('[expire-pro] fatal:', e))
-  await checkChurnAlert().catch(e => console.error('[churn-alert] fatal:', e))
-  await sendDripOnboardingEmails().catch(e => console.error('[drip] fatal:', e))
-  await sendInactivityEmails().catch(e => console.error('[inactivity] fatal:', e))
-  await sendAnniversaryEmails().catch(e => console.error('[anniversary] fatal:', e))
-  await sendAnnualUpsellEmails().catch(e => console.error('[upsell] fatal:', e))
-  await sendConversionEmails().catch(e => console.error('[conversion] fatal:', e))
-
-  // Send notifications — await so we can report count
-  let pushSent = 0
   try {
-    pushSent = await sendNotifications()
-  } catch (e) {
-    console.error('[notify] fatal:', e)
-  }
-  cleanupExpiredLimits().catch(e => console.error('[rate-limit] cleanup failed:', e))
+    const summary = await trackCronRun('daily', async () => {
+      const users = await db.user.findMany({ select: { id: true } })
 
-  // Blog auto-generation — every day (blog-generate checks for duplicates)
-  let blogGenerated = false
-  try {
-    const blogRes = await fetch(`${process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : 'http://localhost:3000'}/api/cron/blog-generate`, {
-      method: 'GET',
-      headers: { 'x-cron-secret': process.env.CRON_SECRET ?? '' },
+      let processed = 0
+      const errors: string[] = []
+
+      for (const user of users) {
+        try {
+          await migrateOldRecurring(user.id)
+          await processAutoIncome(user.id)
+          await processAutoRecurring(user.id)
+          await processRecurringPersonEntries(user.id)
+          await processRecurringBills(user.id)
+          processed++
+        } catch (err) {
+          errors.push(`${user.id}: ${String(err)}`)
+        }
+      }
+
+      await warnExpiringManualPro().catch(e => console.error('[expire-warn] fatal:', e))
+      await expireManualPro().catch(e => console.error('[expire-pro] fatal:', e))
+      await checkChurnAlert().catch(e => console.error('[churn-alert] fatal:', e))
+      await sendDripOnboardingEmails().catch(e => console.error('[drip] fatal:', e))
+      await sendInactivityEmails().catch(e => console.error('[inactivity] fatal:', e))
+      await sendAnniversaryEmails().catch(e => console.error('[anniversary] fatal:', e))
+      await sendAnnualUpsellEmails().catch(e => console.error('[upsell] fatal:', e))
+      await sendConversionEmails().catch(e => console.error('[conversion] fatal:', e))
+
+      // Send notifications — await so we can report count
+      let pushSent = 0
+      try {
+        pushSent = await sendNotifications()
+      } catch (e) {
+        console.error('[notify] fatal:', e)
+      }
+      cleanupExpiredLimits().catch(e => console.error('[rate-limit] cleanup failed:', e))
+
+      // Blog auto-generation — every day (blog-generate checks for duplicates)
+      let blogGenerated = false
+      try {
+        const blogRes = await fetch(`${process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : 'http://localhost:3000'}/api/cron/blog-generate`, {
+          method: 'GET',
+          headers: { 'x-cron-secret': process.env.CRON_SECRET ?? '' },
+        })
+        const blogJson = await blogRes.json()
+        blogGenerated = blogJson.ok && !blogJson.skipped
+      } catch (e) {
+        console.error('[blog-generate] fatal:', e)
+      }
+
+      return { processed, pushSent, blogGenerated, errors }
     })
-    const blogJson = await blogRes.json()
-    blogGenerated = blogJson.ok && !blogJson.skipped
-  } catch (e) {
-    console.error('[blog-generate] fatal:', e)
-  }
 
-  return res.status(200).json({ ok: true, processed, pushSent, blogGenerated, errors })
+    return res.status(200).json({ ok: true, ...summary })
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e instanceof Error ? e.message : String(e) })
+  }
 }

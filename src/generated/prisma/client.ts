@@ -147,6 +147,11 @@ export type PushLog = Prisma.PushLogModel
  */
 export type ChatUsageLog = Prisma.ChatUsageLogModel
 /**
+ * Model CronRun
+ * 
+ */
+export type CronRun = Prisma.CronRunModel
+/**
  * Model BlogPost
  * 
  */

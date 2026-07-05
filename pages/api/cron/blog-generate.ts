@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import Anthropic from '@anthropic-ai/sdk'
 import { db } from '@/lib/db'
 import { sendNewsletterEmail } from '@/lib/email'
+import { trackCronRun } from '@/lib/cron-tracking'
 
 const UNSPLASH_IMAGES: Record<string, string[]> = {
   'dicas': [
@@ -134,8 +135,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
+  try {
+    const { statusCode, body } = await trackCronRun('blog-generate', () => generateBlogPost())
+    return res.status(statusCode).json(body)
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e instanceof Error ? e.message : String(e) })
+  }
+}
+
+type BlogGenResult = { statusCode: number; body: Record<string, unknown> }
+
+async function generateBlogPost(): Promise<BlogGenResult> {
   if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(503).json({ error: 'ANTHROPIC_API_KEY not configured' })
+    return { statusCode: 503, body: { error: 'ANTHROPIC_API_KEY not configured' } }
   }
 
   // Check if already generated today — max 1 per day
@@ -144,7 +156,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     where: { source: 'ai-generated', createdAt: { gte: todayStart } },
   })
   if (todayCount >= 1) {
-    return res.status(200).json({ ok: true, skipped: true, reason: 'Already generated today' })
+    return { statusCode: 200, body: { ok: true, skipped: true, reason: 'Already generated today' } }
   }
 
   // Pick a category that hasn't been used in the last 3 days
@@ -220,7 +232,7 @@ Responda APENAS com o JSON, sem markdown code fence.`,
     const clean = text.replace(/```json\n?|\n?```/g, '').trim()
     parsed = JSON.parse(clean)
   } catch {
-    return res.status(500).json({ error: 'Failed to parse AI response', raw: text.slice(0, 500) })
+    return { statusCode: 500, body: { error: 'Failed to parse AI response', raw: text.slice(0, 500) } }
   }
 
   const slug = slugify(parsed.title) + '-' + Date.now().toString(36)
@@ -272,5 +284,5 @@ Responda APENAS com o JSON, sem markdown code fence.`,
     console.error('[newsletter] fatal:', e)
   }
 
-  return res.status(201).json({ ok: true, post: { id: post.id, slug: post.slug, title: post.title, category }, newsletterSent })
+  return { statusCode: 201, body: { ok: true, post: { id: post.id, slug: post.slug, title: post.title, category }, newsletterSent } }
 }

@@ -72,6 +72,7 @@ export const ModelName = {
   UserAchievement: 'UserAchievement',
   PushLog: 'PushLog',
   ChatUsageLog: 'ChatUsageLog',
+  CronRun: 'CronRun',
   BlogPost: 'BlogPost',
   NewsletterSubscriber: 'NewsletterSubscriber',
   PluggyItem: 'PluggyItem'
@@ -451,6 +452,20 @@ export const ChatUsageLogScalarFieldEnum = {
 export type ChatUsageLogScalarFieldEnum = (typeof ChatUsageLogScalarFieldEnum)[keyof typeof ChatUsageLogScalarFieldEnum]
 
 
+export const CronRunScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  status: 'status',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  durationMs: 'durationMs',
+  error: 'error',
+  meta: 'meta'
+} as const
+
+export type CronRunScalarFieldEnum = (typeof CronRunScalarFieldEnum)[keyof typeof CronRunScalarFieldEnum]
+
+
 export const BlogPostScalarFieldEnum = {
   id: 'id',
   slug: 'slug',
@@ -505,6 +520,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -519,4 +542,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
