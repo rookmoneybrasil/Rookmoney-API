@@ -56,13 +56,7 @@ function parseX5cCertificate(b64: string, idx: number): X509Certificate {
 }
 
 export async function verifyAppleSignedTransaction(jwsTransaction: string): Promise<AppleTransactionInfo> {
-  // TEMP DIAGNOSTIC: reveal the shape of the token that fails to verify.
-  // Safe to log (no full token / no secrets) — remove after the fix is confirmed.
-  const dots = (jwsTransaction.match(/\./g) || []).length
-  console.log(`[apple-iap] token shape: len=${jwsTransaction.length} dots=${dots} head="${jwsTransaction.slice(0, 40)}"`)
-
-  const header = decodeProtectedHeader(jwsTransaction) as { x5c?: string[]; alg?: string }
-  console.log(`[apple-iap] header: alg=${header.alg} x5cCount=${header.x5c?.length ?? 0} cert0Len=${header.x5c?.[0]?.length ?? 0}`)
+  const header = decodeProtectedHeader(jwsTransaction) as { x5c?: string[] }
 
   if (!header.x5c || header.x5c.length < 2) {
     throw new Error('Missing x5c certificate chain in JWS header')
@@ -77,7 +71,6 @@ export async function verifyAppleSignedTransaction(jwsTransaction: string): Prom
   const certs = header.x5c.map((c, idx) => parseX5cCertificate(c, idx))
 
   // Verify each cert is signed by the next in chain (leaf → intermediate → root)
-  console.log('[apple-iap] step: chain-verify')
   for (let i = 0; i < certs.length - 1; i++) {
     if (!certs[i].verify(certs[i + 1].publicKey)) {
       throw new Error(`Certificate chain broken at index ${i}`)
@@ -85,20 +78,15 @@ export async function verifyAppleSignedTransaction(jwsTransaction: string): Prom
   }
 
   // Verify the final cert is signed by Apple Root CA G3
-  console.log('[apple-iap] step: root-parse')
   const rootCert = new X509Certificate(APPLE_ROOT_CA_G3)
   const topCert = certs[certs.length - 1]
-  console.log('[apple-iap] step: root-verify')
   if (!topCert.verify(rootCert.publicKey)) {
     throw new Error('Certificate chain not rooted in Apple Root CA G3')
   }
 
   // Verify JWT signature using leaf certificate's public key
-  console.log('[apple-iap] step: import-leaf')
   const publicKey = await importX509(certs[0].toString(), 'ES256')
-  console.log('[apple-iap] step: jwt-verify')
   const { payload } = await jwtVerify(jwsTransaction, publicKey)
-  console.log('[apple-iap] step: done, verified OK')
 
   return {
     productId:             payload['productId'] as string,
