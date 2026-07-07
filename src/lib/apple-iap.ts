@@ -30,13 +30,25 @@ export interface AppleTransactionInfo {
 }
 
 export async function verifyAppleSignedTransaction(jwsTransaction: string): Promise<AppleTransactionInfo> {
-  const header = decodeProtectedHeader(jwsTransaction) as { x5c?: string[] }
+  // TEMP DIAGNOSTIC: reveal the shape of the token that fails to verify.
+  // Safe to log (no full token / no secrets) — remove after the fix is confirmed.
+  const dots = (jwsTransaction.match(/\./g) || []).length
+  console.log(`[apple-iap] token shape: len=${jwsTransaction.length} dots=${dots} head="${jwsTransaction.slice(0, 40)}"`)
+
+  const header = decodeProtectedHeader(jwsTransaction) as { x5c?: string[]; alg?: string }
+  console.log(`[apple-iap] header: alg=${header.alg} x5cCount=${header.x5c?.length ?? 0} cert0Len=${header.x5c?.[0]?.length ?? 0}`)
+
   if (!header.x5c || header.x5c.length < 2) {
     throw new Error('Missing x5c certificate chain in JWS header')
   }
 
   // Build X509Certificate from DER bytes (x5c values are base64-encoded DER)
-  const certs = header.x5c.map(c => new X509Certificate(Buffer.from(c, 'base64')))
+  let certs: X509Certificate[]
+  try {
+    certs = header.x5c.map(c => new X509Certificate(Buffer.from(c, 'base64')))
+  } catch (e) {
+    throw new Error(`x5c parse failed (count=${header.x5c.length}, cert0Len=${header.x5c[0]?.length}): ${e instanceof Error ? e.message : String(e)}`)
+  }
 
   // Verify each cert is signed by the next in chain (leaf → intermediate → root)
   for (let i = 0; i < certs.length - 1; i++) {
