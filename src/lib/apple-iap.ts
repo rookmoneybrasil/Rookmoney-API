@@ -77,6 +77,7 @@ export async function verifyAppleSignedTransaction(jwsTransaction: string): Prom
   const certs = header.x5c.map((c, idx) => parseX5cCertificate(c, idx))
 
   // Verify each cert is signed by the next in chain (leaf → intermediate → root)
+  console.log('[apple-iap] step: chain-verify')
   for (let i = 0; i < certs.length - 1; i++) {
     if (!certs[i].verify(certs[i + 1].publicKey)) {
       throw new Error(`Certificate chain broken at index ${i}`)
@@ -84,15 +85,20 @@ export async function verifyAppleSignedTransaction(jwsTransaction: string): Prom
   }
 
   // Verify the final cert is signed by Apple Root CA G3
+  console.log('[apple-iap] step: root-parse')
   const rootCert = new X509Certificate(APPLE_ROOT_CA_G3)
   const topCert = certs[certs.length - 1]
+  console.log('[apple-iap] step: root-verify')
   if (!topCert.verify(rootCert.publicKey)) {
     throw new Error('Certificate chain not rooted in Apple Root CA G3')
   }
 
   // Verify JWT signature using leaf certificate's public key
+  console.log('[apple-iap] step: import-leaf')
   const publicKey = await importX509(certs[0].toString(), 'ES256')
+  console.log('[apple-iap] step: jwt-verify')
   const { payload } = await jwtVerify(jwsTransaction, publicKey)
+  console.log('[apple-iap] step: done, verified OK')
 
   return {
     productId:             payload['productId'] as string,
