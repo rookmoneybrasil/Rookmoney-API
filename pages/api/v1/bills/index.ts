@@ -6,6 +6,7 @@ import { randomUUID } from 'crypto'
 import { getLimits } from '@/lib/plans'
 import { checkAchievements } from '@/lib/achievement-checker'
 import { processRecurringBills } from '@/lib/process-recurring-bills'
+import { countActiveBillUnits } from '@/lib/bill-usage'
 
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
@@ -38,10 +39,11 @@ export default withAuth(async (req, res, session) => {
     if (limits.bills !== null) {
       // Fix 4: atomic limit check — count + create in one transaction to prevent
       // race conditions where two concurrent requests both pass the count check.
-      const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      // Uma conta parcelada conta como UMA conta (não uma por parcela): countActiveBillUnits
+      // agrupa o parcelamento, e o que estamos criando adiciona sempre 1 unidade conceitual.
       const result = await db.$transaction(async (tx) => {
-        const count = await tx.bill.count({ where: { userId: session.userId, isPaid: false, dueDate: { gte: monthStart } } })
-        if (count + numToCreate > limits.bills!) return null
+        const count = await countActiveBillUnits(tx, session.userId)
+        if (count + 1 > limits.bills!) return null
         return 'ok'
       })
       if (!result) return planLimit(res, `Limite de ${limits.bills} contas ativas atingido. Faça upgrade para o plano PRO.`)

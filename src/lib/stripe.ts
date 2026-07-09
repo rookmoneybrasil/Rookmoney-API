@@ -119,15 +119,20 @@ export async function createCheckoutSession(
   returnUrl: string,
   plan: 'PRO' | 'PRO_PLUS' = 'PRO',
   annual = false,
+  // URL de sucesso separada da de cancelamento: após pagar, o usuário cai no
+  // dashboard (onde o WelcomeProModal dispara com ?upgraded=1&plan=...); ao
+  // cancelar, volta pra returnUrl (a página de planos). Default = returnUrl.
+  successUrl?: string,
 ): Promise<{ url: string }> {
   const priceId = getPriceId(plan, annual)
+  const success = successUrl ?? `${returnUrl}?upgraded=1`
 
   const data = await stripePost('/v1/checkout/sessions', {
     'payment_method_types[0]':         'card',
     'line_items[0][price]':            priceId,
     'line_items[0][quantity]':         '1',
     mode:                              'subscription',
-    success_url:                       `${returnUrl}?upgraded=1`,
+    success_url:                       success,
     cancel_url:                        returnUrl,
     customer_email:                    email,
     'metadata[userId]':                userId,

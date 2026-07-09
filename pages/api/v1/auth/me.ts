@@ -3,6 +3,7 @@ import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, notFound } from '@/lib/respond'
 import { getLimits } from '@/lib/plans'
+import { countActiveBillUnits } from '@/lib/bill-usage'
 
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'GET') return res.status(405).end()
@@ -15,7 +16,8 @@ export default withAuth(async (req, res, session) => {
 
   const [
     user,
-    activeBills,       // reused for both badges and usage
+    activeBills,       // badge: itens pagáveis individuais (cada parcela conta)
+    billUnits,         // uso/limite: conta parcelada = 1 conta só
     openPeople,
     budgets,
     monthExpenses,
@@ -30,6 +32,7 @@ export default withAuth(async (req, res, session) => {
       select: { id: true, name: true, email: true, plan: true, hasOnboarded: true, whatsappPhone: true, createdAt: true, profileImage: true, bio: true, city: true, occupation: true, birthdate: true },
     }),
     db.bill.count({ where: { userId: uid, isPaid: false, dueDate: { gte: monthStart } } }),
+    countActiveBillUnits(db, uid),
     db.person.count({ where: { userId: uid, entries: { some: { isSettled: false } } } }),
     db.budget.findMany({ where: { userId: uid, month }, select: { categoryId: true, amount: true } }),
     db.transaction.findMany({ where: { userId: uid, type: 'EXPENSE', date: { gte: monthStart, lte: monthEnd } }, select: { categoryId: true, amount: true } }),
@@ -54,7 +57,7 @@ export default withAuth(async (req, res, session) => {
     badges: { '/bills': activeBills, '/people': openPeople, '/budget': overBudgetCount },
     usage: {
       transactionsThisMonth: monthTransactions,
-      bills:                 activeBills,
+      bills:                 billUnits,
       goals:                 goalsCount,
       people:                peopleCount,
       customCategories:      customCategoriesCount,
