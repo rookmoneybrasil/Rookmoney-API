@@ -15,8 +15,6 @@ export default withAuth(async (req, res, session) => {
     if (!Number.isFinite(amountNum) || amountNum <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
     const goal = await db.goal.findFirst({ where: { id, userId: session.userId } })
     if (!goal) return notFound(res)
-    const newAmount   = Number(goal.currentAmount) + amountNum
-    const isCompleted = newAmount >= Number(goal.targetAmount)
 
     // Use provided categoryId, otherwise look for a savings category
     const cat = categoryId ? { id: categoryId } : await db.category.findFirst({
@@ -27,13 +25,24 @@ export default withAuth(async (req, res, session) => {
 
     if (!cat?.id) return badRequest(res, 'Categoria não encontrada. Configure uma categoria padrão.')
 
-    const [, , contrib] = await db.$transaction([
-      db.goal.update({ where: { id }, data: { currentAmount: newAmount, isCompleted, completedAt: isCompleted ? new Date() : null } }),
+    // Atomic increment (not "read currentAmount, add, write absolute value"):
+    // Postgres applies `SET x = x + $1` as a single atomic row-level operation,
+    // so two concurrent contributions (double-tap, two devices) can never lose
+    // one of them — the old code read a stale currentAmount and overwrote it
+    // with an absolute value, silently dropping whichever committed first even
+    // though both Transaction/GoalContribution rows were created.
+    const [updatedGoal, , contrib] = await db.$transaction([
+      db.goal.update({ where: { id }, data: { currentAmount: { increment: amountNum } } }),
       db.transaction.create({
         data: { amount: amountNum, type: 'EXPENSE', description: `Aporte — ${goal.name}`, date: new Date(), userId: session.userId, categoryId: cat.id },
       }),
       db.goalContribution.create({ data: { goalId: id, amount: amountNum, note: note ?? null } }),
     ])
+
+    const isCompleted = Number(updatedGoal.currentAmount) >= Number(updatedGoal.targetAmount)
+    if (isCompleted && !updatedGoal.isCompleted) {
+      await db.goal.update({ where: { id }, data: { isCompleted: true, completedAt: new Date() } })
+    }
     checkAchievements(db, session.userId, 'contribute-goal').catch(() => {})
     if (isCompleted) {
       const user = await db.user.findUnique({ where: { id: session.userId }, select: { email: true, name: true } })

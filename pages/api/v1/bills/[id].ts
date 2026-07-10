@@ -13,12 +13,26 @@ export default withAuth(async (req, res, session) => {
     const { paid = true } = req.body
 
     if (paid && !bill.isPaid) {
-      // Create EXPENSE transaction when marking as paid
+      // Resolve categoryId before mutating anything (fail cleanly if missing).
       const categoryId = bill.categoryId ?? (
         await db.category.findFirst({ where: { OR: [{ isDefault: true }, { userId: session.userId }] }, orderBy: { isDefault: 'desc' } })
       )?.id ?? null
 
       if (!categoryId) return badRequest(res, 'Nenhuma categoria encontrada. Configure uma categoria padrão.')
+
+      // Atomic claim (WHERE isPaid=false): a double-tap or race firing this
+      // endpoint twice must only ever create ONE Transaction. Postgres takes a
+      // row lock during the UPDATE, so a concurrent claim either matches 0 rows
+      // (lost the race) or blocks until the first commits, then re-checks the
+      // WHERE — never both succeed.
+      const claim = await db.bill.updateMany({
+        where: { id, userId: session.userId, isPaid: false },
+        data:  { isPaid: true, paidAt: new Date() },
+      })
+      if (claim.count === 0) {
+        const current = await db.bill.findFirst({ where: { id, userId: session.userId } })
+        return ok(res, current)
+      }
 
       const tx = await db.transaction.create({
         data: {
@@ -30,17 +44,26 @@ export default withAuth(async (req, res, session) => {
           categoryId,
         },
       })
-      const updated = await db.bill.update({ where: { id }, data: { isPaid: true, paidAt: new Date(), paidTransactionId: tx.id } })
+      const updated = await db.bill.update({ where: { id }, data: { paidTransactionId: tx.id } })
       checkAchievements(db, session.userId, 'pay-bill', { billId: id }).catch(() => {})
       return ok(res, updated)
     }
 
     if (!paid && bill.isPaid) {
-      // Undo payment — remove the transaction if it exists
+      // Same atomic claim on the way back, so a double-tap "unpay" doesn't
+      // double-delete/duplicate-clear the linked transaction.
+      const claim = await db.bill.updateMany({
+        where: { id, userId: session.userId, isPaid: true },
+        data:  { isPaid: false, paidAt: null, paidTransactionId: null },
+      })
+      if (claim.count === 0) {
+        const current = await db.bill.findFirst({ where: { id, userId: session.userId } })
+        return ok(res, current)
+      }
       if (bill.paidTransactionId) {
         await db.transaction.deleteMany({ where: { id: bill.paidTransactionId, userId: session.userId } })
       }
-      const updated = await db.bill.update({ where: { id }, data: { isPaid: false, paidAt: null, paidTransactionId: null } })
+      const updated = await db.bill.findFirst({ where: { id, userId: session.userId } })
       return ok(res, updated)
     }
 

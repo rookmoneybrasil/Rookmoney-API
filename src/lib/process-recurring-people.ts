@@ -155,6 +155,18 @@ export async function settlePersonEntry(uid: string, entryId: string) {
   )?.id ?? null
   if (!categoryId) throw new Error('Nenhuma categoria encontrada. Configure uma categoria padrão.')
 
+  // Atomic claim (WHERE isSettled=false): a double-tap or race calling this
+  // twice must only ever create ONE settlement Transaction. Postgres row-locks
+  // during the UPDATE, so a concurrent claim either matches 0 rows (lost the
+  // race) or blocks until the first commits, then re-checks the WHERE.
+  const claim = await db.personEntry.updateMany({
+    where: { id: entryId, userId: uid, isSettled: false },
+    data:  { isSettled: true, settledAt: new Date() },
+  })
+  if (claim.count === 0) {
+    return db.personEntry.findFirst({ where: { id: entryId, userId: uid } })
+  }
+
   const personName    = entry.person?.name
   const txDescription = personName ? `${entry.description} (${personName})` : entry.description
 
@@ -171,6 +183,6 @@ export async function settlePersonEntry(uid: string, entryId: string) {
 
   return db.personEntry.update({
     where: { id: entryId },
-    data:  { isSettled: true, settledAt: new Date(), settledTransactionId: tx.id },
+    data:  { settledTransactionId: tx.id },
   })
 }
