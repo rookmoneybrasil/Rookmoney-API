@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { isProPlus, getLimits } from '@/lib/plans'
 import { processRookinhoChat, checkBurstLimit } from '@/lib/rookinho-core'
 import { sendTextMessage, sendListMessage, sendButtonMessage, markAsRead, downloadMedia, transcribeAudio } from '@/lib/whatsapp'
-import { isMenuTrigger, handleMenuSelection, handleFlowStep, hasActiveFlow, clearFlow, menuGreeting, MAIN_MENU_ROWS, MENU_BUTTON_TEXT } from '@/lib/whatsapp-menu'
+import { isMenuTrigger, isAck, ackReply, handleMenuSelection, handleFlowStep, hasActiveFlow, clearFlow, menuGreeting, MAIN_MENU_ROWS, MENU_BUTTON_TEXT } from '@/lib/whatsapp-menu'
 import type { MenuResult } from '@/lib/whatsapp-menu'
 import { format } from 'date-fns'
 import type Anthropic from '@anthropic-ai/sdk'
@@ -142,8 +142,9 @@ async function sendMenuAndLog(to: string, userId: string | null, userName: strin
   return result
 }
 
-// Manda o resultado de um passo de menu/fluxo: botoes quando houver, senao texto.
-async function sendMenuResult(to: string, userId: string, result: MenuResult) {
+// Manda o resultado de um passo de menu/fluxo: menu, botoes ou texto.
+async function sendMenuResult(to: string, userId: string, result: MenuResult, userName = '') {
+  if (result.showMenu) return sendMenuAndLog(to, userId, userName)
   if (!result.reply) return
   const send = result.buttons?.length
     ? () => sendButtonMessage(to, result.reply!, result.buttons!)
@@ -297,7 +298,7 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
   if (selectionId) {
     const result = await handleMenuSelection(selectionId, user.id, user.name)
     if (result.handled) {
-      await sendMenuResult(msg.from, user.id, result)
+      await sendMenuResult(msg.from, user.id, result, user.name)
       return
     }
     // Selecao desconhecida (menu antigo?) → cai pro Rookinho normalmente
@@ -309,7 +310,7 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
     if (msg.type === 'text' && msg.text) {
       const result = await handleFlowStep(user.id, msg.text.body)
       if (result?.handled) {
-        await sendMenuResult(msg.from, user.id, result)
+        await sendMenuResult(msg.from, user.id, result, user.name)
         return
       }
     } else {
@@ -320,6 +321,12 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
   // 3) Mensagem que e SO saudacao/"menu"/"ajuda" → mostra o menu
   if (msg.type === 'text' && msg.text && isMenuTrigger(msg.text.body)) {
     await sendMenuAndLog(msg.from, user.id, user.name)
+    return
+  }
+
+  // 4) Agradecimento/"ok" seco → resposta canned, sem IA (senao gastava mensagem)
+  if (msg.type === 'text' && msg.text && isAck(msg.text.body)) {
+    await sendAndLog(msg.from, ackReply(), user.id)
     return
   }
 

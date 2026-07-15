@@ -45,6 +45,20 @@ export interface MenuResult {
   reply?: string
   /** Se presente, o webhook manda botoes em vez de texto puro (max 3). */
   buttons?: { id: string; title: string }[]
+  /** Se true, o webhook manda a lista do menu principal. */
+  showMenu?: boolean
+}
+
+/** Agradecimento/confirmacao seca ("ok", "valeu"). Responde canned, ZERO token —
+ *  sem isso um "Ok" depois de um cadastro caia na IA e gastava mensagem a toa. */
+const ACK_RE = /^\s*(ok(ay)?|okey|blz|beleza|show|joia|jóia|valeu|vlw|obrigad[oa]|brigad[oa]|thanks|tks|perfeito|isso|certo|top|massa|legal|entendi|👍|🙏|👌|😄|😁)[\s!.,]*$/i
+
+export function isAck(text: string): boolean {
+  return ACK_RE.test(text.trim())
+}
+
+export function ackReply(): string {
+  return 'Tamo junto! 🐂 Se precisar de mais alguma coisa é só chamar — manda *menu* pra ver as opções.'
 }
 
 // ── Fluxo guiado de cadastro de conta ───────────────────────────────────────
@@ -118,6 +132,18 @@ export async function handleMenuSelection(id: string, userId: string, userName: 
         handled: true,
         reply: `Tô aqui, ${userName?.split(' ')[0] ?? ''}! Manda o que precisa — pode ser texto, áudio ou print de comprovante. 😉`.replace('  ', ' '),
       }
+
+    // ── Desfecho do fluxo ────────────────────────────────────────────────────
+    case 'menu_voltar':
+      clearFlow(userId)
+      return { handled: true, showMenu: true }
+
+    case 'flow_done':
+      clearFlow(userId)
+      return {
+        handled: true,
+        reply: 'Show! Tá tudo registrado. 🐂\n\nQuando precisar, é só me chamar — manda *menu* pra ver as opções, ou fala comigo normal que eu resolvo.',
+      }
     default:
       return { handled: false }
   }
@@ -142,15 +168,23 @@ function parseCount(s: string): number | null {
   return Number.isFinite(n) && n >= 0 ? n : null
 }
 
-/** Aceita "20", "20/07" ou "20/07/2026". Só o dia => este mês (ou o próximo, se já passou). */
+const MONTHS: Record<string, number> = {
+  jan: 1, fev: 2, mar: 3, abr: 4, mai: 5, jun: 6,
+  jul: 7, ago: 8, set: 9, out: 10, nov: 11, dez: 12,
+}
+
+/** Aceita "20", "20/07", "20/07/2026" e por extenso ("20 de junho", "dia 20 de jul de 2026").
+ *  Só o dia => este mês (ou o próximo, se já passou). Mês por extenso é respeitado
+ *  literalmente (não rola pro ano seguinte) — se a pessoa disse junho, é junho. */
 function parseDueDate(s: string): string | null {
-  const t = s.trim()
+  const t = s.trim().replace(/^dia\s+/i, '').trim()
   const now = new Date()
   let d: number, m: number, y: number
 
   const full = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/)
   const dm = t.match(/^(\d{1,2})\/(\d{1,2})$/)
   const only = t.match(/^(\d{1,2})$/)
+  const named = t.match(/^(\d{1,2})\s*(?:de\s+)?([a-zà-ú]{3,})(?:\s*(?:de\s+)?(\d{2,4}))?$/i)
 
   if (full) {
     d = +full[1]; m = +full[2]; y = +full[3]
@@ -160,6 +194,10 @@ function parseDueDate(s: string): string | null {
   } else if (only) {
     d = +only[1]; m = now.getMonth() + 1; y = now.getFullYear()
     if (d < now.getDate()) { m += 1; if (m > 12) { m = 1; y += 1 } }
+  } else if (named && MONTHS[named[2].toLowerCase().slice(0, 3)]) {
+    d = +named[1]
+    m = MONTHS[named[2].toLowerCase().slice(0, 3)]
+    y = named[3] ? (+named[3] < 100 ? +named[3] + 2000 : +named[3]) : now.getFullYear()
   } else return null
 
   if (d < 1 || d > 31 || m < 1 || m > 12) return null
@@ -251,21 +289,35 @@ export async function handleFlowStep(userId: string, text: string): Promise<Menu
 
     case 'dueDate': {
       const dueDate = parseDueDate(text)
-      if (!dueDate) return { handled: true, reply: 'Não entendi a data. Manda assim: 20, 20/07 ou 20/07/2026' }
+      if (!dueDate) return { handled: true, reply: 'Não entendi a data. Manda assim: *20*, *20/07*, *20/07/2026* ou *20 de julho*.' }
       flows.delete(userId)
-      return { handled: true, reply: await createBill(userId, flow, dueDate) }
+      return finishFlow(await createBill(userId, flow, dueDate))
     }
 
     case 'dayOfMonth': {
       const d = parseCount(text)
       if (d === null || d < 1 || d > 31) return { handled: true, reply: 'Manda o dia do mês, de 1 a 31. Ex: 10' }
       flows.delete(userId)
-      return { handled: true, reply: await createBill(userId, flow, undefined, d) }
+      return finishFlow(await createBill(userId, flow, undefined, d))
     }
   }
 
   flows.delete(userId)
   return null
+}
+
+/** Desfecho: confirma o cadastro e oferece a saida em botoes. Sem isso o usuario
+ *  respondia "Ok" no vazio e a mensagem caia na IA (token gasto a toa). */
+function finishFlow(confirmation: string): MenuResult {
+  return {
+    handled: true,
+    reply: `${confirmation}\n\nQuer cadastrar mais alguma coisa?`,
+    buttons: [
+      { id: 'menu_cadastrar', title: 'Cadastrar outra' },
+      { id: 'menu_voltar', title: 'Ver menu' },
+      { id: 'flow_done', title: 'Finalizar' },
+    ],
+  }
 }
 
 async function createBill(userId: string, flow: FlowState, dueDate?: string, dayOfMonth?: number): Promise<string> {
