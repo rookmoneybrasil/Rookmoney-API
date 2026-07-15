@@ -105,6 +105,53 @@ export async function sendListMessage(
   return { ok: true }
 }
 
+// Envia botoes de resposta rapida (max 3, title <=20 chars). A resposta volta
+// no webhook como interactive.button_reply.id.
+export async function sendButtonMessage(
+  to: string,
+  body: string,
+  buttons: { id: string; title: string }[],
+): Promise<SendResult> {
+  let token: string, phoneId: string
+  try {
+    ({ token, phoneId } = getConfig())
+  } catch (e) {
+    console.error('[whatsapp] sendButtonMessage config error:', e)
+    return { ok: false, error: e instanceof Error ? e.message : String(e) }
+  }
+
+  try {
+    const res = await fetch(`${GRAPH_API}/${phoneId}/messages`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to,
+        type: 'interactive',
+        interactive: {
+          type: 'button',
+          body: { text: body.slice(0, 1024) },
+          action: {
+            buttons: buttons.slice(0, 3).map(b => ({
+              type: 'reply',
+              reply: { id: b.id.slice(0, 256), title: b.title.slice(0, 20) },
+            })),
+          },
+        },
+      }),
+    })
+    if (!res.ok) {
+      const err = await res.text()
+      console.error('[whatsapp] sendButtonMessage failed:', err)
+      return { ok: false, error: `${res.status}: ${err.slice(0, 300)}` }
+    }
+  } catch (e) {
+    console.error('[whatsapp] sendButtonMessage network error:', e)
+    return { ok: false, error: e instanceof Error ? e.message : String(e) }
+  }
+  return { ok: true }
+}
+
 export async function markAsRead(messageId: string): Promise<void> {
   const { token, phoneId } = getConfig()
   await fetch(`${GRAPH_API}/${phoneId}/messages`, {

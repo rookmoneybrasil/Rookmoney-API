@@ -1,5 +1,5 @@
 import { db } from './db'
-import { money } from './rookinho-core'
+import { money, executeTool } from './rookinho-core'
 import { processRecurringBills } from './process-recurring-bills'
 import { processRecurringPersonEntries } from './process-recurring-people'
 import { format, startOfMonth, endOfMonth } from 'date-fns'
@@ -38,14 +38,50 @@ export function menuGreeting(userName: string): string {
     `Escolhe uma opção abaixo pra ser mais rápido — ou simplesmente me manda o que precisa (pode ser áudio ou print de comprovante) que eu resolvo.`
 }
 
-/** Resultado de uma selecao de menu.
+/** Resultado de uma selecao de menu ou passo de fluxo.
  *  handled=false => o webhook deve escalar pro Rookinho (IA). */
 export interface MenuResult {
   handled: boolean
   reply?: string
-  /** Se true, o webhook deve mandar o menu de novo depois da resposta. */
-  showMenuAgain?: boolean
+  /** Se presente, o webhook manda botoes em vez de texto puro (max 3). */
+  buttons?: { id: string; title: string }[]
 }
+
+// ── Fluxo guiado de cadastro de conta ───────────────────────────────────────
+// Aqui esta o ganho de CONFIABILIDADE: em vez de a IA adivinhar se "parcela
+// fixa" e parcelada ou recorrente, o usuario escolhe no botao. Zero ambiguidade
+// e zero token. A criacao reusa executeTool() do rookinho-core — mesma logica
+// de parcelamento/recorrencia ja testada, so que sem passar pela IA.
+
+type BillType = 'avulsa' | 'parcelada' | 'fixa'
+
+interface FlowState {
+  step: 'type' | 'name' | 'amount' | 'installments' | 'alreadyPaid' | 'dueDate' | 'dayOfMonth'
+  type?: BillType
+  data: { name?: string; amount?: number; installments?: number; alreadyPaid?: number }
+  updatedAt: number
+}
+
+const flows = new Map<string, FlowState>()
+const FLOW_TTL = 15 * 60 * 1000
+
+setInterval(() => {
+  const now = Date.now()
+  for (const [k, v] of flows) if (now - v.updatedAt > FLOW_TTL) flows.delete(k)
+}, 60 * 1000)
+
+export function hasActiveFlow(userId: string): boolean {
+  const f = flows.get(userId)
+  if (!f) return false
+  if (Date.now() - f.updatedAt > FLOW_TTL) { flows.delete(userId); return false }
+  return true
+}
+
+export function clearFlow(userId: string): void {
+  flows.delete(userId)
+}
+
+const CANCEL_RE = /^\s*(cancelar|cancela|sair|parar|desisto|menu)[\s!.]*$/i
 
 export async function handleMenuSelection(id: string, userId: string, userName: string): Promise<MenuResult> {
   switch (id) {
@@ -56,17 +92,27 @@ export async function handleMenuSelection(id: string, userId: string, userName: 
     case 'menu_pessoas':
       return { handled: true, reply: await formatPessoas(userId) }
     case 'menu_cadastrar':
-      // Etapa 2 vai virar fluxo guiado (pergunta avulsa/parcelada/fixa em botoes).
-      // Por enquanto entrega pro Rookinho com a pergunta certa ja feita.
+      flows.set(userId, { step: 'type', data: {}, updatedAt: Date.now() })
       return {
         handled: true,
-        reply: 'Beleza! Me conta em uma mensagem: o **nome** da conta, o **valor** e o **vencimento**.\n\n' +
-          'E me diz qual é o caso:\n' +
+        reply: 'Boa! Que tipo de conta é essa?\n\n' +
           '• *Avulsa* — paga uma vez só\n' +
-          '• *Parcelada* — tem número de parcelas (ex: 12x)\n' +
-          '• *Fixa* — repete todo mês, sem fim\n\n' +
-          'Pode mandar tudo junto, tipo: "Sofá 10x de R$150, primeira dia 20".',
+          '• *Parcelada* — tem nº de parcelas (ex: 12x)\n' +
+          '• *Fixa* — repete todo mês, sem fim',
+        buttons: [
+          { id: 'bill_avulsa', title: 'Avulsa' },
+          { id: 'bill_parcelada', title: 'Parcelada' },
+          { id: 'bill_fixa', title: 'Fixa mensal' },
+        ],
       }
+
+    case 'bill_avulsa':
+    case 'bill_parcelada':
+    case 'bill_fixa': {
+      const type = id.replace('bill_', '') as BillType
+      flows.set(userId, { step: 'name', type, data: {}, updatedAt: Date.now() })
+      return { handled: true, reply: 'Qual o *nome* da conta? (ex: Sofá, Internet, IPVA)\n\n_Manda "cancelar" a qualquer momento pra sair._' }
+    }
     case 'menu_rookinho':
       return {
         handled: true,
@@ -74,6 +120,171 @@ export async function handleMenuSelection(id: string, userId: string, userName: 
       }
     default:
       return { handled: false }
+  }
+}
+
+// ── Parsers tolerantes (o usuario digita como quiser) ───────────────────────
+
+function parseMoney(s: string): number | null {
+  const cleaned = s.replace(/[^\d,.]/g, '').trim()
+  if (!cleaned) return null
+  // "1.234,56" -> 1234.56 | "150,50" -> 150.50 | "150.50" -> 150.50 | "150" -> 150
+  const norm = cleaned.includes(',') ? cleaned.replace(/\./g, '').replace(',', '.') : cleaned
+  const n = parseFloat(norm)
+  return Number.isFinite(n) && n > 0 ? n : null
+}
+
+function parseCount(s: string): number | null {
+  if (/^\s*(n[ãa]o|nenhuma|nenhum|zero|0)\s*$/i.test(s)) return 0
+  const m = s.match(/\d+/)
+  if (!m) return null
+  const n = parseInt(m[0], 10)
+  return Number.isFinite(n) && n >= 0 ? n : null
+}
+
+/** Aceita "20", "20/07" ou "20/07/2026". Só o dia => este mês (ou o próximo, se já passou). */
+function parseDueDate(s: string): string | null {
+  const t = s.trim()
+  const now = new Date()
+  let d: number, m: number, y: number
+
+  const full = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/)
+  const dm = t.match(/^(\d{1,2})\/(\d{1,2})$/)
+  const only = t.match(/^(\d{1,2})$/)
+
+  if (full) {
+    d = +full[1]; m = +full[2]; y = +full[3]
+    if (y < 100) y += 2000
+  } else if (dm) {
+    d = +dm[1]; m = +dm[2]; y = now.getFullYear()
+  } else if (only) {
+    d = +only[1]; m = now.getMonth() + 1; y = now.getFullYear()
+    if (d < now.getDate()) { m += 1; if (m > 12) { m = 1; y += 1 } }
+  } else return null
+
+  if (d < 1 || d > 31 || m < 1 || m > 12) return null
+  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+}
+
+// ── Passo a passo do fluxo ──────────────────────────────────────────────────
+
+/** Retorna null se o usuario NAO esta num fluxo (ai o webhook escala pro Rookinho). */
+export async function handleFlowStep(userId: string, text: string): Promise<MenuResult | null> {
+  const flow = flows.get(userId)
+  if (!flow || Date.now() - flow.updatedAt > FLOW_TTL) {
+    flows.delete(userId)
+    return null
+  }
+
+  if (CANCEL_RE.test(text)) {
+    flows.delete(userId)
+    return { handled: true, reply: 'Beleza, cancelei. Manda "menu" quando quiser as opções. 😉' }
+  }
+
+  // Ainda esperando o botao de tipo — usuario digitou em vez de tocar
+  if (flow.step === 'type') {
+    const t = text.toLowerCase()
+    const type: BillType | null = /parcel/.test(t) ? 'parcelada' : /fix|mensal|recorrent/.test(t) ? 'fixa' : /avuls|[uú]nic/.test(t) ? 'avulsa' : null
+    if (!type) {
+      return {
+        handled: true,
+        reply: 'Toca num dos botões pra eu saber o tipo:',
+        buttons: [
+          { id: 'bill_avulsa', title: 'Avulsa' },
+          { id: 'bill_parcelada', title: 'Parcelada' },
+          { id: 'bill_fixa', title: 'Fixa mensal' },
+        ],
+      }
+    }
+    flows.set(userId, { step: 'name', type, data: {}, updatedAt: Date.now() })
+    return { handled: true, reply: 'Qual o *nome* da conta? (ex: Sofá, Internet, IPVA)' }
+  }
+
+  flow.updatedAt = Date.now()
+
+  switch (flow.step) {
+    case 'name': {
+      const name = text.trim().slice(0, 60)
+      if (!name) return { handled: true, reply: 'Não peguei o nome. Como você quer chamar essa conta?' }
+      flow.data.name = name
+      flow.step = 'amount'
+      const pergunta = flow.type === 'parcelada'
+        ? 'Qual o valor de *cada parcela*? (ex: 150,00)'
+        : flow.type === 'fixa'
+          ? 'Qual o valor *por mês*? (ex: 99,90)'
+          : 'Qual o *valor*? (ex: 250,00)'
+      return { handled: true, reply: pergunta }
+    }
+
+    case 'amount': {
+      const amount = parseMoney(text)
+      if (amount === null) return { handled: true, reply: 'Não entendi o valor. Manda só o número, tipo: 150 ou 150,50' }
+      flow.data.amount = amount
+      if (flow.type === 'parcelada') {
+        flow.step = 'installments'
+        return { handled: true, reply: 'Em *quantas parcelas* no total? (ex: 12)' }
+      }
+      if (flow.type === 'fixa') {
+        flow.step = 'dayOfMonth'
+        return { handled: true, reply: 'Todo mês, em que *dia* ela vence? (ex: 10)' }
+      }
+      flow.step = 'dueDate'
+      return { handled: true, reply: 'Quando *vence*? (ex: 20, 20/07 ou 20/07/2026)' }
+    }
+
+    case 'installments': {
+      const n = parseCount(text)
+      if (n === null || n < 2) return { handled: true, reply: 'Manda o número total de parcelas (2 ou mais). Ex: 12' }
+      flow.data.installments = n
+      flow.step = 'alreadyPaid'
+      return { handled: true, reply: `Dessas ${n}, *quantas você já pagou*? (se nenhuma, manda "não")` }
+    }
+
+    case 'alreadyPaid': {
+      const n = parseCount(text)
+      const total = flow.data.installments ?? 1
+      if (n === null || n >= total) return { handled: true, reply: `Manda quantas já foram pagas (de 0 a ${total - 1}), ou "não" se nenhuma.` }
+      flow.data.alreadyPaid = n
+      flow.step = 'dueDate'
+      return { handled: true, reply: 'Quando vence a *próxima parcela*? (ex: 20, 20/07 ou 20/07/2026)' }
+    }
+
+    case 'dueDate': {
+      const dueDate = parseDueDate(text)
+      if (!dueDate) return { handled: true, reply: 'Não entendi a data. Manda assim: 20, 20/07 ou 20/07/2026' }
+      flows.delete(userId)
+      return { handled: true, reply: await createBill(userId, flow, dueDate) }
+    }
+
+    case 'dayOfMonth': {
+      const d = parseCount(text)
+      if (d === null || d < 1 || d > 31) return { handled: true, reply: 'Manda o dia do mês, de 1 a 31. Ex: 10' }
+      flows.delete(userId)
+      return { handled: true, reply: await createBill(userId, flow, undefined, d) }
+    }
+  }
+
+  flows.delete(userId)
+  return null
+}
+
+async function createBill(userId: string, flow: FlowState, dueDate?: string, dayOfMonth?: number): Promise<string> {
+  const { name, amount = 0, installments, alreadyPaid = 0 } = flow.data
+  try {
+    if (flow.type === 'fixa') {
+      return await executeTool('add_recurring_bill', { name, amount, dayOfMonth }, userId)
+    }
+    if (flow.type === 'parcelada' && installments) {
+      // executeTool('add_bill') divide `amount` pelas parcelas RESTANTES. Como aqui
+      // perguntamos o valor de CADA parcela, multiplicamos de volta pelo restante —
+      // assim a divisao la dentro devolve exatamente o valor da parcela.
+      const remaining = installments - alreadyPaid
+      return await executeTool('add_bill', { name, amount: amount * remaining, dueDate, installments, alreadyPaid }, userId)
+    }
+    return await executeTool('add_bill', { name, amount, dueDate }, userId)
+  } catch (e) {
+    console.error('[whatsapp-menu] createBill failed:', e)
+    return 'Ops, não consegui cadastrar agora. Tenta de novo ou me manda por texto que eu resolvo.'
   }
 }
 

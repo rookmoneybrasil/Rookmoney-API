@@ -2,8 +2,9 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '@/lib/db'
 import { isProPlus, getLimits } from '@/lib/plans'
 import { processRookinhoChat, checkBurstLimit } from '@/lib/rookinho-core'
-import { sendTextMessage, sendListMessage, markAsRead, downloadMedia, transcribeAudio } from '@/lib/whatsapp'
-import { isMenuTrigger, handleMenuSelection, menuGreeting, MAIN_MENU_ROWS, MENU_BUTTON_TEXT } from '@/lib/whatsapp-menu'
+import { sendTextMessage, sendListMessage, sendButtonMessage, markAsRead, downloadMedia, transcribeAudio } from '@/lib/whatsapp'
+import { isMenuTrigger, handleMenuSelection, handleFlowStep, hasActiveFlow, clearFlow, menuGreeting, MAIN_MENU_ROWS, MENU_BUTTON_TEXT } from '@/lib/whatsapp-menu'
+import type { MenuResult } from '@/lib/whatsapp-menu'
 import { format } from 'date-fns'
 import type Anthropic from '@anthropic-ai/sdk'
 
@@ -141,6 +142,22 @@ async function sendMenuAndLog(to: string, userId: string | null, userName: strin
   return result
 }
 
+// Manda o resultado de um passo de menu/fluxo: botoes quando houver, senao texto.
+async function sendMenuResult(to: string, userId: string, result: MenuResult) {
+  if (!result.reply) return
+  const send = result.buttons?.length
+    ? () => sendButtonMessage(to, result.reply!, result.buttons!)
+    : () => sendTextMessage(to, result.reply!)
+  const res = await send()
+  await logWhatsApp({
+    userId, phone: normalizePhone(to),
+    direction: 'outbound',
+    status: res.ok ? 'sent' : 'failed',
+    messageType: 'interactive', error: res.error,
+  })
+  return res
+}
+
 // ── Media download with timeout ──
 
 const DOWNLOAD_TIMEOUT = 30_000
@@ -275,18 +292,32 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
   // entao nao custa token nem consome mensagem do usuario. Texto livre, audio e
   // print NAO passam por aqui — vao direto pro Rookinho, que e o diferencial.
 
-  // 1) Usuario tocou numa opcao do menu
+  // 1) Usuario tocou numa opcao do menu (ou num botao do fluxo guiado)
   const selectionId = msg.interactive?.list_reply?.id ?? msg.interactive?.button_reply?.id
   if (selectionId) {
     const result = await handleMenuSelection(selectionId, user.id, user.name)
-    if (result.handled && result.reply) {
-      await sendAndLog(msg.from, result.reply, user.id, 'interactive')
+    if (result.handled) {
+      await sendMenuResult(msg.from, user.id, result)
       return
     }
     // Selecao desconhecida (menu antigo?) → cai pro Rookinho normalmente
   }
 
-  // 2) Mensagem que e SO saudacao/"menu"/"ajuda" → mostra o menu
+  // 2) Fluxo guiado em andamento → o texto e resposta de um passo.
+  //    Se veio anexo/audio no meio, abandona o fluxo e deixa a IA cuidar.
+  if (hasActiveFlow(user.id)) {
+    if (msg.type === 'text' && msg.text) {
+      const result = await handleFlowStep(user.id, msg.text.body)
+      if (result?.handled) {
+        await sendMenuResult(msg.from, user.id, result)
+        return
+      }
+    } else {
+      clearFlow(user.id)
+    }
+  }
+
+  // 3) Mensagem que e SO saudacao/"menu"/"ajuda" → mostra o menu
   if (msg.type === 'text' && msg.text && isMenuTrigger(msg.text.body)) {
     await sendMenuAndLog(msg.from, user.id, user.name)
     return
