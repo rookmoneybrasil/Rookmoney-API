@@ -442,6 +442,19 @@ export function fmtDate(d: Date): string {
   return format(d, 'dd/MM/yyyy', { locale: ptBR })
 }
 
+/** Converte "YYYY-MM-DD" pra Date ao MEIO-DIA UTC.
+ *
+ *  NAO use parseISO() pra esses campos: ele devolve meia-noite LOCAL, que no
+ *  Railway (UTC) vira meia-noite UTC — e o usuario no Brasil (UTC-3) enxerga o
+ *  DIA ANTERIOR ("vence dia 20" aparecia como 19/07). Meio-dia UTC cai no mesmo
+ *  dia do calendario de UTC-11 a UTC+11. Mesma convencao dos endpoints REST
+ *  (Date.UTC(y, m-1, d, 12, 0, 0)) — ver CLAUDE.md. */
+function parseDateUTC(s: string): Date {
+  const [y, m, d] = s.split('-').map(Number)
+  if (!y || !m || !d) return parseISO(s) // string com hora: deixa o parseISO resolver
+  return new Date(Date.UTC(y, m - 1, d, 12, 0, 0))
+}
+
 /** Paga uma conta pelo ID: marca paga E cria a Transaction de despesa, com o
  *  paidTransactionId ligando as duas — exatamente o que o endpoint REST
  *  (POST /bills/:id?action=pay) faz.
@@ -691,14 +704,14 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       const { amount, type, description, date, categoryName } = input as { amount: number; type: string; description: string; date: string; categoryName?: string }
       const categoryId = await findCategory(userId, categoryName)
       if (!categoryId) return 'Erro: nenhuma categoria disponível.'
-      await db.transaction.create({ data: { amount: Math.abs(amount), type: type as 'INCOME' | 'EXPENSE', description: description ?? '', date: parseISO(date), userId, categoryId } })
+      await db.transaction.create({ data: { amount: Math.abs(amount), type: type as 'INCOME' | 'EXPENSE', description: description ?? '', date: parseDateUTC(date), userId, categoryId } })
       checkAchievements(db, userId, 'create-transaction').catch(() => {})
       return `Transação "${description}" de ${money(Math.abs(amount))} registrada com sucesso.`
     }
 
     if (name === 'add_goal') {
       const { name: gName, targetAmount, currentAmount = 0, deadline, description } = input as { name: string; targetAmount: number; currentAmount?: number; deadline?: string; description?: string }
-      await db.goal.create({ data: { name: gName, targetAmount, currentAmount: currentAmount ?? 0, deadline: deadline ? parseISO(deadline) : null, description: description ?? null, userId } })
+      await db.goal.create({ data: { name: gName, targetAmount, currentAmount: currentAmount ?? 0, deadline: deadline ? parseDateUTC(deadline) : null, description: description ?? null, userId } })
       checkAchievements(db, userId, 'create-goal').catch(() => {})
       return `Meta "${gName}" criada com alvo de ${money(targetAmount)}.`
     }
@@ -709,7 +722,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       // que fazia conta fixa. Recorrente = add_recurring_bill, sempre.
       const { name: bName, amount, dueDate, installments = 1, alreadyPaid = 0, categoryName } = input as { name: string; amount: number; dueDate: string; installments?: number; alreadyPaid?: number; categoryName?: string }
       const categoryId = categoryName ? (await findCategory(userId, categoryName)) : undefined
-      const baseDate = parseISO(dueDate)
+      const baseDate = parseDateUTC(dueDate)
       const numTotal = Math.max(1, Math.round(installments))
       const numAlreadyPaid = Math.max(0, Math.min(Math.round(alreadyPaid), numTotal - 1))
       const numToCreate = numTotal > 1 ? numTotal - numAlreadyPaid : 1
@@ -812,7 +825,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       }
       const pType = eType as 'THEY_OWE_ME' | 'I_OWE_THEM'
       const perInstallment = Math.abs(amount)
-      const baseDate = parseISO(date)
+      const baseDate = parseDateUTC(date)
       const numTotal = Math.max(1, Math.round(installments))
       const label = pType === 'THEY_OWE_ME' ? `${person.name} te deve` : `Voce deve pra ${person.name}`
 
@@ -1008,7 +1021,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
         data: {
           ...(newName !== undefined && { name: newName }),
           ...(amount !== undefined && { amount: Math.abs(amount) }),
-          ...(dueDate !== undefined && { dueDate: parseISO(dueDate) }),
+          ...(dueDate !== undefined && { dueDate: parseDateUTC(dueDate) }),
           ...(categoryId ? { categoryId } : {}),
         },
       })
@@ -1025,7 +1038,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
         data: {
           ...(amount !== undefined && { amount: Math.abs(amount) }),
           ...(newDescription !== undefined && { description: newDescription }),
-          ...(date !== undefined && { date: parseISO(date) }),
+          ...(date !== undefined && { date: parseDateUTC(date) }),
           ...(categoryId ? { categoryId } : {}),
         },
       })
@@ -1047,7 +1060,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
           ...(amount !== undefined && { amount: Math.abs(amount) }),
           ...(newDescription !== undefined && { description: newDescription }),
           ...(eType !== undefined && { type: eType as 'THEY_OWE_ME' | 'I_OWE_THEM' }),
-          ...(date !== undefined && { date: parseISO(date) }),
+          ...(date !== undefined && { date: parseDateUTC(date) }),
         },
       })
       return `Lancamento de "${person.name}" atualizado.`
