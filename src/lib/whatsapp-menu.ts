@@ -1,5 +1,5 @@
 import { db } from './db'
-import { money, executeTool, payBillById } from './rookinho-core'
+import { money, executeTool, payBillById, settlePersonEntryById } from './rookinho-core'
 import { processRecurringBills } from './process-recurring-bills'
 import { processRecurringPersonEntries } from './process-recurring-people'
 import { format, startOfMonth, endOfMonth } from 'date-fns'
@@ -63,6 +63,7 @@ export const MAIN_MENU_ROWS: ListRow[] = [
   { id: 'menu_contas',   title: '📄 Contas a pagar',     description: 'O que está pendente e vencido' },
   { id: 'menu_pessoas',  title: '👥 Quem me deve',       description: 'Dívidas e créditos com pessoas' },
   { id: 'menu_cadastrar', title: '➕ Cadastrar conta',   description: 'Avulsa, parcelada ou fixa' },
+  { id: 'menu_cad_pessoa', title: '🤝 Nova dívida',      description: 'Alguém te deve ou você deve' },
   { id: 'menu_rookinho', title: '💬 Falar com o Rookinho', description: 'Pergunte, mande print ou áudio' },
 ]
 
@@ -109,9 +110,18 @@ export function ackReply(): string {
 type BillType = 'avulsa' | 'parcelada' | 'fixa'
 
 interface FlowState {
-  step: 'type' | 'name' | 'amount' | 'installments' | 'alreadyPaid' | 'dueDate' | 'dayOfMonth'
+  /** 'bill' = conta a pagar (aba Contas); 'person' = divida com pessoa (aba Pessoas) */
+  kind: 'bill' | 'person'
+  step: 'type' | 'name' | 'amount' | 'installments' | 'alreadyPaid' | 'dueDate' | 'dayOfMonth' | 'direction' | 'pdesc'
   type?: BillType
-  data: { name?: string; amount?: number; installments?: number; alreadyPaid?: number }
+  data: {
+    name?: string           // nome da conta OU da pessoa
+    description?: string    // so em 'person': referente a que
+    direction?: 'THEY_OWE_ME' | 'I_OWE_THEM'
+    amount?: number
+    installments?: number
+    alreadyPaid?: number
+  }
   updatedAt: number
 }
 
@@ -137,6 +147,25 @@ export function clearFlow(userId: string): void {
 const CANCEL_RE = /^\s*(cancelar|cancela|sair|parar|desisto|menu)[\s!.]*$/i
 
 export async function handleMenuSelection(id: string, userId: string, userName: string): Promise<MenuResult> {
+  // Toque numa divida da lista de "quitar" — id vem como settle_<entryId>
+  if (id.startsWith('settle_')) {
+    const confirmation = await settlePersonEntryById(userId, id.slice(7))
+    const rows = await pendingEntryRows(userId)
+    if (rows.length === 0) {
+      return { handled: true, reply: `${confirmation}\n\nEra a última pendente — tá tudo quitado! ✨` }
+    }
+    return {
+      handled: true,
+      reply: `${confirmation}\n\nAinda tem ${rows.length} pendente${rows.length > 1 ? 's' : ''}.`,
+      buttonsBody: 'Quer quitar mais alguma?',
+      buttons: [
+        { id: 'menu_quitar', title: 'Quitar outra' },
+        { id: 'menu_voltar', title: 'Ver menu' },
+        { id: 'flow_done', title: 'Finalizar' },
+      ],
+    }
+  }
+
   // Toque numa conta da lista de "marcar paga" — id vem como pay_<billId>
   if (id.startsWith('pay_')) {
     const confirmation = await payBillById(userId, id.slice(4))
@@ -188,10 +217,36 @@ export async function handleMenuSelection(id: string, userId: string, userName: 
         },
       }
     }
-    case 'menu_pessoas':
-      return { handled: true, reply: await formatPessoas(userId) }
+    case 'menu_pessoas': {
+      const reply = await formatPessoas(userId)
+      const pendentes = await db.personEntry.count({ where: { userId, isSettled: false } })
+      if (pendentes === 0) return { handled: true, reply }
+      return {
+        handled: true,
+        reply,
+        buttonsBody: 'Quer quitar alguma ou cadastrar uma nova?',
+        buttons: [
+          { id: 'menu_quitar', title: 'Quitar dívida' },
+          { id: 'menu_cad_pessoa', title: 'Nova dívida' },
+          { id: 'menu_voltar', title: 'Ver menu' },
+        ],
+      }
+    }
+
+    case 'menu_quitar': {
+      const rows = await pendingEntryRows(userId)
+      if (rows.length === 0) return { handled: true, reply: 'Nada pendente com ninguém. Tudo quitado! ✨' }
+      return {
+        handled: true,
+        list: {
+          body: 'Qual dívida foi acertada?\n\n_Vou quitar e já lançar a transação._',
+          buttonText: 'Escolher dívida',
+          rows,
+        },
+      }
+    }
     case 'menu_cadastrar':
-      flows.set(userId, { step: 'type', data: {}, updatedAt: Date.now() })
+      flows.set(userId, { kind: 'bill', step: 'type', data: {}, updatedAt: Date.now() })
       return {
         handled: true,
         reply: 'Boa! Que tipo de conta é essa?\n\n' +
@@ -209,8 +264,42 @@ export async function handleMenuSelection(id: string, userId: string, userName: 
     case 'bill_parcelada':
     case 'bill_fixa': {
       const type = id.replace('bill_', '') as BillType
-      flows.set(userId, { step: 'name', type, data: {}, updatedAt: Date.now() })
+      flows.set(userId, { kind: 'bill', step: 'name', type, data: {}, updatedAt: Date.now() })
       return { handled: true, reply: 'Qual o *nome* da conta? (ex: Sofá, Internet, IPVA)\n\n_Manda "cancelar" a qualquer momento pra sair._' }
+    }
+
+    // ── Cadastro guiado de dívida com pessoa ─────────────────────────────────
+    case 'menu_cad_pessoa':
+      flows.set(userId, { kind: 'person', step: 'type', data: {}, updatedAt: Date.now() })
+      return {
+        handled: true,
+        reply: 'Beleza! Que tipo de dívida é essa?\n\n' +
+          '• *Avulsa* — uma vez só\n' +
+          '• *Parcelada* — tem nº de parcelas\n' +
+          '• *Recorrente* — todo mês, sem fim',
+        buttons: [
+          { id: 'pentry_avulsa', title: 'Avulsa' },
+          { id: 'pentry_parcelada', title: 'Parcelada' },
+          { id: 'pentry_fixa', title: 'Recorrente' },
+        ],
+      }
+
+    case 'pentry_avulsa':
+    case 'pentry_parcelada':
+    case 'pentry_fixa': {
+      const type = id.replace('pentry_', '') as BillType
+      flows.set(userId, { kind: 'person', step: 'name', type, data: {}, updatedAt: Date.now() })
+      return { handled: true, reply: 'Qual o *nome da pessoa*?\n\n_Manda "cancelar" a qualquer momento pra sair._' }
+    }
+
+    case 'pdir_they':
+    case 'pdir_i': {
+      const flow = flows.get(userId)
+      if (!flow || flow.kind !== 'person') return { handled: false }
+      flow.data.direction = id === 'pdir_they' ? 'THEY_OWE_ME' : 'I_OWE_THEM'
+      flow.step = 'pdesc'
+      flow.updatedAt = Date.now()
+      return { handled: true, reply: 'Referente a quê? (ex: almoço, empréstimo, ChatGPT)' }
     }
     case 'menu_rookinho':
       return {
@@ -304,23 +393,21 @@ export async function handleFlowStep(userId: string, text: string): Promise<Menu
     return { handled: true, reply: 'Beleza, cancelei. Manda "menu" quando quiser as opções. 😉' }
   }
 
+  const isPerson = flow.kind === 'person'
+  const prefix = isPerson ? 'pentry_' : 'bill_'
+  const typeButtons = [
+    { id: `${prefix}avulsa`, title: 'Avulsa' },
+    { id: `${prefix}parcelada`, title: 'Parcelada' },
+    { id: `${prefix}fixa`, title: isPerson ? 'Recorrente' : 'Fixa mensal' },
+  ]
+
   // Ainda esperando o botao de tipo — usuario digitou em vez de tocar
   if (flow.step === 'type') {
     const t = text.toLowerCase()
     const type: BillType | null = /parcel/.test(t) ? 'parcelada' : /fix|mensal|recorrent/.test(t) ? 'fixa' : /avuls|[uú]nic/.test(t) ? 'avulsa' : null
-    if (!type) {
-      return {
-        handled: true,
-        reply: 'Toca num dos botões pra eu saber o tipo:',
-        buttons: [
-          { id: 'bill_avulsa', title: 'Avulsa' },
-          { id: 'bill_parcelada', title: 'Parcelada' },
-          { id: 'bill_fixa', title: 'Fixa mensal' },
-        ],
-      }
-    }
-    flows.set(userId, { step: 'name', type, data: {}, updatedAt: Date.now() })
-    return { handled: true, reply: 'Qual o *nome* da conta? (ex: Sofá, Internet, IPVA)' }
+    if (!type) return { handled: true, reply: 'Toca num dos botões pra eu saber o tipo:', buttons: typeButtons }
+    flows.set(userId, { kind: flow.kind, step: 'name', type, data: {}, updatedAt: Date.now() })
+    return { handled: true, reply: isPerson ? 'Qual o *nome da pessoa*?' : 'Qual o *nome* da conta? (ex: Sofá, Internet, IPVA)' }
   }
 
   flow.updatedAt = Date.now()
@@ -328,8 +415,42 @@ export async function handleFlowStep(userId: string, text: string): Promise<Menu
   switch (flow.step) {
     case 'name': {
       const name = text.trim().slice(0, 60)
-      if (!name) return { handled: true, reply: 'Não peguei o nome. Como você quer chamar essa conta?' }
+      if (!name) return { handled: true, reply: isPerson ? 'Não peguei o nome. Quem é a pessoa?' : 'Não peguei o nome. Como você quer chamar essa conta?' }
       flow.data.name = name
+      if (isPerson) {
+        flow.step = 'direction'
+        return {
+          handled: true,
+          reply: `E aí, quem deve pra quem?`,
+          buttons: [
+            { id: 'pdir_they', title: `${name.split(' ')[0]} me deve`.slice(0, 20) },
+            { id: 'pdir_i', title: 'Eu devo' },
+          ],
+        }
+      }
+      flow.step = 'amount'
+      const pergunta = flow.type === 'parcelada'
+        ? 'Qual o valor de *cada parcela*? (ex: 150,00)'
+        : flow.type === 'fixa'
+          ? 'Qual o valor *por mês*? (ex: 99,90)'
+          : 'Qual o *valor*? (ex: 250,00)'
+      return { handled: true, reply: pergunta }
+    }
+
+    case 'direction':
+      return {
+        handled: true,
+        reply: 'Toca num dos botões pra eu saber:',
+        buttons: [
+          { id: 'pdir_they', title: `${(flow.data.name ?? '').split(' ')[0]} me deve`.slice(0, 20) },
+          { id: 'pdir_i', title: 'Eu devo' },
+        ],
+      }
+
+    case 'pdesc': {
+      const desc = text.trim().slice(0, 60)
+      if (!desc) return { handled: true, reply: 'Referente a quê? (ex: almoço, empréstimo)' }
+      flow.data.description = desc
       flow.step = 'amount'
       const pergunta = flow.type === 'parcelada'
         ? 'Qual o valor de *cada parcela*? (ex: 150,00)'
@@ -349,10 +470,10 @@ export async function handleFlowStep(userId: string, text: string): Promise<Menu
       }
       if (flow.type === 'fixa') {
         flow.step = 'dayOfMonth'
-        return { handled: true, reply: 'Todo mês, em que *dia* ela vence? (ex: 10)' }
+        return { handled: true, reply: isPerson ? 'Todo mês, em que *dia*? (ex: 10)' : 'Todo mês, em que *dia* ela vence? (ex: 10)' }
       }
       flow.step = 'dueDate'
-      return { handled: true, reply: 'Quando *vence*? (ex: 20, 20/07 ou 20/07/2026)' }
+      return { handled: true, reply: isPerson ? 'De que *dia* é? (ex: 20, 20/07 ou 20 de julho)' : 'Quando *vence*? (ex: 20, 20/07 ou 20/07/2026)' }
     }
 
     case 'installments': {
@@ -376,14 +497,14 @@ export async function handleFlowStep(userId: string, text: string): Promise<Menu
       const dueDate = parseDueDate(text)
       if (!dueDate) return { handled: true, reply: 'Não entendi a data. Manda assim: *20*, *20/07*, *20/07/2026* ou *20 de julho*.' }
       flows.delete(userId)
-      return finishFlow(await createBill(userId, flow, dueDate))
+      return finishFlow(await createBill(userId, flow, dueDate), flow.kind)
     }
 
     case 'dayOfMonth': {
       const d = parseCount(text)
       if (d === null || d < 1 || d > 31) return { handled: true, reply: 'Manda o dia do mês, de 1 a 31. Ex: 10' }
       flows.delete(userId)
-      return finishFlow(await createBill(userId, flow, undefined, d))
+      return finishFlow(await createBill(userId, flow, undefined, d), flow.kind)
     }
   }
 
@@ -393,12 +514,12 @@ export async function handleFlowStep(userId: string, text: string): Promise<Menu
 
 /** Desfecho: confirma o cadastro e oferece a saida em botoes. Sem isso o usuario
  *  respondia "Ok" no vazio e a mensagem caia na IA (token gasto a toa). */
-function finishFlow(confirmation: string): MenuResult {
+function finishFlow(confirmation: string, kind: FlowState['kind']): MenuResult {
   return {
     handled: true,
     reply: `${confirmation}\n\nQuer cadastrar mais alguma coisa?`,
     buttons: [
-      { id: 'menu_cadastrar', title: 'Cadastrar outra' },
+      { id: kind === 'person' ? 'menu_cad_pessoa' : 'menu_cadastrar', title: 'Cadastrar outra' },
       { id: 'menu_voltar', title: 'Ver menu' },
       { id: 'flow_done', title: 'Finalizar' },
     ],
@@ -406,8 +527,22 @@ function finishFlow(confirmation: string): MenuResult {
 }
 
 async function createBill(userId: string, flow: FlowState, dueDate?: string, dayOfMonth?: number): Promise<string> {
-  const { name, amount = 0, installments, alreadyPaid = 0 } = flow.data
+  const { name, description, direction, amount = 0, installments, alreadyPaid = 0 } = flow.data
   try {
+    // ── Divida com pessoa ──
+    if (flow.kind === 'person') {
+      const base = { personName: name, type: direction, description }
+      if (flow.type === 'fixa') {
+        return await executeTool('add_recurring_person_entry', { ...base, amount, dayOfMonth }, userId)
+      }
+      // add_person_entry ja recebe o valor POR parcela — nao precisa converter
+      return await executeTool('add_person_entry', {
+        ...base, amount, date: dueDate,
+        ...(flow.type === 'parcelada' && installments ? { installments, alreadyPaid } : {}),
+      }, userId)
+    }
+
+    // ── Conta a pagar ──
     if (flow.type === 'fixa') {
       return await executeTool('add_recurring_bill', { name, amount, dayOfMonth }, userId)
     }
@@ -498,6 +633,30 @@ async function pendingBillRows(userId: string): Promise<ListRow[]> {
       id: `pay_${b.id}`,
       title: `${b.name}${parc}`,
       description: `${money(b.amount)} — ${venceu}${format(b.dueDate, 'dd/MM')}`,
+    }
+  })
+}
+
+/** Dividas pendentes como linhas da lista interativa (mais antigas primeiro). */
+async function pendingEntryRows(userId: string): Promise<ListRow[]> {
+  await processRecurringPersonEntries(userId).catch(() => {})
+  const entries = await db.personEntry.findMany({
+    where: { userId, isSettled: false },
+    orderBy: { date: 'asc' },
+    take: 10,
+    select: {
+      id: true, description: true, amount: true, type: true, date: true,
+      installmentCurrent: true, installmentTotal: true,
+      person: { select: { name: true } },
+    },
+  })
+  return entries.map(e => {
+    const parc = e.installmentTotal ? ` (${e.installmentCurrent}/${e.installmentTotal})` : ''
+    const label = e.type === 'THEY_OWE_ME' ? 'te deve' : 'você deve'
+    return {
+      id: `settle_${e.id}`,
+      title: `${e.person.name}: ${e.description}${parc}`,
+      description: `${money(e.amount)} — ${label} — ${format(e.date, 'dd/MM')}`,
     }
   })
 }

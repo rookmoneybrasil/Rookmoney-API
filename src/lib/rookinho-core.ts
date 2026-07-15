@@ -442,6 +442,39 @@ export function fmtDate(d: Date): string {
   return format(d, 'dd/MM/yyyy', { locale: ptBR })
 }
 
+/** Quita um lancamento de pessoa pelo ID: marca settled E cria a Transaction
+ *  (INCOME se a pessoa te pagou, EXPENSE se voce pagou), ligando pelo
+ *  settledTransactionId — igual ao POST /people/entries/:id?action=settle.
+ *  Compartilhado entre a tool settle_person_entry e o menu do WhatsApp, pra nao
+ *  repetir o erro de duplicar a logica (ver CLAUDE.md). */
+export async function settlePersonEntryById(userId: string, entryId: string): Promise<string> {
+  const entry = await db.personEntry.findFirst({
+    where: { id: entryId, userId },
+    include: { person: { select: { name: true } } },
+  })
+  if (!entry) return 'Nao encontrei esse lancamento.'
+  if (entry.isSettled) return `"${entry.description}" ja estava quitado.`
+
+  const txType = entry.type === 'I_OWE_THEM' ? 'EXPENSE' : 'INCOME'
+  const categoryId = entry.categoryId ?? (await findCategory(userId)) ?? null
+  if (!categoryId) return 'Erro: nenhuma categoria disponivel pra registrar a transacao.'
+
+  const personName = entry.person?.name
+  const tx = await db.transaction.create({
+    data: {
+      amount: entry.amount, type: txType,
+      description: personName ? `${entry.description} (${personName})` : entry.description,
+      date: new Date(), userId, categoryId,
+    },
+  })
+  await db.personEntry.update({
+    where: { id: entry.id },
+    data: { isSettled: true, settledAt: new Date(), settledTransactionId: tx.id },
+  })
+  const label = entry.type === 'THEY_OWE_ME' ? `${personName} te pagou` : `Voce pagou ${personName}`
+  return `Quitado: ${label} ${money(entry.amount)} (${entry.description}). 💰`
+}
+
 /** Converte "YYYY-MM-DD" pra Date ao MEIO-DIA UTC.
  *
  *  NAO use parseISO() pra esses campos: ele devolve meia-noite LOCAL, que no
@@ -1000,15 +1033,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
         orderBy: { date: 'asc' },
       })
       if (!entry) return `Nao encontrei lancamento pendente${desc ? ` "${desc}"` : ''} para "${person.name}".`
-      const txType = entry.type === 'I_OWE_THEM' ? 'EXPENSE' : 'INCOME'
-      const categoryId = entry.categoryId ?? (await findCategory(userId))
-      if (!categoryId) return 'Erro: nenhuma categoria disponivel.'
-      const tx = await db.transaction.create({
-        data: { amount: entry.amount, type: txType, description: `${entry.description} (${person.name})`, date: new Date(), userId, categoryId },
-      })
-      await db.personEntry.update({ where: { id: entry.id }, data: { isSettled: true, settledAt: new Date(), settledTransactionId: tx.id } })
-      const label = entry.type === 'THEY_OWE_ME' ? `${person.name} te pagou` : `Voce pagou ${person.name}`
-      return `Quitado: ${label} ${money(entry.amount)} (${entry.description}).`
+      return settlePersonEntryById(userId, entry.id)
     }
 
     if (name === 'update_bill') {
