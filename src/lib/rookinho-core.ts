@@ -1016,6 +1016,33 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       const bill = await db.bill.findFirst({ where: { userId, name: { contains: billName, mode: 'insensitive' } }, orderBy: { createdAt: 'desc' } })
       if (!bill) return `Nao encontrei conta com nome "${billName}".`
       const categoryId = categoryName ? (await findCategory(userId, categoryName)) : undefined
+
+      // Parcelada: nome/valor/categoria valem pro GRUPO inteiro, igual ao
+      // PATCH /bills/group/:groupId. Sem isso, "muda o valor do sofa" alterava
+      // so 1 das 10 parcelas e o usuario nem percebia.
+      if (bill.installmentGroupId && (newName !== undefined || amount !== undefined || categoryId)) {
+        await db.bill.updateMany({
+          where: { installmentGroupId: bill.installmentGroupId, userId, isPaid: false },
+          data: {
+            ...(newName !== undefined && { name: newName }),
+            ...(amount !== undefined && { amount: Math.abs(amount) }),
+            ...(categoryId ? { categoryId } : {}),
+          },
+        })
+        // Nome tambem nas ja pagas, pra nao ficar historico com dois nomes
+        if (newName !== undefined) {
+          await db.bill.updateMany({
+            where: { installmentGroupId: bill.installmentGroupId, userId, isPaid: true },
+            data: { name: newName },
+          })
+        }
+        // Data e do lancamento especifico, nao do grupo
+        if (dueDate !== undefined) {
+          await db.bill.update({ where: { id: bill.id }, data: { dueDate: parseDateUTC(dueDate) } })
+        }
+        return `Conta parcelada "${newName ?? bill.name}" atualizada (todas as parcelas pendentes).`
+      }
+
       await db.bill.update({
         where: { id: bill.id },
         data: {
@@ -1054,6 +1081,24 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
         orderBy: { createdAt: 'desc' },
       })
       if (!entry) return `Nao encontrei lancamento${desc ? ` "${desc}"` : ''} para "${person.name}".`
+
+      // Parcelada: descricao/valor/tipo valem pro GRUPO (parcelas pendentes),
+      // igual ao PATCH /people/entries/:id com applyToGroup.
+      if (entry.installmentGroupId && (amount !== undefined || newDescription !== undefined || eType !== undefined)) {
+        await db.personEntry.updateMany({
+          where: { installmentGroupId: entry.installmentGroupId, userId, isSettled: false },
+          data: {
+            ...(amount !== undefined && { amount: Math.abs(amount) }),
+            ...(newDescription !== undefined && { description: newDescription }),
+            ...(eType !== undefined && { type: eType as 'THEY_OWE_ME' | 'I_OWE_THEM' }),
+          },
+        })
+        if (date !== undefined) {
+          await db.personEntry.update({ where: { id: entry.id }, data: { date: parseDateUTC(date) } })
+        }
+        return `Lancamento parcelado de "${person.name}" atualizado (todas as parcelas pendentes).`
+      }
+
       await db.personEntry.update({
         where: { id: entry.id },
         data: {
