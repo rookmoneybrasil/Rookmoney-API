@@ -2,7 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '@/lib/db'
 import { isProPlus, getLimits } from '@/lib/plans'
 import { processRookinhoChat, checkBurstLimit } from '@/lib/rookinho-core'
-import { sendTextMessage, markAsRead, downloadMedia, transcribeAudio } from '@/lib/whatsapp'
+import { sendTextMessage, sendListMessage, markAsRead, downloadMedia, transcribeAudio } from '@/lib/whatsapp'
+import { isMenuTrigger, handleMenuSelection, menuGreeting, MAIN_MENU_ROWS, MENU_BUTTON_TEXT } from '@/lib/whatsapp-menu'
 import { format } from 'date-fns'
 import type Anthropic from '@anthropic-ai/sdk'
 
@@ -56,6 +57,11 @@ interface WhatsAppMessage {
   image?: { id: string; mime_type: string; caption?: string }
   document?: { id: string; mime_type: string; filename?: string; caption?: string }
   audio?: { id: string; mime_type: string; voice?: boolean }
+  interactive?: {
+    type: string
+    list_reply?: { id: string; title: string }
+    button_reply?: { id: string; title: string }
+  }
 }
 
 interface WhatsAppWebhookBody {
@@ -119,6 +125,18 @@ async function sendAndLog(to: string, text: string, userId: string | null, messa
     direction: 'outbound',
     status: result.ok ? 'sent' : 'failed',
     messageType, error: result.error,
+  })
+  return result
+}
+
+// Envia o menu interativo + loga. Nao consome cota nem rajada: nao chama a IA.
+async function sendMenuAndLog(to: string, userId: string | null, userName: string) {
+  const result = await sendListMessage(to, menuGreeting(userName), MENU_BUTTON_TEXT, MAIN_MENU_ROWS)
+  await logWhatsApp({
+    userId, phone: normalizePhone(to),
+    direction: 'outbound',
+    status: result.ok ? 'sent' : 'failed',
+    messageType: 'interactive', error: result.error,
   })
   return result
 }
@@ -249,6 +267,28 @@ async function processMessage(msg: WhatsAppMessage): Promise<void> {
       'Faça upgrade em rookmoney.com/billing pra desbloquear!',
       user.id,
     )
+    return
+  }
+
+  // ── Menu (atalho, NAO portao) ─────────────────────────────────────────────
+  // Roda ANTES da cota e do limite de rajada de proposito: nada aqui chama a IA,
+  // entao nao custa token nem consome mensagem do usuario. Texto livre, audio e
+  // print NAO passam por aqui — vao direto pro Rookinho, que e o diferencial.
+
+  // 1) Usuario tocou numa opcao do menu
+  const selectionId = msg.interactive?.list_reply?.id ?? msg.interactive?.button_reply?.id
+  if (selectionId) {
+    const result = await handleMenuSelection(selectionId, user.id, user.name)
+    if (result.handled && result.reply) {
+      await sendAndLog(msg.from, result.reply, user.id, 'interactive')
+      return
+    }
+    // Selecao desconhecida (menu antigo?) → cai pro Rookinho normalmente
+  }
+
+  // 2) Mensagem que e SO saudacao/"menu"/"ajuda" → mostra o menu
+  if (msg.type === 'text' && msg.text && isMenuTrigger(msg.text.body)) {
+    await sendMenuAndLog(msg.from, user.id, user.name)
     return
   }
 

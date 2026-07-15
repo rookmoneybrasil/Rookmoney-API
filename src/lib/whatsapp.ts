@@ -47,6 +47,64 @@ export async function sendTextMessage(to: string, text: string): Promise<SendRes
   return failure ? { ok: false, error: failure } : { ok: true }
 }
 
+export interface ListRow { id: string; title: string; description?: string }
+
+// Envia uma mensagem interativa de LISTA (menu nativo do WhatsApp).
+// Limites da Meta Cloud API: max 10 rows no total, title <=24 chars,
+// description <=72, texto do botao <=20. A resposta do usuario volta no
+// webhook como type 'interactive' -> interactive.list_reply.id.
+export async function sendListMessage(
+  to: string,
+  body: string,
+  buttonText: string,
+  rows: ListRow[],
+  header?: string,
+): Promise<SendResult> {
+  let token: string, phoneId: string
+  try {
+    ({ token, phoneId } = getConfig())
+  } catch (e) {
+    console.error('[whatsapp] sendListMessage config error:', e)
+    return { ok: false, error: e instanceof Error ? e.message : String(e) }
+  }
+
+  const safeRows = rows.slice(0, 10).map(r => ({
+    id: r.id.slice(0, 200),
+    title: r.title.slice(0, 24),
+    ...(r.description ? { description: r.description.slice(0, 72) } : {}),
+  }))
+
+  try {
+    const res = await fetch(`${GRAPH_API}/${phoneId}/messages`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to,
+        type: 'interactive',
+        interactive: {
+          type: 'list',
+          ...(header ? { header: { type: 'text', text: header.slice(0, 60) } } : {}),
+          body: { text: body.slice(0, 1024) },
+          action: {
+            button: buttonText.slice(0, 20),
+            sections: [{ title: 'Opções', rows: safeRows }],
+          },
+        },
+      }),
+    })
+    if (!res.ok) {
+      const err = await res.text()
+      console.error('[whatsapp] sendListMessage failed:', err)
+      return { ok: false, error: `${res.status}: ${err.slice(0, 300)}` }
+    }
+  } catch (e) {
+    console.error('[whatsapp] sendListMessage network error:', e)
+    return { ok: false, error: e instanceof Error ? e.message : String(e) }
+  }
+  return { ok: true }
+}
+
 export async function markAsRead(messageId: string): Promise<void> {
   const { token, phoneId } = getConfig()
   await fetch(`${GRAPH_API}/${phoneId}/messages`, {
