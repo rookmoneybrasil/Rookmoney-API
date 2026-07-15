@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { db } from './db'
 import { checkAchievements } from './achievement-checker'
+import { sendGoalCompletedEmail } from './email'
 import { parseISO, format, startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { ptBR } from 'date-fns/locale'
@@ -691,12 +692,14 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       const categoryId = await findCategory(userId, categoryName)
       if (!categoryId) return 'Erro: nenhuma categoria disponível.'
       await db.transaction.create({ data: { amount: Math.abs(amount), type: type as 'INCOME' | 'EXPENSE', description: description ?? '', date: parseISO(date), userId, categoryId } })
+      checkAchievements(db, userId, 'create-transaction').catch(() => {})
       return `Transação "${description}" de ${money(Math.abs(amount))} registrada com sucesso.`
     }
 
     if (name === 'add_goal') {
       const { name: gName, targetAmount, currentAmount = 0, deadline, description } = input as { name: string; targetAmount: number; currentAmount?: number; deadline?: string; description?: string }
       await db.goal.create({ data: { name: gName, targetAmount, currentAmount: currentAmount ?? 0, deadline: deadline ? parseISO(deadline) : null, description: description ?? null, userId } })
+      checkAchievements(db, userId, 'create-goal').catch(() => {})
       return `Meta "${gName}" criada com alvo de ${money(targetAmount)}.`
     }
 
@@ -728,10 +731,12 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
             installmentGroupId: groupId,
           })),
         })
+        checkAchievements(db, userId, 'create-bill').catch(() => {})
         return `Conta "${bName}" parcelada em ${numTotal}x de ${money(amount / numToCreate)} cadastrada${numAlreadyPaid > 0 ? ` (${numAlreadyPaid} parcelas ja pagas, ${numToCreate} restantes)` : ''}. Primeira parcela em ${fmtDate(baseDate)}.`
       }
 
       await db.bill.create({ data: { name: bName, amount, dueDate: baseDate, isRecurring: false, userId, ...(categoryId ? { categoryId } : {}) } })
+      checkAchievements(db, userId, 'create-bill').catch(() => {})
       return `Conta "${bName}" de ${money(amount)} cadastrada para ${fmtDate(baseDate)}.`
     }
 
@@ -751,12 +756,33 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
         where: { userId, isCompleted: false, name: { contains: goalName, mode: 'insensitive' } },
       })
       if (!goal) return `Não encontrei meta ativa com nome "${goalName}".`
-      const newAmount = Number(goal.currentAmount) + Math.abs(amount)
+      const amt = Math.abs(amount)
+      const newAmount = Number(goal.currentAmount) + amt
       const isCompleted = newAmount >= Number(goal.targetAmount)
-      await db.goal.update({ where: { id: goal.id }, data: { currentAmount: newAmount, ...(isCompleted ? { isCompleted: true, completedAt: new Date() } : {}) } })
-      await db.goalContribution.create({ data: { goalId: goal.id, amount: Math.abs(amount) } })
-      if (isCompleted) return `Contribuição de ${money(amount)} adicionada! Meta "${goal.name}" foi COMPLETADA! Parabéns! 🎉`
-      return `Contribuição de ${money(amount)} adicionada à meta "${goal.name}". Progresso: ${money(newAmount)} de ${money(goal.targetAmount)} (${Math.round((newAmount / Number(goal.targetAmount)) * 100)}%).`
+
+      // Mesma escolha de categoria do endpoint REST: prefere "Poupanca", senao a padrao.
+      const cat = (await db.category.findFirst({
+        where: { name: { contains: 'Poupan', mode: 'insensitive' }, OR: [{ isDefault: true }, { userId }] },
+      })) ?? (await db.category.findFirst({
+        where: { OR: [{ isDefault: true }, { userId }] }, orderBy: { isDefault: 'desc' },
+      }))
+      if (!cat) return 'Erro: nenhuma categoria disponivel pra registrar o aporte.'
+
+      // A Transaction "Aporte — X" e obrigatoria: sem ela o aporte nao entra no
+      // resumo/dashboard, e withdraw_from_goal/delete_goal (que procuram por essa
+      // descricao pra estornar) nao acham nada. Igual ao POST /goals/:id?action=contribute.
+      await db.$transaction([
+        db.goal.update({ where: { id: goal.id }, data: { currentAmount: newAmount, isCompleted, completedAt: isCompleted ? new Date() : null } }),
+        db.transaction.create({ data: { amount: amt, type: 'EXPENSE', description: `Aporte — ${goal.name}`, date: new Date(), userId, categoryId: cat.id } }),
+        db.goalContribution.create({ data: { goalId: goal.id, amount: amt } }),
+      ])
+      checkAchievements(db, userId, 'contribute-goal').catch(() => {})
+      if (isCompleted) {
+        const u = await db.user.findUnique({ where: { id: userId }, select: { email: true, name: true } })
+        if (u) sendGoalCompletedEmail(u.email, u.name, goal.name, Number(goal.targetAmount)).catch(() => {})
+      }
+      if (isCompleted) return `Contribuição de ${money(amt)} adicionada! Meta "${goal.name}" foi COMPLETADA! Parabéns! 🎉`
+      return `Contribuição de ${money(amt)} adicionada à meta "${goal.name}". Progresso: ${money(newAmount)} de ${money(goal.targetAmount)} (${Math.round((newAmount / Number(goal.targetAmount)) * 100)}%).`
     }
 
     if (name === 'add_income_source') {
@@ -765,6 +791,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       await db.incomeSource.create({
         data: { name: sName, amount: Math.abs(amount), type: sType as 'EMPLOYMENT' | 'FREELANCE' | 'RENTAL' | 'OTHER', isRecurring, dayOfMonth: dayOfMonth ?? null, userId, ...(categoryId ? { categoryId } : {}) },
       })
+      checkAchievements(db, userId, 'create-income').catch(() => {})
       return `Renda "${sName}" de ${money(amount)}/mês cadastrada${dayOfMonth ? ` (dia ${dayOfMonth})` : ''}.`
     }
 
@@ -773,6 +800,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       const existing = await db.person.findFirst({ where: { userId, name: { contains: pName, mode: 'insensitive' } } })
       if (existing) return `A pessoa "${existing.name}" já está cadastrada.`
       await db.person.create({ data: { name: pName, notes: notes ?? null, userId } })
+      checkAchievements(db, userId, 'create-person').catch(() => {})
       return `Pessoa "${pName}" cadastrada.`
     }
 
@@ -804,6 +832,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
             installmentGroupId: groupId,
           })),
         })
+        checkAchievements(db, userId, 'create-person-entry').catch(() => {})
         return `Registrado: ${label} ${remaining}x de ${money(perInstallment)} (${desc})${numAlreadyPaid > 0 ? ` — ${numAlreadyPaid} ja pagas, ${remaining} restantes` : ''}.`
       }
 
@@ -811,6 +840,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       await db.personEntry.create({
         data: { type: pType, description: desc, amount: perInstallment, date: baseDate, personId: person.id, userId },
       })
+      checkAchievements(db, userId, 'create-person-entry').catch(() => {})
       return `Registrado: ${label} ${money(perInstallment)} (${desc}).`
     }
 
@@ -835,6 +865,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       await db.recurringBill.create({
         data: { name: rbName, amount: Math.abs(amount), dayOfMonth: Math.min(Math.max(dayOfMonth, 1), 28), userId, ...(categoryId ? { categoryId } : {}) },
       })
+      checkAchievements(db, userId, 'create-recurring-bill').catch(() => {})
       return `Conta recorrente "${rbName}" de ${money(amount)}/mês (dia ${dayOfMonth}) cadastrada. Vai gerar contas automaticamente todo mês.`
     }
 
