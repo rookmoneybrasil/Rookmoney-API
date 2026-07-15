@@ -137,16 +137,15 @@ export const TOOLS: Anthropic.Tool[] = [
   },
   {
     name: 'add_bill',
-    description: 'Cadastra uma conta a pagar. Suporta conta unica, parcelada ou recorrente. Para parcelada, informe installments (numero de parcelas) e alreadyPaid (parcelas ja pagas). O valor total e dividido igualmente entre as parcelas.',
+    description: 'Cadastra uma conta a pagar AVULSA (uma vez so) ou PARCELADA (tem numero de parcelas e um fim). Para parcelada, informe installments (total de parcelas) e alreadyPaid (parcelas ja pagas). NAO use pra conta recorrente/fixa mensal sem fim (aluguel, Netflix) — pra isso use add_recurring_bill. ATENCAO: "parcela fixa" NAO e conta fixa — se tem numero de parcelas, e PARCELADA, use esta tool aqui.',
     input_schema: {
       type: 'object' as const,
       properties: {
         name: { type: 'string' },
         amount: { type: 'number', description: 'Valor TOTAL em reais (sera dividido pelas parcelas se parcelado)' },
         dueDate: { type: 'string', description: 'Vencimento da primeira parcela no formato YYYY-MM-DD' },
-        installments: { type: 'number', description: 'Numero de parcelas (1 = conta unica, 2+ = parcelado)' },
-        alreadyPaid: { type: 'number', description: 'Parcelas ja pagas (ex: se esta na 3a de 12, alreadyPaid=2)' },
-        isRecurring: { type: 'boolean', description: 'Se e uma conta recorrente mensal (nao usar junto com parcelas)' },
+        installments: { type: 'number', description: 'Total de parcelas (1 = avulsa, 2+ = parcelada). Notacao "parc N/T" = installments T' },
+        alreadyPaid: { type: 'number', description: 'Parcelas ja pagas. Notacao "parc N/T" (a N-esima e a atual) => alreadyPaid = N-1' },
         categoryName: { type: 'string', description: 'Nome da categoria' },
       },
       required: ['name', 'amount', 'dueDate'],
@@ -237,7 +236,7 @@ export const TOOLS: Anthropic.Tool[] = [
   },
   {
     name: 'add_recurring_bill',
-    description: 'Cria um modelo de conta recorrente que gera contas automaticamente todo mês. Use para contas fixas mensais como aluguel, internet, streaming.',
+    description: 'Cria um modelo de conta RECORRENTE (conta fixa) que gera uma conta automaticamente todo mes, PARA SEMPRE, sem numero de parcelas e sem fim. Ex: aluguel, internet, Netflix, academia, plano de saude. NAO use se o usuario citou um numero de parcelas ou um fim (ex: "12x", "parc 3/5", "parcela fixa de 10 vezes") — isso e PARCELADA, use add_bill com installments.',
     input_schema: {
       type: 'object' as const,
       properties: {
@@ -674,7 +673,10 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
     }
 
     if (name === 'add_bill') {
-      const { name: bName, amount, dueDate, installments = 1, alreadyPaid = 0, isRecurring = false, categoryName } = input as { name: string; amount: number; dueDate: string; installments?: number; alreadyPaid?: number; isRecurring?: boolean; categoryName?: string }
+      // isRecurring saiu do schema da tool de proposito: marcava so uma flag numa
+      // conta avulsa, NAO criava o template RecurringBill — o modelo usava achando
+      // que fazia conta fixa. Recorrente = add_recurring_bill, sempre.
+      const { name: bName, amount, dueDate, installments = 1, alreadyPaid = 0, categoryName } = input as { name: string; amount: number; dueDate: string; installments?: number; alreadyPaid?: number; categoryName?: string }
       const categoryId = categoryName ? (await findCategory(userId, categoryName)) : undefined
       const baseDate = parseISO(dueDate)
       const numTotal = Math.max(1, Math.round(installments))
@@ -701,7 +703,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
         return `Conta "${bName}" parcelada em ${numTotal}x de ${money(amount / numToCreate)} cadastrada${numAlreadyPaid > 0 ? ` (${numAlreadyPaid} parcelas ja pagas, ${numToCreate} restantes)` : ''}. Primeira parcela em ${fmtDate(baseDate)}.`
       }
 
-      await db.bill.create({ data: { name: bName, amount, dueDate: baseDate, isRecurring, userId, ...(categoryId ? { categoryId } : {}) } })
+      await db.bill.create({ data: { name: bName, amount, dueDate: baseDate, isRecurring: false, userId, ...(categoryId ? { categoryId } : {}) } })
       return `Conta "${bName}" de ${money(amount)} cadastrada para ${fmtDate(baseDate)}.`
     }
 
@@ -1129,6 +1131,17 @@ Regra pratica: se a mensagem cita o NOME de uma pessoa como quem deve ou a quem 
 Se o usuario disser explicitamente "coloca em Pessoas", "lanca em Pessoas" ou "isso e divida de pessoa", use add_person_entry mesmo que ele tenha usado a palavra "conta".
 Na duvida entre os dois, PERGUNTE antes de criar: "Isso e uma conta que voce paga (aba Contas) ou uma divida com alguem (aba Pessoas)?".
 
+DENTRO DE CONTAS — diferencie avulsa, parcelada e recorrente (e onde mais se erra depois):
+A pergunta que decide tudo: TEM FIM ou NAO TEM FIM?
+- AVULSA (uma vez so, nao repete): add_bill sem installments. Ex: "boleto do IPVA dia 10", "exame R$200".
+- PARCELADA (TEM FIM — existe um numero de parcelas): add_bill COM installments e alreadyPaid. Ex: "celular em 12x", "sofa parc 3/5", "curso em 10 vezes".
+- RECORRENTE / CONTA FIXA (NAO TEM FIM — repete todo mes pra sempre): add_recurring_bill. Ex: "aluguel todo mes", "Netflix", "internet", "academia".
+ARMADILHA DA PALAVRA "FIXA" (muita gente fala assim — preste atencao):
+- "parcela fixa", "parcelas fixas", "10x fixas", "valor fixo da parcela" = PARCELADA! O "fixa" aqui so quer dizer que o VALOR da parcela nao muda. Se tem numero de parcelas, e SEMPRE add_bill com installments — NUNCA add_recurring_bill.
+- "conta fixa", "despesa fixa", "fixo todo mes" (SEM numero de parcelas) = RECORRENTE, ai sim add_recurring_bill.
+REGRA DE OURO: se a mensagem cita QUANTIDADE de parcelas (12x, 3/5, "em 10 vezes", "parcelei em 6"), e PARCELADA — mesmo que a pessoa tenha usado a palavra "fixa". Recorrente e so quando NAO ha quantidade e a conta se repete indefinidamente.
+Na duvida entre parcelada e recorrente, PERGUNTE numa frase: "Essa conta tem um numero de parcelas pra acabar, ou ela se repete todo mes sem fim?".
+
 DENTRO DE PESSOAS — diferencie avulsa, parcelada e recorrente (nao lance tudo como avulsa):
 - AVULSA (uma vez so): use add_person_entry SEM installments. Ex: "a Ana me deve 50 do almoco".
 - PARCELADA: use add_person_entry COM installments (total de parcelas) e alreadyPaid (ja pagas). O amount e o valor de CADA parcela. A notacao "parc N/T" quer dizer: installments=T, e a N-esima e a parcela ATUAL, entao alreadyPaid=N-1. Ex: "Curso parc 3/3 R$141,68" => installments=3, alreadyPaid=2, amount=141,68 (cria so a 3a). Ex: "Camisa parc 4/5 R$24,65" => installments=5, alreadyPaid=3, amount=24,65 (cria a 4a e a 5a).
@@ -1143,7 +1156,7 @@ Para "mover" algo de uma aba pra outra, exclua no lugar errado e recrie no lugar
 CONFIRMACAO antes de apagar: se for excluir UM item pontual que o usuario pediu claramente, apague direto. Mas se for apagar VARIOS itens de uma vez (uma serie/lote), ou se houver duvida sobre qual item, confirme antes numa frase curta ("Vou apagar essas 4 contas: X, Y, Z, W — confirma?") e so apague depois do OK.
 
 DICA PROATIVA DE RECORRENCIA:
-Se o usuario cadastrar/registrar algo que claramente se repete todo mes (aluguel, salario, streaming, internet, academia, plano de saude), ofereca transformar em recorrente (add_recurring_bill pra conta fixa, ou add_income_source recorrente pra renda) numa frase curta ao final. Nao force nem repita a oferta se ele recusar.
+Se o usuario cadastrar/registrar algo que claramente se repete todo mes SEM FIM (aluguel, salario, streaming, internet, academia, plano de saude), ofereca transformar em recorrente (add_recurring_bill pra conta fixa, ou add_income_source recorrente pra renda) numa frase curta ao final. Nao force nem repita a oferta se ele recusar. NUNCA ofereca isso pra conta PARCELADA (que tem numero de parcelas e um fim) — parcelada nao e recorrente.
 
 IMAGENS, PDFs E COMPROVANTES:
 Quando o usuario enviar uma imagem ou PDF (comprovante, nota fiscal, boleto, extrato, recibo, fatura), analise o conteudo e:
