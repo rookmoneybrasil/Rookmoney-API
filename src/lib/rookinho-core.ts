@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { db } from './db'
+import { checkAchievements } from './achievement-checker'
 import { parseISO, format, startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { ptBR } from 'date-fns/locale'
@@ -440,6 +441,33 @@ export function fmtDate(d: Date): string {
   return format(d, 'dd/MM/yyyy', { locale: ptBR })
 }
 
+/** Paga uma conta pelo ID: marca paga E cria a Transaction de despesa, com o
+ *  paidTransactionId ligando as duas — exatamente o que o endpoint REST
+ *  (POST /bills/:id?action=pay) faz.
+ *
+ *  Existe porque a tool pay_bill so marcava isPaid e NAO criava a transacao: quem
+ *  pagava conta pelo Rookinho ficava com o gasto fora do resumo/dashboard, e o
+ *  paidTransactionId null quebrava o cascade delete (apagar a transacao deveria
+ *  despagar a conta). Usado pela tool pay_bill e pelo menu do WhatsApp. */
+export async function payBillById(userId: string, billId: string): Promise<string> {
+  const bill = await db.bill.findFirst({ where: { id: billId, userId } })
+  if (!bill) return 'Nao encontrei essa conta.'
+  if (bill.isPaid) return `A conta "${bill.name}" ja estava paga.`
+
+  const categoryId = bill.categoryId ?? (await findCategory(userId)) ?? null
+  if (!categoryId) return 'Erro: nenhuma categoria disponivel pra registrar a despesa.'
+
+  const tx = await db.transaction.create({
+    data: { amount: bill.amount, type: 'EXPENSE', description: bill.name, date: new Date(), userId, categoryId },
+  })
+  await db.bill.update({
+    where: { id: bill.id },
+    data: { isPaid: true, paidAt: new Date(), paidTransactionId: tx.id },
+  })
+  checkAchievements(db, userId, 'pay-bill', { billId: bill.id }).catch(() => {})
+  return `Conta "${bill.name}" de ${money(bill.amount)} marcada como paga! 💰`
+}
+
 export async function executeTool(name: string, input: Record<string, unknown>, userId: string): Promise<string> {
   try {
     const now = new Date()
@@ -714,8 +742,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
         orderBy: { dueDate: 'asc' },
       })
       if (!bill) return `Não encontrei conta pendente com nome "${billName}".`
-      await db.bill.update({ where: { id: bill.id }, data: { isPaid: true, paidAt: new Date() } })
-      return `Conta "${bill.name}" de ${money(bill.amount)} marcada como paga!`
+      return payBillById(userId, bill.id)
     }
 
     if (name === 'contribute_to_goal') {

@@ -1,5 +1,5 @@
 import { db } from './db'
-import { money, executeTool } from './rookinho-core'
+import { money, executeTool, payBillById } from './rookinho-core'
 import { processRecurringBills } from './process-recurring-bills'
 import { processRecurringPersonEntries } from './process-recurring-people'
 import { format, startOfMonth, endOfMonth } from 'date-fns'
@@ -77,8 +77,13 @@ export function menuGreeting(userName: string): string {
 export interface MenuResult {
   handled: boolean
   reply?: string
-  /** Se presente, o webhook manda botoes em vez de texto puro (max 3). */
+  /** Se presente, o webhook manda botoes (max 3). */
   buttons?: { id: string; title: string }[]
+  /** Corpo dos botoes. Se vier junto com `reply`, o texto vai numa mensagem e os
+   *  botoes noutra — necessario quando `reply` e longo (o corpo tem teto de 1024). */
+  buttonsBody?: string
+  /** Lista interativa dinamica (ex: escolher qual conta pagar). */
+  list?: { body: string; buttonText: string; rows: ListRow[] }
   /** Se true, o webhook manda a lista do menu principal. */
   showMenu?: boolean
 }
@@ -132,11 +137,57 @@ export function clearFlow(userId: string): void {
 const CANCEL_RE = /^\s*(cancelar|cancela|sair|parar|desisto|menu)[\s!.]*$/i
 
 export async function handleMenuSelection(id: string, userId: string, userName: string): Promise<MenuResult> {
+  // Toque numa conta da lista de "marcar paga" — id vem como pay_<billId>
+  if (id.startsWith('pay_')) {
+    const confirmation = await payBillById(userId, id.slice(4))
+    const rows = await pendingBillRows(userId)
+    if (rows.length === 0) {
+      return { handled: true, reply: `${confirmation}\n\nEra a última pendente — tá tudo em dia agora! 🎯` }
+    }
+    return {
+      handled: true,
+      reply: `${confirmation}\n\nAinda tem ${rows.length} conta${rows.length > 1 ? 's' : ''} pendente${rows.length > 1 ? 's' : ''}.`,
+      buttonsBody: 'Quer marcar mais alguma?',
+      buttons: [
+        { id: 'menu_pagar', title: 'Marcar outra' },
+        { id: 'menu_voltar', title: 'Ver menu' },
+        { id: 'flow_done', title: 'Finalizar' },
+      ],
+    }
+  }
+
   switch (id) {
     case 'menu_resumo':
       return { handled: true, reply: await formatResumo(userId) }
-    case 'menu_contas':
-      return { handled: true, reply: await formatContas(userId) }
+    case 'menu_contas': {
+      const reply = await formatContas(userId)
+      const pendentes = await countPendingBills(userId)
+      if (pendentes === 0) return { handled: true, reply }
+      // Leitura nao pode ser beco sem saida: oferece a acao mais comum na sequencia.
+      return {
+        handled: true,
+        reply,
+        buttonsBody: 'Quer marcar alguma como paga?',
+        buttons: [
+          { id: 'menu_pagar', title: 'Marcar paga' },
+          { id: 'menu_voltar', title: 'Ver menu' },
+          { id: 'flow_done', title: 'Finalizar' },
+        ],
+      }
+    }
+
+    case 'menu_pagar': {
+      const rows = await pendingBillRows(userId)
+      if (rows.length === 0) return { handled: true, reply: 'Nenhuma conta pendente pra pagar. Tá tudo em dia! 🎯' }
+      return {
+        handled: true,
+        list: {
+          body: 'Qual conta você pagou?\n\n_Vou marcar como paga e já lançar a despesa._',
+          buttonText: 'Escolher conta',
+          rows,
+        },
+      }
+    }
     case 'menu_pessoas':
       return { handled: true, reply: await formatPessoas(userId) }
     case 'menu_cadastrar':
@@ -423,6 +474,32 @@ async function formatContas(userId: string): Promise<string> {
   out += `\n*Total pendente: ${money(total)}*`
   if (vencidas.length) out += '\n\nTem conta vencida aí, paga logo essas! 😬'
   return out
+}
+
+async function countPendingBills(userId: string): Promise<number> {
+  return db.bill.count({ where: { userId, isPaid: false } })
+}
+
+/** Contas pendentes como linhas da lista interativa. Vencidas primeiro (sao as
+ *  que a pessoa quer quitar). Teto de 10 e limite do WhatsApp, nao nosso — quem
+ *  tiver mais que isso resolve o resto no app ou falando com o Rookinho. */
+async function pendingBillRows(userId: string): Promise<ListRow[]> {
+  await processRecurringBills(userId).catch(() => {})
+  const bills = await db.bill.findMany({
+    where: { userId, isPaid: false },
+    orderBy: { dueDate: 'asc' },
+    take: 10,
+    select: { id: true, name: true, amount: true, dueDate: true, installmentCurrent: true, installmentTotal: true },
+  })
+  return bills.map(b => {
+    const parc = b.installmentTotal ? ` (${b.installmentCurrent}/${b.installmentTotal})` : ''
+    const venceu = b.dueDate < new Date() ? '⚠️ venceu ' : 'vence '
+    return {
+      id: `pay_${b.id}`,
+      title: `${b.name}${parc}`,
+      description: `${money(b.amount)} — ${venceu}${format(b.dueDate, 'dd/MM')}`,
+    }
+  })
 }
 
 async function formatPessoas(userId: string): Promise<string> {

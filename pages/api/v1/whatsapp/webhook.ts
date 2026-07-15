@@ -142,21 +142,38 @@ async function sendMenuAndLog(to: string, userId: string | null, userName: strin
   return result
 }
 
-// Manda o resultado de um passo de menu/fluxo: menu, botoes ou texto.
+// Manda o resultado de um passo de menu/fluxo: menu principal, lista dinamica,
+// botoes ou texto. Quando ha `reply` + `buttonsBody`, o texto vai numa mensagem
+// e os botoes noutra (o corpo dos botoes tem teto de 1024 chars).
 async function sendMenuResult(to: string, userId: string, result: MenuResult, userName = '') {
   if (result.showMenu) return sendMenuAndLog(to, userId, userName)
+
+  const log = async (res: { ok: boolean; error?: string }) => {
+    await logWhatsApp({
+      userId, phone: normalizePhone(to),
+      direction: 'outbound',
+      status: res.ok ? 'sent' : 'failed',
+      messageType: 'interactive', error: res.error,
+    })
+    return res
+  }
+
+  if (result.list) {
+    return log(await sendListMessage(to, result.list.body, result.list.buttonText, result.list.rows))
+  }
+
+  // Texto primeiro quando os botoes tem corpo proprio
+  if (result.reply && result.buttonsBody) {
+    await log(await sendTextMessage(to, result.reply))
+    return log(await sendButtonMessage(to, result.buttonsBody, result.buttons ?? []))
+  }
+
   if (!result.reply) return
-  const send = result.buttons?.length
-    ? () => sendButtonMessage(to, result.reply!, result.buttons!)
-    : () => sendTextMessage(to, result.reply!)
-  const res = await send()
-  await logWhatsApp({
-    userId, phone: normalizePhone(to),
-    direction: 'outbound',
-    status: res.ok ? 'sent' : 'failed',
-    messageType: 'interactive', error: res.error,
-  })
-  return res
+  return log(
+    result.buttons?.length
+      ? await sendButtonMessage(to, result.reply, result.buttons)
+      : await sendTextMessage(to, result.reply),
+  )
 }
 
 // ── Media download with timeout ──
