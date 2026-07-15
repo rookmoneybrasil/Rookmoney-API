@@ -11,6 +11,7 @@ const ALLOWED_IMAGE_HOSTS = [
   'i.imgur.com', 'avatars.githubusercontent.com',
   'unavatar.io', 'avatar.vercel.sh',
   'images.unsplash.com', 'cdn.discordapp.com',
+  'public.blob.vercel-storage.com',
 ]
 function validateImageUrl(url: string | null): boolean {
   if (!url) return true
