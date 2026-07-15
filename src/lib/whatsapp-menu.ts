@@ -16,10 +16,44 @@ import type { ListRow } from './whatsapp'
 
 const GREETING_RE = /^\s*(oi+|ol[aá]+|e a[ií]|opa|hey|bom dia|boa tarde|boa noite|menu|ajuda|help|op[cç][oõ]es|come[cç]ar|start|in[ií]cio|voltar)[\s!.,?]*$/i
 
+// Palavras que abrem o menu, toleradas com erro de digitacao ("meni", "mneu").
+const MENU_WORDS = ['menu', 'ajuda', 'opcoes', 'comecar', 'inicio', 'start', 'help', 'voltar']
+
+function stripAccents(s: string): string {
+  return s.normalize('NFD').replace(/[̀-ͯ]/g, '')
+}
+
+/** Damerau-Levenshtein: conta transposicao de vizinhos como 1 edicao, entao
+ *  pega "mneu" (que Levenshtein puro contaria como 2). */
+function editDistance(a: string, b: string): number {
+  const m = a.length, n = b.length
+  const d: number[][] = Array.from({ length: m + 1 }, (_, i) =>
+    Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0)),
+  )
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost)
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1)
+      }
+    }
+  }
+  return d[m][n]
+}
+
 /** So dispara o menu quando a mensagem e SO uma saudacao/pedido de menu.
- *  "oi, paguei a luz" NAO cai aqui — vai pro Rookinho, como deve ser. */
+ *  "oi, paguei a luz" NAO cai aqui — vai pro Rookinho, como deve ser.
+ *  Tolera 1 erro de digitacao numa palavra unica ("meni", "mneu", "menuu").
+ *  Limite de 1 edicao de proposito: com 2, "comprar" casaria com "comecar" e
+ *  "meta" chegaria perto de "menu" — palavras que sao comandos de verdade. */
 export function isMenuTrigger(text: string): boolean {
-  return GREETING_RE.test(text.trim())
+  const t = text.trim()
+  if (GREETING_RE.test(t)) return true
+  if (t.split(/\s+/).length > 1) return false // so mensagem de UMA palavra
+  const word = stripAccents(t.toLowerCase()).replace(/[^a-z]/g, '')
+  if (word.length < 3 || word.length > 12) return false
+  return MENU_WORDS.some(kw => editDistance(word, kw) <= 1)
 }
 
 export const MENU_BUTTON_TEXT = 'Ver opções'
@@ -34,7 +68,7 @@ export const MAIN_MENU_ROWS: ListRow[] = [
 
 export function menuGreeting(userName: string): string {
   const first = userName?.split(' ')[0] ?? 'por aí'
-  return `Opa, ${first}! 🐂 Sou o Rookinho.\n\n` +
+  return `Opa, ${first}! 👋 Sou o Rookinho.\n\n` +
     `Escolhe uma opção abaixo pra ser mais rápido — ou simplesmente me manda o que precisa (pode ser áudio ou print de comprovante) que eu resolvo.`
 }
 
@@ -58,7 +92,7 @@ export function isAck(text: string): boolean {
 }
 
 export function ackReply(): string {
-  return 'Tamo junto! 🐂 Se precisar de mais alguma coisa é só chamar — manda *menu* pra ver as opções.'
+  return 'Tamo junto! 👊 Se precisar de mais alguma coisa é só chamar — manda *menu* pra ver as opções.'
 }
 
 // ── Fluxo guiado de cadastro de conta ───────────────────────────────────────
@@ -142,7 +176,7 @@ export async function handleMenuSelection(id: string, userId: string, userName: 
       clearFlow(userId)
       return {
         handled: true,
-        reply: 'Show! Tá tudo registrado. 🐂\n\nQuando precisar, é só me chamar — manda *menu* pra ver as opções, ou fala comigo normal que eu resolvo.',
+        reply: 'Show! Tá tudo registrado. ✅\n\nQuando precisar, é só me chamar — manda *menu* pra ver as opções, ou fala comigo normal que eu resolvo.',
       }
     default:
       return { handled: false }

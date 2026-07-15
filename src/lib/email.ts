@@ -125,7 +125,7 @@ export async function sendAccountDeletedEmail(
     </div>` : ''}
 
     <p style="color:#64748b;margin:0 0 24px;font-size:14px;line-height:1.6">
-      Se mudou de ideia, você é sempre bem-vindo de volta — é só criar uma nova conta quando quiser. 🐂
+      Se mudou de ideia, você é sempre bem-vindo de volta — é só criar uma nova conta quando quiser. 💙
     </p>
 
     <a href="https://rookmoney.com" style="display:block;text-align:center;padding:13px 28px;background:#4f46e5;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none">Voltar para o Rook Money</a>
