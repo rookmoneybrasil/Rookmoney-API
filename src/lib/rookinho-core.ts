@@ -3,6 +3,8 @@ import { db } from './db'
 import { checkAchievements } from './achievement-checker'
 import { sendGoalCompletedEmail } from './email'
 import { autoProcessMonth } from './auto-process'
+import { computePersonBalances } from './person-balances'
+import { processRecurringBills } from './process-recurring-bills'
 import { parseISO, format, startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { ptBR } from 'date-fns/locale'
@@ -571,13 +573,8 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
           where: { userId, isCompleted: false },
           select: { name: true, targetAmount: true, currentAmount: true, deadline: true },
         }),
-        db.person.findMany({
-          where: { userId },
-          select: {
-            name: true,
-            entries: { where: { isSettled: false }, select: { type: true, amount: true } },
-          },
-        }),
+        // MESMA conta do GET /people — nao somar entries na mao (ver get_people)
+        computePersonBalances(userId),
         db.$queryRawUnsafe<{ month: string; type: string; total: number }[]>(
           `SELECT to_char(date, 'YYYY-MM') as month, type, SUM(amount)::float as total
            FROM "Transaction" WHERE "userId" = $1 AND date >= $2
@@ -597,11 +594,9 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       const totalFixedExpenses = recurringBills.reduce((s, rb) => s + Number(rb.amount), 0)
       const totalPendingBills = pendingBills.reduce((s, b) => s + Number(b.amount), 0)
 
-      const peopleDebts = people.filter(p => p.entries.length > 0).map(p => {
-        const theyOwe = p.entries.filter(e => e.type === 'THEY_OWE_ME').reduce((s, e) => s + Number(e.amount), 0)
-        const iOwe = p.entries.filter(e => e.type === 'I_OWE_THEM').reduce((s, e) => s + Number(e.amount), 0)
-        return { name: p.name, theyOweMe: theyOwe, iOweThem: iOwe }
-      })
+      const peopleDebts = people
+        .filter(p => p.theyOweMe > 0 || p.iOweThem > 0)
+        .map(p => ({ name: p.name, theyOweMe: p.theyOweMe, iOweThem: p.iOweThem }))
       const totalReceivable = peopleDebts.reduce((s, p) => s + p.theyOweMe, 0)
       const totalPayable = peopleDebts.reduce((s, p) => s + p.iOweThem, 0)
 
@@ -658,6 +653,9 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
     }
 
     if (name === 'get_bills') {
+      // Gera as contas fixas do mes antes de listar, igual GET /bills faz — senao
+      // "quais contas eu tenho?" omitia a recorrente ainda nao materializada.
+      await processRecurringBills(userId).catch(() => {})
       const includeOverdue = (input as { includeOverdue?: boolean }).includeOverdue !== false
       const where: Record<string, unknown> = { userId, isPaid: false }
       if (!includeOverdue) where.dueDate = { gte: now }
@@ -710,18 +708,28 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
     }
 
     if (name === 'get_people') {
-      const people = await db.person.findMany({
-        where: { userId },
-        select: {
-          name: true,
-          entries: { where: { isSettled: false }, select: { type: true, amount: true, description: true } },
-        },
+      // MESMA conta do GET /people (computePersonBalances ja roda o gerador de
+      // recorrentes). Somar as entries na mao aqui fazia o Rookinho responder um
+      // numero diferente do app — parcela futura entrava, template recorrente nao.
+      const balances = await computePersonBalances(userId)
+      const comDivida = balances.filter(p => p.theyOweMe > 0 || p.iOweThem > 0)
+      if (comDivida.length === 0) return JSON.stringify([])
+
+      const entries = await db.personEntry.findMany({
+        where: { userId, isSettled: false, personId: { in: comDivida.map(p => p.id) } },
+        select: { personId: true, type: true, amount: true, description: true },
       })
-      return JSON.stringify(people.filter(p => p.entries.length > 0).map(p => {
-        const theyOwe = p.entries.filter(e => e.type === 'THEY_OWE_ME').reduce((s, e) => s + Number(e.amount), 0)
-        const iOwe = p.entries.filter(e => e.type === 'I_OWE_THEM').reduce((s, e) => s + Number(e.amount), 0)
-        return { name: p.name, theyOweMe: money(theyOwe), iOweThem: money(iOwe), balance: money(theyOwe - iOwe), entries: p.entries.map(e => ({ type: e.type === 'THEY_OWE_ME' ? 'me deve' : 'eu devo', description: e.description, amount: money(e.amount) })) }
-      }))
+      return JSON.stringify(comDivida.map(p => ({
+        name: p.name,
+        theyOweMe: money(p.theyOweMe),
+        iOweThem: money(p.iOweThem),
+        balance: money(p.balance),
+        entries: entries.filter(e => e.personId === p.id).map(e => ({
+          type: e.type === 'THEY_OWE_ME' ? 'me deve' : 'eu devo',
+          description: e.description,
+          amount: money(e.amount),
+        })),
+      })))
     }
 
     if (name === 'get_income_sources') {
