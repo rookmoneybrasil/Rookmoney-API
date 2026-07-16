@@ -2,6 +2,7 @@ import { db } from './db'
 import { money, executeTool, payBillById, settlePersonEntryById } from './rookinho-core'
 import { processRecurringBills } from './process-recurring-bills'
 import { processRecurringPersonEntries } from './process-recurring-people'
+import { computePersonBalances } from './person-balances'
 import { format, startOfMonth, endOfMonth } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import type { ListRow } from './whatsapp'
@@ -662,18 +663,12 @@ async function pendingEntryRows(userId: string): Promise<ListRow[]> {
 }
 
 async function formatPessoas(userId: string): Promise<string> {
-  await processRecurringPersonEntries(userId).catch(() => {})
-
-  const people = await db.person.findMany({
-    where: { userId },
-    select: { name: true, entries: { where: { isSettled: false }, select: { type: true, amount: true } } },
-  })
-  const rows = people
-    .map(p => {
-      const meDevem = p.entries.filter(e => e.type === 'THEY_OWE_ME').reduce((s, e) => s + Number(e.amount), 0)
-      const euDevo = p.entries.filter(e => e.type === 'I_OWE_THEM').reduce((s, e) => s + Number(e.amount), 0)
-      return { name: p.name, saldo: meDevem - euDevo }
-    })
+  // MESMA funcao que o GET /people usa — nao somar entries na mao aqui: a regra e
+  // sutil (parcela so conta no mes corrente, recorrente tem gate de startMonth,
+  // recorrente legado tem cutoff) e duplicar faz o WhatsApp mostrar um numero
+  // diferente do app. Ver CLAUDE.md > "Pessoas — agregacao de valores".
+  const rows = (await computePersonBalances(userId))
+    .map(p => ({ name: p.name, saldo: p.balance }))
     .filter(p => p.saldo !== 0)
 
   if (rows.length === 0) return '👥 *Pessoas*\n\nNinguém te deve e você não deve ninguém. Tudo quitado! ✨'
