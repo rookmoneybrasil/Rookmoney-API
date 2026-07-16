@@ -6,6 +6,7 @@ import { cleanupExpiredLimits } from '@/lib/rate-limit'
 import { sendPush, isValidPushToken } from '@/lib/push'
 import { processRecurringPersonEntries } from '@/lib/process-recurring-people'
 import { processRecurringBills } from '@/lib/process-recurring-bills'
+import { processAutoIncome, processAutoRecurring } from '@/lib/auto-process'
 import { trackCronRun } from '@/lib/cron-tracking'
 
 async function migrateOldRecurring(userId: string) {
@@ -44,47 +45,12 @@ async function migrateOldRecurring(userId: string) {
   }
 }
 
-async function processAutoIncome(userId: string) {
-  const now       = new Date()
-  const today     = now.getDate()
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-
-  const sources = await db.incomeSource.findMany({ where: { userId, isRecurring: true } })
-
-  for (const src of sources) {
-    if (!src.categoryId || !src.dayOfMonth) continue
-    if (src.lastAutoPayMonth === yearMonth) continue
-    if (today < src.dayOfMonth) continue
-    // Don't auto-pay if startDate is in the future
-    if (src.startDate && src.startDate > now) continue
-    await db.$transaction([
-      db.transaction.create({ data: { amount: src.amount, type: 'INCOME', description: src.name, date: new Date(now.getFullYear(), now.getMonth(), src.dayOfMonth), userId, categoryId: src.categoryId } }),
-      db.incomeSource.update({ where: { id: src.id }, data: { lastAutoPayMonth: yearMonth } }),
-    ])
-  }
-}
-
-async function processAutoRecurring(userId: string) {
-  const now       = new Date()
-  const today     = now.getDate()
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-
-  const items = await db.recurringTransaction.findMany({ where: { userId, isActive: true, frequency: 'MONTHLY' } })
-
-  for (const item of items) {
-    if (!item.categoryId) continue
-    if (item.lastAutoMonth === yearMonth) continue
-    if (item.dayOfMonth && today < item.dayOfMonth) continue
-    await db.$transaction([
-      db.transaction.create({ data: { amount: item.amount, type: item.type, description: item.name, date: new Date(now.getFullYear(), now.getMonth(), item.dayOfMonth ?? 1), userId, categoryId: item.categoryId } }),
-      db.recurringTransaction.update({ where: { id: item.id }, data: { lastAutoMonth: yearMonth } }),
-    ])
-  }
-}
-
-
-// processRecurringBills now lives in api/src/lib/process-recurring-bills.ts
-// (self-healing, shared with GET /bills and the dashboard auto-process).
+// processAutoIncome/processAutoRecurring vivem em api/src/lib/auto-process.ts,
+// compartilhados com a dashboard, o get_summary do Rookinho e o menu do WhatsApp.
+// A copia que existia aqui tinha DIVERGIDO: pulava a renda com dayOfMonth null
+// (`if (!src.dayOfMonth) continue`) enquanto a dashboard tratava null como dia 1 —
+// ou seja, renda sem dia definido nunca era gerada pelo cron, so quando alguem
+// abria o app. processRecurringBills tambem e compartilhado (self-healing).
 
 async function warnExpiringManualPro() {
   const now      = new Date()
