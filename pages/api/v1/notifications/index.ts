@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { ok } from '@/lib/respond'
 import { format, addDays, startOfMonth, endOfMonth } from 'date-fns'
 import { isPro } from '@/lib/plans'
+import { computePersonBalances } from '@/lib/person-balances'
 
 type NotifType    = 'bill' | 'goal' | 'budget' | 'person' | 'income' | 'rookinho'
 type NotifUrgency = 'high' | 'medium' | 'low'
@@ -33,7 +34,7 @@ export default withAuth(async (req, res, session) => {
     db.budget.findMany({ where: { userId: uid, month }, include: { category: true } }),
     db.transaction.findMany({ where: { userId: uid, type: 'EXPENSE', date: { gte: startOfMonth(now), lte: endOfMonth(now) } } }),
     db.incomeSource.findMany({ where: { userId: uid, isRecurring: true } }),
-    db.person.findMany({ where: { userId: uid }, include: { entries: { where: { isSettled: false } } } }),
+    computePersonBalances(uid),
   ])
 
   const readAt = user?.notificationsReadAt
@@ -74,13 +75,10 @@ export default withAuth(async (req, res, session) => {
   }
 
   for (const person of people) {
-    let theyOweMe = 0
-    let iOweThem  = 0
-    for (const e of person.entries) {
-      if (e.type === 'THEY_OWE_ME') theyOweMe += Number(e.amount)
-      else                           iOweThem  += Number(e.amount)
-    }
-    const net = theyOweMe - iOweThem
+    // MESMA conta do GET /people (computePersonBalances). Somar as entries na mao
+    // aqui fazia a notificacao "Fulano te deve R$ X" mostrar um valor e a pagina
+    // de Pessoas outro — parcela futura entrava, template recorrente nao contava.
+    const net = person.balance
     if (Math.abs(net) < 1) continue
     const theyOweMeNet = net > 0
     notifications.push({
