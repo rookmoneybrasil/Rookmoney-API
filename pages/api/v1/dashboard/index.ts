@@ -3,47 +3,11 @@ import { db } from '@/lib/db'
 import { ok } from '@/lib/respond'
 import { startOfMonth, endOfMonth, subMonths, addDays, subDays, format } from 'date-fns'
 import { getProjection, type ProjectionItem } from '@/lib/projection'
-import { processRecurringPersonEntries } from '@/lib/process-recurring-people'
-import { processRecurringBills } from '@/lib/process-recurring-bills'
-
-async function processAutoIncome(uid: string) {
-  const now       = new Date()
-  const today     = now.getDate()
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-  const sources   = await db.incomeSource.findMany({ where: { userId: uid, isRecurring: true } })
-  for (const src of sources) {
-    if (src.lastAutoPayMonth === yearMonth) continue
-    if (!src.categoryId) continue
-    const day = src.dayOfMonth ?? 1
-    if (today < day) continue
-    // Don't auto-pay if startDate is in the future
-    if (src.startDate && src.startDate > now) continue
-    await db.$transaction([
-      db.transaction.create({ data: { amount: src.amount, type: 'INCOME', description: src.name, date: new Date(now.getFullYear(), now.getMonth(), day), userId: uid, categoryId: src.categoryId } }),
-      db.incomeSource.update({ where: { id: src.id }, data: { lastAutoPayMonth: yearMonth } }),
-    ])
-  }
-}
-
-async function processAutoRecurring(uid: string) {
-  const now       = new Date()
-  const today     = now.getDate()
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-  const items     = await db.recurringTransaction.findMany({ where: { userId: uid, isActive: true, frequency: 'MONTHLY' } })
-  for (const item of items) {
-    if (item.lastAutoMonth === yearMonth) continue
-    if (!item.categoryId) continue
-    const day = item.dayOfMonth ?? 1
-    if (today < day) continue
-    await db.$transaction([
-      db.transaction.create({ data: { amount: item.amount, type: item.type, description: item.name, date: new Date(now.getFullYear(), now.getMonth(), day), userId: uid, categoryId: item.categoryId } }),
-      db.recurringTransaction.update({ where: { id: item.id }, data: { lastAutoMonth: yearMonth } }),
-    ])
-  }
-}
+import { autoProcessMonth } from '@/lib/auto-process'
 
 // Data migrations are centralized in api/src/lib/data-migrations.ts
-// processRecurringBills now lives in api/src/lib/process-recurring-bills.ts
+// O auto-process vive em api/src/lib/auto-process.ts — o get_summary do Rookinho
+// e o menu do WhatsApp chamam a MESMA funcao, senao leem saldo defasado.
 
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'GET') return res.status(405).end()
@@ -51,13 +15,7 @@ export default withAuth(async (req, res, session) => {
   const uid = session.userId
   const now = new Date()
 
-  // Auto-process recurring income, transactions, and bills
-  await Promise.allSettled([
-    processAutoIncome(uid),
-    processAutoRecurring(uid),
-    processRecurringBills(uid),
-    processRecurringPersonEntries(uid),
-  ])
+  await autoProcessMonth(uid)
 
   const mS  = startOfMonth(now)
   const mE  = endOfMonth(now)

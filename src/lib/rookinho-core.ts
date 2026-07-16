@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { db } from './db'
 import { checkAchievements } from './achievement-checker'
 import { sendGoalCompletedEmail } from './email'
+import { autoProcessMonth } from './auto-process'
 import { parseISO, format, startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { ptBR } from 'date-fns/locale'
@@ -522,6 +523,10 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
     const monthEnd = endOfMonth(now)
 
     if (name === 'get_summary') {
+      // Gera renda/recorrentes/contas do mes antes de somar, igual a dashboard faz.
+      // Sem isso, quem nao abriu o app no mes via receita R$ 0 aqui enquanto o app
+      // mostrava o salario.
+      await autoProcessMonth(userId)
       const [income, expense, goals, bills, budgets, categories] = await Promise.all([
         db.transaction.aggregate({ where: { userId, type: 'INCOME', date: { gte: monthStart, lte: monthEnd } }, _sum: { amount: true } }),
         db.transaction.aggregate({ where: { userId, type: 'EXPENSE', date: { gte: monthStart, lte: monthEnd } }, _sum: { amount: true } }),

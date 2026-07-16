@@ -3,6 +3,7 @@ import { money, executeTool, payBillById, settlePersonEntryById } from './rookin
 import { processRecurringBills } from './process-recurring-bills'
 import { processRecurringPersonEntries } from './process-recurring-people'
 import { computePersonBalances } from './person-balances'
+import { autoProcessMonth } from './auto-process'
 import { format, startOfMonth, endOfMonth } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import type { ListRow } from './whatsapp'
@@ -564,6 +565,9 @@ async function createBill(userId: string, flow: FlowState, dueDate?: string, day
 // ── Formatters (consultas diretas ao banco — zero token) ────────────────────
 
 async function formatResumo(userId: string): Promise<string> {
+  // MESMO auto-process da dashboard — sem isso o resumo do WhatsApp mostraria
+  // receita R$ 0 pra quem ainda nao abriu o app no mes (salario nao gerado).
+  await autoProcessMonth(userId)
   const now = new Date()
   const mS = startOfMonth(now), mE = endOfMonth(now)
   const [income, expense] = await Promise.all([
