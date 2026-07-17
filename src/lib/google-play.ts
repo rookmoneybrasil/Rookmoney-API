@@ -26,7 +26,13 @@ export function planFromProductId(productId: string): GooglePlan {
   return PRODUCT_TO_PLAN[productId] ?? 'PRO'
 }
 
-async function getAccessToken(): Promise<string> {
+// Exported so the Play Integrity helper (api/src/lib/play-integrity.ts) can reuse
+// the same service-account credentials with a different OAuth scope. Google Play
+// verification uses the default androidpublisher scope; Play Integrity's
+// decodeIntegrityToken needs the playintegrity scope.
+export async function getAccessToken(
+  scope = 'https://www.googleapis.com/auth/androidpublisher',
+): Promise<string> {
   const credentials = process.env.GOOGLE_PLAY_CREDENTIALS
   if (!credentials) throw new Error('GOOGLE_PLAY_CREDENTIALS not configured')
 
@@ -36,7 +42,7 @@ async function getAccessToken(): Promise<string> {
   const header = btoa(JSON.stringify({ alg: 'RS256', typ: 'JWT' }))
   const payload = btoa(JSON.stringify({
     iss: parsed.client_email,
-    scope: 'https://www.googleapis.com/auth/androidpublisher',
+    scope,
     aud: 'https://oauth2.googleapis.com/token',
     iat: now,
     exp: now + 3600,

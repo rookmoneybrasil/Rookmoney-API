@@ -8,14 +8,27 @@ import {
   isSubscriptionActive,
 } from '@/lib/google-play'
 import { sendMetaEvent } from '@/lib/meta-capi'
+import { runIntegrityGate, INTEGRITY_DENIED } from '@/lib/play-integrity'
 
 export default withAuth(async (req, res, session) => {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const { productId, purchaseToken } = req.body ?? {}
+  const { productId, purchaseToken, integrityToken } = req.body ?? {}
   if (!productId || !purchaseToken) {
     return badRequest(res, 'productId e purchaseToken são obrigatórios')
   }
+
+  // Play Integrity gate (Android) — second layer of defense. The app also checks
+  // this before starting the purchase (POST /billing/integrity-check), so a
+  // compromised device is normally stopped before being charged; this re-check
+  // catches a client that skipped straight to verify. Same shared decision.
+  const gate = await runIntegrityGate(integrityToken, session.userId)
+  if (gate.log) {
+    db.adminLog
+      .create({ data: { action: 'integrity_check', targetId: session.userId, details: gate.log } })
+      .catch(() => {})
+  }
+  if (!gate.allow) return res.status(403).json({ ok: false, ...INTEGRITY_DENIED })
 
   try {
     const sub = await verifySubscription(productId, purchaseToken)
