@@ -353,6 +353,43 @@ const MIGRATIONS: Migration[] = [
       console.log(`[data-migration] heal-all-active-person-recurring: healed ${ok} users, ${failed} failed`)
     },
   },
+
+  // ─── 2026-07-17 ─────────────────────────────────────────────────────
+  {
+    id:  '2026-07-17-unpublish-duplicate-blog-posts',
+    // O AdSense reprovou o blog por "conteúdo de baixo valor": o gerador
+    // diário escreveu vários artigos sobre o MESMO tema (Bitcoin 3x,
+    // "curiosidades sobre dinheiro" 4x, CLT ou PJ 2x, etc). Agrupa os posts
+    // ai-generated por similaridade de título, mantém o MAIS RECENTE de cada
+    // cluster publicado e despublica (published:false) os clones mais antigos.
+    // Não deleta nada — só esconde do blog/sitemap, então é reversível e
+    // idempotente (posts já despublicados saem do conjunto na próxima corrida).
+    run: async (db) => {
+      const { sameTopic } = await import('./blog-dedup')
+      const posts = await db.blogPost.findMany({
+        where:   { source: 'ai-generated', published: true },
+        orderBy: { createdAt: 'desc' }, // mais recente primeiro = "dono" do cluster
+        select:  { id: true, title: true },
+      })
+
+      const kept: string[] = []          // títulos dos posts que ficam publicados
+      const toUnpublish: string[] = []   // ids dos clones a esconder
+
+      for (const post of posts) {
+        const isDup = kept.some(t => sameTopic(post.title, t))
+        if (isDup) toUnpublish.push(post.id)
+        else kept.push(post.title)
+      }
+
+      if (toUnpublish.length > 0) {
+        await db.blogPost.updateMany({
+          where: { id: { in: toUnpublish } },
+          data:  { published: false },
+        })
+        console.log(`[data-migration] unpublished ${toUnpublish.length} duplicate blog posts`)
+      }
+    },
+  },
 ]
 
 async function backfillPersonRecurringFk(db: PrismaClient, opts: { tagSettledInAmbiguousGroups?: boolean } = {}) {

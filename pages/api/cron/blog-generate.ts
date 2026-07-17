@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { db } from '@/lib/db'
 import { sendNewsletterEmail } from '@/lib/email'
 import { trackCronRun } from '@/lib/cron-tracking'
+import { sameTopic } from '@/lib/blog-dedup'
 
 const UNSPLASH_IMAGES: Record<string, string[]> = {
   'dicas': [
@@ -172,6 +173,15 @@ async function generateBlogPost(): Promise<BlogGenResult> {
   // Fetch trending news
   const trendingContext = await fetchTrendingTopics()
 
+  // Títulos já publicados — para o modelo NÃO repetir tema e para rejeitar duplicatas.
+  const existingPosts = await db.blogPost.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 40,
+    select: { title: true },
+  })
+  const existingTitles = existingPosts.map(p => p.title)
+  const recentTitlesList = existingTitles.slice(0, 25).map(t => `- ${t}`).join('\n')
+
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
   const categoryLabel: Record<string, string> = {
@@ -182,19 +192,21 @@ async function generateBlogPost(): Promise<BlogGenResult> {
     'curiosidades': 'curiosidades sobre dinheiro, economia e finanças no Brasil e no mundo',
   }
 
-  const response = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 4000,
-    messages: [{
-      role: 'user',
-      content: `Você é um redator especializado em finanças pessoais para o blog do Rook Money, um app brasileiro de controle financeiro.
+  const buildPrompt = (extraWarning: string) => `Você é um redator especializado em finanças pessoais para o blog do Rook Money, um app brasileiro de controle financeiro.
 
 DATA DE HOJE: ${new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}. Quando mencionar o ano, use ${new Date().getFullYear()}.
 
 CONTEXTO — Notícias da semana:
 ${trendingContext}
 
+ARTIGOS JÁ PUBLICADOS (NÃO repita esses temas, ângulos ou títulos — escolha um assunto claramente diferente):
+${recentTitlesList || '(nenhum ainda)'}
+${extraWarning}
 TAREFA: Escreva um artigo de blog sobre ${categoryLabel[category] ?? category}.
+
+REGRAS DE ORIGINALIDADE (CRÍTICO — o blog foi reprovado no AdSense por conteúdo repetitivo):
+- O tema DEVE ser diferente de todos os artigos da lista acima. Não basta trocar o número do título ("5 curiosidades" → "7 curiosidades") — o assunto tem que ser novo.
+- Traga um ângulo específico, dado concreto, exemplo numérico real ou passo a passo acionável. Evite texto genérico que serve pra qualquer blog.
 
 REGRAS:
 - Público: brasileiro, 20-40 anos, quer organizar finanças
@@ -221,18 +233,43 @@ FORMATO DE RESPOSTA (JSON):
   "imageAlt": "Descrição da imagem de capa (para SEO)"
 }
 
-Responda APENAS com o JSON, sem markdown code fence.`,
-    }],
-  })
+Responda APENAS com o JSON, sem markdown code fence.`
 
-  const text = (response.content[0] as { text: string }).text
-  let parsed: { title: string; excerpt: string; content: string; imageAlt: string }
+  // Título do "mesmo tema" (sameTopic) que um já publicado = duplicata → retry.
+  let parsed: { title: string; excerpt: string; content: string; imageAlt: string } | null = null
 
-  try {
-    const clean = text.replace(/```json\n?|\n?```/g, '').trim()
-    parsed = JSON.parse(clean)
-  } catch {
-    return { statusCode: 500, body: { error: 'Failed to parse AI response', raw: text.slice(0, 500) } }
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const warning = attempt === 0
+      ? ''
+      : `\n⚠️ A tentativa anterior gerou um título parecido demais com um artigo já publicado. Escolha um TEMA totalmente diferente desta vez.\n`
+
+    const response = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: buildPrompt(warning) }],
+    })
+
+    const text = (response.content[0] as { text: string }).text
+    let candidate: { title: string; excerpt: string; content: string; imageAlt: string }
+    try {
+      const clean = text.replace(/```json\n?|\n?```/g, '').trim()
+      candidate = JSON.parse(clean)
+    } catch {
+      if (attempt === 2) return { statusCode: 500, body: { error: 'Failed to parse AI response', raw: text.slice(0, 500) } }
+      continue
+    }
+
+    const clash = existingTitles.find(t => sameTopic(candidate.title, t))
+    if (!clash) { parsed = candidate; break }
+
+    // Última tentativa ainda duplicada: pula o dia (melhor não publicar que publicar clone).
+    if (attempt === 2) {
+      return { statusCode: 200, body: { ok: true, skipped: true, reason: 'Todas as tentativas geraram título duplicado', lastTitle: candidate.title, clashWith: clash } }
+    }
+  }
+
+  if (!parsed) {
+    return { statusCode: 200, body: { ok: true, skipped: true, reason: 'Nenhum artigo único gerado' } }
   }
 
   const slug = slugify(parsed.title) + '-' + Date.now().toString(36)
