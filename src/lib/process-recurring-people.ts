@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { Prisma } from '@/generated/prisma/client'
+import { resolveFallbackCategoryId } from '@/lib/category-fallback'
 
 // Generates this month's PersonEntry for every active PersonEntryRecurring
 // template that hasn't been processed yet, mirroring processRecurringBills —
@@ -147,12 +148,7 @@ export async function settlePersonEntry(uid: string, entryId: string) {
   if (!entry || entry.isSettled) return entry
 
   const txType = entry.type === 'I_OWE_THEM' ? 'EXPENSE' : 'INCOME'
-  const categoryId = entry.categoryId ?? (
-    await db.category.findFirst({
-      where:   { OR: [{ isDefault: true }, { userId: uid }] },
-      orderBy: { isDefault: 'desc' },
-    })
-  )?.id ?? null
+  const categoryId = entry.categoryId ?? (await resolveFallbackCategoryId(uid))
   if (!categoryId) throw new Error('Nenhuma categoria encontrada. Configure uma categoria padrão.')
 
   // Atomic claim (WHERE isSettled=false): a double-tap or race calling this

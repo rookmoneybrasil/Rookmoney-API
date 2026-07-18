@@ -39,6 +39,26 @@ export default withAuth(async (req, res, session) => {
       await db.personEntry.deleteMany({
         where: { recurringEntryId: id, userId: uid, isSettled: false, date: { gte: monthStart, lte: monthEnd } },
       })
+    } else if (categoryId !== undefined || description !== undefined || amount !== undefined || notes !== undefined) {
+      // Keep this month's already-generated UNSETTLED entry in sync with the
+      // template. ensureMonthEntry (process-recurring-people.ts) only creates/
+      // adopts an entry — it never re-syncs an existing one — so without this a
+      // category (or value) edit on the recurring doesn't reach the current
+      // month's entry, and settling it snapshots the OLD category into the
+      // Transaction (a null category then falls back to the first default,
+      // "Moradia"). Settled entries stay as history. Mirrors the Contas Fixas fix.
+      const now        = new Date()
+      const monthStart = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1))
+      const monthEnd   = new Date(Date.UTC(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59))
+      await db.personEntry.updateMany({
+        where: { recurringEntryId: id, userId: uid, isSettled: false, date: { gte: monthStart, lte: monthEnd } },
+        data: {
+          ...(categoryId  !== undefined && { categoryId:  categoryId || null }),
+          ...(description !== undefined && { description }),
+          ...(amount      !== undefined && { amount:      parseFloat(amount) }),
+          ...(notes       !== undefined && { notes:       notes || null }),
+        },
+      })
     }
     return ok(res, updated)
   }

@@ -2,6 +2,7 @@ import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, notFound, badRequest } from '@/lib/respond'
 import { checkAchievements } from '@/lib/achievement-checker'
+import { resolveFallbackCategoryId } from '@/lib/category-fallback'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -14,9 +15,7 @@ export default withAuth(async (req, res, session) => {
 
     if (paid && !bill.isPaid) {
       // Resolve categoryId before mutating anything (fail cleanly if missing).
-      const categoryId = bill.categoryId ?? (
-        await db.category.findFirst({ where: { OR: [{ isDefault: true }, { userId: session.userId }] }, orderBy: { isDefault: 'desc' } })
-      )?.id ?? null
+      const categoryId = bill.categoryId ?? (await resolveFallbackCategoryId(session.userId))
 
       if (!categoryId) return badRequest(res, 'Nenhuma categoria encontrada. Configure uma categoria padrão.')
 

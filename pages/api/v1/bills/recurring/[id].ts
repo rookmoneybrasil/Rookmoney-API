@@ -46,6 +46,25 @@ export default withAuth(async (req, res, session) => {
       await db.bill.deleteMany({
         where: { recurringBillId: id, userId: session.userId, isPaid: false, dueDate: { gte: monthStart, lte: monthEnd } },
       })
+    } else if (categoryId !== undefined || name !== undefined || amount !== undefined || notes !== undefined) {
+      // Keep this month's already-generated UNPAID bill in sync with the template.
+      // ensureMonthBill (process-recurring-bills.ts) only creates/adopts a bill —
+      // it never re-syncs an existing one — so without this a category (or value)
+      // edit on the Conta Fixa doesn't reach the current month's bill, and paying
+      // it snapshots the OLD category into the Transaction (a null category then
+      // falls back to the first default, "Moradia"). Paid bills stay as history.
+      const now        = new Date()
+      const monthStart = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1))
+      const monthEnd   = new Date(Date.UTC(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59))
+      await db.bill.updateMany({
+        where: { recurringBillId: id, userId: session.userId, isPaid: false, dueDate: { gte: monthStart, lte: monthEnd } },
+        data: {
+          ...(categoryId !== undefined && { categoryId: categoryId || null }),
+          ...(name       !== undefined && { name }),
+          ...(amount     !== undefined && { amount: parseFloat(amount) }),
+          ...(notes      !== undefined && { notes: notes || null }),
+        },
+      })
     }
     return ok(res, updated)
   }

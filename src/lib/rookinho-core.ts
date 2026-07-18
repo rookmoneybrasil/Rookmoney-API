@@ -5,6 +5,7 @@ import { sendGoalCompletedEmail } from './email'
 import { autoProcessMonth } from './auto-process'
 import { computePersonBalances } from './person-balances'
 import { processRecurringBills } from './process-recurring-bills'
+import { resolveFallbackCategoryId } from './category-fallback'
 import { parseISO, format, startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { ptBR } from 'date-fns/locale'
@@ -433,8 +434,7 @@ async function findCategory(userId: string, name?: string): Promise<string | und
     const cat = await db.category.findFirst({ where: { name: { contains: name, mode: 'insensitive' }, OR: [{ isDefault: true }, { userId }] } })
     if (cat) return cat.id
   }
-  const fallback = await db.category.findFirst({ where: { OR: [{ isDefault: true }, { userId }] }, orderBy: { isDefault: 'desc' } })
-  return fallback?.id
+  return (await resolveFallbackCategoryId(userId)) ?? undefined
 }
 
 export function money(v: unknown): string {
@@ -822,10 +822,8 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       // Mesma escolha de categoria do endpoint REST: prefere "Poupanca", senao a padrao.
       const cat = (await db.category.findFirst({
         where: { name: { contains: 'Poupan', mode: 'insensitive' }, OR: [{ isDefault: true }, { userId }] },
-      })) ?? (await db.category.findFirst({
-        where: { OR: [{ isDefault: true }, { userId }] }, orderBy: { isDefault: 'desc' },
-      }))
-      if (!cat) return 'Erro: nenhuma categoria disponivel pra registrar o aporte.'
+      })) ?? { id: await resolveFallbackCategoryId(userId) }
+      if (!cat.id) return 'Erro: nenhuma categoria disponivel pra registrar o aporte.'
 
       // A Transaction "Aporte — X" e obrigatoria: sem ela o aporte nao entra no
       // resumo/dashboard, e withdraw_from_goal/delete_goal (que procuram por essa

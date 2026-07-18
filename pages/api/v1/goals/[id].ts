@@ -4,6 +4,7 @@ import { ok, created, noContent, notFound, badRequest } from '@/lib/respond'
 import { parseISO } from 'date-fns'
 import { checkAchievements } from '@/lib/achievement-checker'
 import { sendGoalCompletedEmail } from '@/lib/email'
+import { resolveFallbackCategoryId } from '@/lib/category-fallback'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -16,12 +17,13 @@ export default withAuth(async (req, res, session) => {
     const goal = await db.goal.findFirst({ where: { id, userId: session.userId } })
     if (!goal) return notFound(res)
 
-    // Use provided categoryId, otherwise look for a savings category
-    const cat = categoryId ? { id: categoryId } : await db.category.findFirst({
-      where: { name: { contains: 'Poupan', mode: 'insensitive' }, OR: [{ isDefault: true }, { userId: session.userId }] },
-    }) ?? await db.category.findFirst({
-      where: { OR: [{ isDefault: true }, { userId: session.userId }] }, orderBy: { isDefault: 'desc' },
-    })
+    // Use provided categoryId, otherwise a savings category, else the shared
+    // neutral fallback ("Outros", not "Moradia").
+    const cat = categoryId
+      ? { id: categoryId }
+      : (await db.category.findFirst({
+          where: { name: { contains: 'Poupan', mode: 'insensitive' }, OR: [{ isDefault: true }, { userId: session.userId }] },
+        })) ?? { id: await resolveFallbackCategoryId(session.userId) }
 
     if (!cat?.id) return badRequest(res, 'Categoria não encontrada. Configure uma categoria padrão.')
 

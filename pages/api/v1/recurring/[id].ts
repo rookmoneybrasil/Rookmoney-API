@@ -32,10 +32,12 @@ export default withAuth(async (req, res, session) => {
       },
       include: { category: { select: { id: true, name: true, icon: true, color: true } } },
     })
-    // If amount or name changed and already auto-generated a transaction this month, update it
+    // If value / name / category changed and a transaction was already auto-
+    // generated this month, sync it too — otherwise a category-only edit never
+    // reaches the current month's transaction (it kept the old category).
     const now = new Date()
     const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-    if (item.lastAutoMonth === yearMonth && (amount !== undefined || name !== undefined)) {
+    if (item.lastAutoMonth === yearMonth && (amount !== undefined || name !== undefined || categoryId !== undefined)) {
       await db.transaction.updateMany({
         where: {
           userId:      session.userId,
