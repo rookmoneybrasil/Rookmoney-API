@@ -91,6 +91,19 @@ export default withAuth(async (req, res, session) => {
         ...(notes       !== undefined && { notes: notes || null }),
       },
     })
+
+    // If this bill was already paid, re-file its generated Transaction to the
+    // new category too (only the category — value/description stay as the
+    // historical record). Same fix as the recurring template PATCH.
+    if (categoryId !== undefined && bill.paidTransactionId) {
+      const txCategoryId = categoryId || (await resolveFallbackCategoryId(session.userId))
+      if (txCategoryId) {
+        await db.transaction.updateMany({
+          where: { id: bill.paidTransactionId, userId: session.userId },
+          data:  { categoryId: txCategoryId },
+        })
+      }
+    }
     return ok(res, updated)
   }
 

@@ -1,6 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, notFound, badRequest } from '@/lib/respond'
+import { resolveFallbackCategoryId } from '@/lib/category-fallback'
 
 export default withAuth(async (req, res, session) => {
   const id       = req.query.id as string
@@ -33,6 +34,30 @@ export default withAuth(async (req, res, session) => {
       },
       include: { category: { select: { id: true, name: true, icon: true, color: true } } },
     })
+
+    // Propagate a category change to the Transactions this template's PAID bills
+    // already generated (linked via Bill.paidTransactionId) — otherwise editing
+    // the Conta Fixa's category leaves every past/current payment's Transaction
+    // stuck on the old category (the "troquei a categoria da conta mas a
+    // transação continua Moradia" report). Only the category is re-filed, never
+    // amount/name: a Transaction's value/description is a historical financial
+    // fact, its category is a classification that's safe to correct retroactively.
+    if (categoryId !== undefined) {
+      const txCategoryId = categoryId || (await resolveFallbackCategoryId(session.userId))
+      if (txCategoryId) {
+        const paidBills = await db.bill.findMany({
+          where:  { recurringBillId: id, userId: session.userId, paidTransactionId: { not: null } },
+          select: { paidTransactionId: true },
+        })
+        const txIds = paidBills.map(b => b.paidTransactionId).filter((v): v is string => !!v)
+        if (txIds.length) {
+          await db.transaction.updateMany({
+            where: { id: { in: txIds }, userId: session.userId },
+            data:  { categoryId: txCategoryId },
+          })
+        }
+      }
+    }
 
     // Pausing a template removes THIS month's obligation (rule: "desativar para
     // o mês atual e futuros"). Delete only the current-month UNPAID generated

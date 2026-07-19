@@ -1,6 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, notFound } from '@/lib/respond'
+import { resolveFallbackCategoryId } from '@/lib/category-fallback'
 
 export default withAuth(async (req, res, session) => {
   const id  = req.query.id as string
@@ -27,6 +28,27 @@ export default withAuth(async (req, res, session) => {
         category: { select: { id: true, name: true, icon: true, color: true } },
       },
     })
+
+    // Re-file the Transactions this template's SETTLED entries already generated
+    // (linked via PersonEntry.settledTransactionId) to the new category — mirrors
+    // the Contas Fixas fix so a category edit reaches past/current settlements
+    // instead of leaving them stuck on the old category. Category only.
+    if (categoryId !== undefined) {
+      const txCategoryId = categoryId || (await resolveFallbackCategoryId(uid))
+      if (txCategoryId) {
+        const settled = await db.personEntry.findMany({
+          where:  { recurringEntryId: id, userId: uid, settledTransactionId: { not: null } },
+          select: { settledTransactionId: true },
+        })
+        const txIds = settled.map(e => e.settledTransactionId).filter((v): v is string => !!v)
+        if (txIds.length) {
+          await db.transaction.updateMany({
+            where: { id: { in: txIds }, userId: uid },
+            data:  { categoryId: txCategoryId },
+          })
+        }
+      }
+    }
 
     // Pausing removes THIS month's obligation (rule: "desativar para o mês atual
     // e futuros"). Delete only the current-month UNSETTLED generated entry so it
