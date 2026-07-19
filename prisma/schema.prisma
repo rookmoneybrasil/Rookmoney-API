@@ -69,6 +69,7 @@ model User {
   updatedAt           DateTime  @updatedAt
 
   transactions          Transaction[]
+  accounts              Account[]
   categories            Category[]
   goals                 Goal[]
   bills                 Bill[]
@@ -126,15 +127,47 @@ model Transaction {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  accountId  String?
+  account    Account? @relation(fields: [accountId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([userId, date])
   @@index([categoryId])
+  @@index([accountId])
 }
 
 enum TransactionType {
   INCOME
   EXPENSE
+}
+
+// ─── Account (Carteira / conta bancária / cartão) ────────────────────
+
+model Account {
+  id             String      @id @default(cuid())
+  name           String
+  type           AccountType @default(CASH)
+  icon           String      @default("💳")
+  color          String      @default("#3B82F6")
+  initialBalance Decimal     @default(0) @db.Decimal(12, 2)
+  isDefault      Boolean     @default(false)
+  archived       Boolean     @default(false)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+
+  @@index([userId])
+}
+
+enum AccountType {
+  CASH
+  CHECKING
+  SAVINGS
+  CREDIT_CARD
 }
 
 // ─── RecurringTransaction ────────────────────────────────────────────

@@ -5,6 +5,7 @@ export interface PlanLimits {
   bills:                number | null
   goals:                number | null
   people:               number | null
+  accounts:             number | null  // carteiras/contas bancárias
   customCategories:     number | null
   recurring:            number | null
   budget:               boolean
@@ -23,6 +24,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     bills:                5,
     goals:                2,
     people:               2,
+    accounts:             2,
     customCategories:     3,
     recurring:            2,
     budget:               false,
@@ -39,6 +41,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     bills:                null,
     goals:                null,
     people:               null,
+    accounts:             null,
     customCategories:     null,
     recurring:            null,
     budget:               true,
@@ -55,6 +58,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     bills:                null,
     goals:                null,
     people:               null,
+    accounts:             null,
     customCategories:     null,
     recurring:            null,
     budget:               true,

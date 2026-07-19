@@ -17,6 +17,16 @@ export const TransactionType = {
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType]
 
 
+export const AccountType = {
+  CASH: 'CASH',
+  CHECKING: 'CHECKING',
+  SAVINGS: 'SAVINGS',
+  CREDIT_CARD: 'CREDIT_CARD'
+} as const
+
+export type AccountType = (typeof AccountType)[keyof typeof AccountType]
+
+
 export const RecurringFreq = {
   WEEKLY: 'WEEKLY',
   MONTHLY: 'MONTHLY',

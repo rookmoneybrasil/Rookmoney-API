@@ -390,6 +390,30 @@ const MIGRATIONS: Migration[] = [
       }
     },
   },
+
+  // ─── 2026-07-19 ─────────────────────────────────────────────────────
+  {
+    // Every user gets a default "Carteira" account, and all their existing
+    // Transactions are pointed at it — so account balances = full history from
+    // day one. Idempotent: skips users who already have an account, and only
+    // backfills transactions whose accountId is still null.
+    id:  '2026-07-19-default-account-backfill',
+    run: async (db) => {
+      const users = await db.user.findMany({ select: { id: true } })
+      for (const { id: userId } of users) {
+        const existing = await db.account.findFirst({ where: { userId } })
+        const account = existing ?? await db.account.create({
+          data: { userId, name: 'Carteira', type: 'CASH', icon: '👛', color: '#22C55E', isDefault: true },
+        })
+        // Point this user's un-assigned transactions at their default account.
+        await db.transaction.updateMany({
+          where: { userId, accountId: null },
+          data:  { accountId: account.id },
+        })
+      }
+      console.log(`[data-migration] default account + transaction backfill done for ${users.length} users`)
+    },
+  },
 ]
 
 async function backfillPersonRecurringFk(db: PrismaClient, opts: { tagSettledInAmbiguousGroups?: boolean } = {}) {
