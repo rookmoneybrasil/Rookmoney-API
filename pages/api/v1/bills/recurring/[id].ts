@@ -95,8 +95,24 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'DELETE') {
-    // Delete all unpaid generated bills from this template, then delete template
-    await db.bill.deleteMany({ where: { recurringBillId: id, userId: session.userId, isPaid: false } })
+    // ?deleteHistory=true also wipes the PAID bills this template generated and
+    // their linked Transactions (a full clean slate). Default keeps them: the
+    // paid months are real expenses, so deleting the template only removes the
+    // template + its unpaid bills and leaves history intact.
+    const deleteHistory = req.query.deleteHistory === 'true'
+    if (deleteHistory) {
+      const paid = await db.bill.findMany({
+        where:  { recurringBillId: id, userId: session.userId, paidTransactionId: { not: null } },
+        select: { paidTransactionId: true },
+      })
+      const txIds = paid.map(b => b.paidTransactionId).filter((v): v is string => !!v)
+      if (txIds.length > 0) {
+        await db.transaction.deleteMany({ where: { id: { in: txIds }, userId: session.userId } })
+      }
+      await db.bill.deleteMany({ where: { recurringBillId: id, userId: session.userId } })
+    } else {
+      await db.bill.deleteMany({ where: { recurringBillId: id, userId: session.userId, isPaid: false } })
+    }
     await db.recurringBill.delete({ where: { id } })
     return noContent(res)
   }
