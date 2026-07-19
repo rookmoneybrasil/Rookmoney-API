@@ -108,6 +108,25 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'DELETE') {
+    // Granular delete for installment parcelas (?scope=one|future|all).
+    // 'one' (default) = just this bill; 'future' = this + every later parcela of
+    // the same group (dueDate >= this); 'all' = the whole group. Non-installment
+    // bills ignore scope and delete only themselves. Linked paid transactions of
+    // every targeted bill are removed too.
+    const scope = (req.query.scope as string) || 'one'
+    if (bill.installmentGroupId && (scope === 'future' || scope === 'all')) {
+      const where = scope === 'all'
+        ? { installmentGroupId: bill.installmentGroupId, userId: session.userId }
+        : { installmentGroupId: bill.installmentGroupId, userId: session.userId, dueDate: { gte: bill.dueDate } }
+      const targeted = await db.bill.findMany({ where, select: { paidTransactionId: true } })
+      const txIds = targeted.map(b => b.paidTransactionId).filter((v): v is string => !!v)
+      if (txIds.length > 0) {
+        await db.transaction.deleteMany({ where: { id: { in: txIds }, userId: session.userId } })
+      }
+      await db.bill.deleteMany({ where })
+      return noContent(res)
+    }
+
     if (bill.paidTransactionId) {
       await db.transaction.deleteMany({ where: { id: bill.paidTransactionId, userId: session.userId } })
     }
