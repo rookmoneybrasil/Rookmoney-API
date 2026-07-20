@@ -53,6 +53,17 @@ export default withAuth(async (req, res, session) => {
         where: { accountId: id, userId: session.userId },
         data:  { accountId: fallback.id },
       })
+      // The opening balance has to move with the transactions. Balance is
+      // computed (initialBalance + Σ transactions), so deleting the account
+      // without carrying its initialBalance over makes the TOTAL silently drop
+      // by that amount — money vanishing from the user's screen, which is the
+      // same failure the reassignment above exists to prevent.
+      if (Number(account.initialBalance) !== 0) {
+        await db.account.update({
+          where: { id: fallback.id },
+          data:  { initialBalance: { increment: account.initialBalance } },
+        })
+      }
     }
 
     await db.account.delete({ where: { id } })
