@@ -6,7 +6,7 @@ import { cleanupExpiredLimits } from '@/lib/rate-limit'
 import { sendPush, isValidPushToken } from '@/lib/push'
 import { processRecurringPersonEntries } from '@/lib/process-recurring-people'
 import { processRecurringBills } from '@/lib/process-recurring-bills'
-import { processAutoIncome, processAutoRecurring } from '@/lib/auto-process'
+import { processAutoIncome } from '@/lib/auto-process'
 import { trackCronRun } from '@/lib/cron-tracking'
 
 async function migrateOldRecurring(userId: string) {
@@ -46,7 +46,7 @@ async function migrateOldRecurring(userId: string) {
   }
 }
 
-// processAutoIncome/processAutoRecurring vivem em api/src/lib/auto-process.ts,
+// processAutoIncome vive em api/src/lib/auto-process.ts,
 // compartilhados com a dashboard, o get_summary do Rookinho e o menu do WhatsApp.
 // A copia que existia aqui tinha DIVERGIDO: pulava a renda com dayOfMonth null
 // (`if (!src.dayOfMonth) continue`) enquanto a dashboard tratava null como dia 1 —
@@ -588,7 +588,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         try {
           await migrateOldRecurring(user.id)
           await processAutoIncome(user.id)
-          await processAutoRecurring(user.id)
           await processRecurringPersonEntries(user.id)
           await processRecurringBills(user.id)
           processed++

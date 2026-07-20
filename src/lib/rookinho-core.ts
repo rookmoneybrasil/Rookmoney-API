@@ -991,10 +991,6 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
             data: { lastAutoPayMonth: null },
           })
         }
-        await db.recurringTransaction.updateMany({
-          where: { userId, name: tx.description, type: tx.type, lastAutoMonth: yearMonth },
-          data: { lastAutoMonth: null },
-        })
       }
       await db.transaction.deleteMany({ where: { id: tx.id, userId } })
       return `Transacao "${tx.description ?? '(sem descricao)'}" de ${money(tx.amount)} excluida.`

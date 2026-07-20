@@ -7,7 +7,6 @@ export interface PlanLimits {
   people:               number | null
   accounts:             number | null  // carteiras/contas bancárias
   customCategories:     number | null
-  recurring:            number | null
   budget:               boolean
   reports:              boolean
   projection:           boolean
@@ -26,7 +25,6 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     people:               2,
     accounts:             2,
     customCategories:     3,
-    recurring:            2,
     budget:               false,
     reports:              false,
     projection:           false,
@@ -43,7 +41,6 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     people:               null,
     accounts:             null,
     customCategories:     null,
-    recurring:            null,
     budget:               true,
     reports:              true,
     projection:           true,
@@ -60,7 +57,6 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     people:               null,
     accounts:             null,
     customCategories:     null,
-    recurring:            null,
     budget:               true,
     reports:              true,
     projection:           true,

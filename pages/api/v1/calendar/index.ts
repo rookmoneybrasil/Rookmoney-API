@@ -6,7 +6,7 @@ import { startOfMonth, endOfMonth, format } from 'date-fns'
 export type CalendarEvent = {
   id:       string
   day:      number   // 1-31
-  type:     'bill' | 'income' | 'recurring'
+  type:     'bill' | 'income'
   label:    string
   amount:   number
   status:   'pending' | 'paid' | 'overdue' | 'expected' | 'received'
@@ -26,7 +26,7 @@ export default withAuth(async (req, res, session) => {
   const maxDay    = end.getDate()
   const uid       = session.userId
 
-  const [bills, incomeSources, recurring, recurringBills] = await Promise.all([
+  const [bills, incomeSources, recurringBills] = await Promise.all([
     db.bill.findMany({
       where:   { userId: uid, dueDate: { gte: start, lte: end } },
       select:  { id: true, name: true, amount: true, dueDate: true, isPaid: true, recurringBillId: true },
@@ -37,11 +37,6 @@ export default withAuth(async (req, res, session) => {
     db.incomeSource.findMany({
       where:  { userId: uid, isRecurring: true },
       select: { id: true, name: true, amount: true, dayOfMonth: true, lastAutoPayMonth: true, startDate: true },
-    }),
-
-    db.recurringTransaction.findMany({
-      where:  { userId: uid, isActive: true, frequency: 'MONTHLY' },
-      select: { id: true, name: true, amount: true, type: true, dayOfMonth: true },
     }),
 
     // Bug 1 fix: fetch RecurringBill templates for future months
@@ -103,22 +98,6 @@ export default withAuth(async (req, res, session) => {
       status: alreadyReceived ? 'received' : 'expected',
       href:   '/income',
       color:  alreadyReceived ? 'success' : 'success',
-    })
-  }
-
-  // ── Recurring transactions ────────────────────────────────────────────────────
-  for (const r of recurring) {
-    const day = Math.min(r.dayOfMonth ?? 1, maxDay)
-    if (day < 1 || day > maxDay) continue
-    events.push({
-      id:     `rec-${r.id}`,
-      day,
-      type:   'recurring',
-      label:  r.name,
-      amount: Number(r.amount),
-      status: r.type === 'INCOME' ? 'expected' : 'pending',
-      href:   '/recurring',
-      color:  r.type === 'INCOME' ? 'success' : 'warning',
     })
   }
 

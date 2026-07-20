@@ -21,7 +21,6 @@ import { resolveDefaultAccountId } from './account-balances'
 export async function autoProcessMonth(userId: string): Promise<void> {
   await Promise.allSettled([
     processAutoIncome(userId),
-    processAutoRecurring(userId),
     processRecurringBills(userId),
     processRecurringPersonEntries(userId),
   ])
@@ -47,20 +46,3 @@ export async function processAutoIncome(uid: string): Promise<void> {
   }
 }
 
-/** Gera a Transaction das RecurringTransaction mensais cujo dia ja passou. */
-export async function processAutoRecurring(uid: string): Promise<void> {
-  const now       = new Date()
-  const today     = now.getDate()
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-  const items     = await db.recurringTransaction.findMany({ where: { userId: uid, isActive: true, frequency: 'MONTHLY' } })
-  for (const item of items) {
-    if (item.lastAutoMonth === yearMonth) continue
-    if (!item.categoryId) continue
-    const day = item.dayOfMonth ?? 1
-    if (today < day) continue
-    await db.$transaction([
-      db.transaction.create({ data: { amount: item.amount, type: item.type, description: item.name, date: new Date(now.getFullYear(), now.getMonth(), day), userId: uid, categoryId: item.categoryId, accountId: await resolveDefaultAccountId(uid) } }),
-      db.recurringTransaction.update({ where: { id: item.id }, data: { lastAutoMonth: yearMonth } }),
-    ])
-  }
-}

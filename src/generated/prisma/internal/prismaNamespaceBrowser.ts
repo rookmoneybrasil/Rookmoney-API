@@ -55,7 +55,6 @@ export const ModelName = {
   Category: 'Category',
   Transaction: 'Transaction',
   Account: 'Account',
-  RecurringTransaction: 'RecurringTransaction',
   Goal: 'Goal',
   GoalContribution: 'GoalContribution',
   Budget: 'Budget',
@@ -201,25 +200,6 @@ export const AccountScalarFieldEnum = {
 } as const
 
 export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
-
-
-export const RecurringTransactionScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  amount: 'amount',
-  type: 'type',
-  frequency: 'frequency',
-  dayOfMonth: 'dayOfMonth',
-  description: 'description',
-  isActive: 'isActive',
-  lastAutoMonth: 'lastAutoMonth',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  userId: 'userId',
-  categoryId: 'categoryId'
-} as const
-
-export type RecurringTransactionScalarFieldEnum = (typeof RecurringTransactionScalarFieldEnum)[keyof typeof RecurringTransactionScalarFieldEnum]
 
 
 export const GoalScalarFieldEnum = {

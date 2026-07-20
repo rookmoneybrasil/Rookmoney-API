@@ -31,7 +31,6 @@ export async function getProjection(uid: string, months: number): Promise<Projec
   const [
     incomeSources,
     recurringBillTemplates,  // RecurringBill templates, not old isRecurring bills
-    recurringTxs,
     personPayables,          // I_OWE_THEM, unsettled, all dates
     personReceivables,       // THEY_OWE_ME, unsettled, all dates
     personRecurringAll,      // PersonEntryRecurring, active, both types
@@ -47,10 +46,6 @@ export async function getProjection(uid: string, months: number): Promise<Projec
     db.recurringBill.findMany({
       where:  { userId: uid, isActive: true },
       select: { id: true, name: true, amount: true, dayOfMonth: true, lastAutoMonth: true, startMonth: true },
-    }),
-    db.recurringTransaction.findMany({
-      where:  { userId: uid, isActive: true, frequency: 'MONTHLY' },
-      select: { id: true, name: true, amount: true, dayOfMonth: true, type: true, lastAutoMonth: true },
     }),
     db.personEntry.findMany({
       where:   { userId: uid, type: 'I_OWE_THEM', isSettled: false },
@@ -270,24 +265,6 @@ export async function getProjection(uid: string, months: number): Promise<Projec
           })
         }
 
-        // RecurringTransaction templates not yet auto-processed this month
-        for (const r of recurringTxs) {
-          if (r.lastAutoMonth === curKey) continue
-          const matchType = r.type === 'INCOME' ? 'INCOME' : 'EXPENSE'
-          const alreadyIn = monthTxs.some(t => t.type === matchType && (t.description ?? t.category.name) === r.name)
-          if (alreadyIn) continue
-          const item: ProjectionItem = {
-            id:     `rec-pending-${r.id}-${mKey}`,
-            label:  r.name,
-            amount: Number(r.amount),
-            day:    Math.min(r.dayOfMonth ?? 1, maxDay),
-            type:   'recurring',
-            href:   r.type === 'INCOME' ? '/income' : '/bills',
-            actual: false,
-          }
-          if (r.type === 'INCOME') incomeItems.push(item)
-          else                     expenseItems.push(item)
-        }
       }
     } else {
       // Future months: pure projection — only include sources active in this month
@@ -301,17 +278,6 @@ export async function getProjection(uid: string, months: number): Promise<Projec
           type:   'income',
           href:   '/income',
         }))
-
-      for (const r of recurringTxs.filter(r => r.type === 'INCOME')) {
-        incomeItems.push({
-          id:     `rec-${r.id}-${mKey}`,
-          label:  r.name,
-          amount: Number(r.amount),
-          day:    Math.min(r.dayOfMonth ?? 1, maxDay),
-          type:   'recurring',
-          href:   '/income',
-        })
-      }
 
       // RecurringBill templates fill in months where no Bill instance has been generated yet
       // (upcomingBills already covers generated instances — avoid duplicates)
@@ -333,16 +299,6 @@ export async function getProjection(uid: string, months: number): Promise<Projec
         })
       }
 
-      for (const r of recurringTxs.filter(r => r.type === 'EXPENSE')) {
-        expenseItems.push({
-          id:     `rec-${r.id}-${mKey}`,
-          label:  r.name,
-          amount: Number(r.amount),
-          day:    Math.min(r.dayOfMonth ?? 1, maxDay),
-          type:   'recurring',
-          href:   '/bills',
-        })
-      }
 
       for (const b of upcomingBills) {
         const due = new Date(b.dueDate)

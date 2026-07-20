@@ -25,7 +25,6 @@ export default withAuth(async (req, res, session) => {
     goalsCount,
     peopleCount,
     customCategoriesCount,
-    recurringCount,
   ] = await Promise.all([
     db.user.findUnique({
       where:  { id: uid },
@@ -40,7 +39,6 @@ export default withAuth(async (req, res, session) => {
     db.goal.count({ where: { userId: uid, isCompleted: false } }),
     db.person.count({ where: { userId: uid } }),
     db.category.count({ where: { userId: uid, isDefault: false } }),
-    db.recurringTransaction.count({ where: { userId: uid, isActive: true } }),
   ])
 
   const overBudgetCount = budgets.filter(b => {
@@ -61,7 +59,6 @@ export default withAuth(async (req, res, session) => {
       goals:                 goalsCount,
       people:                peopleCount,
       customCategories:      customCategoriesCount,
-      recurring:             recurringCount,
     },
     limits: {
       transactionsPerMonth: limits.transactionsPerMonth,
@@ -69,7 +66,6 @@ export default withAuth(async (req, res, session) => {
       goals:                limits.goals,
       people:               limits.people,
       customCategories:     limits.customCategories,
-      recurring:            limits.recurring,
       budget:               limits.budget,
       reports:              limits.reports,
       projection:           limits.projection,

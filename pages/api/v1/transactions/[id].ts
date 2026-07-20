@@ -57,10 +57,6 @@ export default withAuth(async (req, res, session) => {
           data:  { lastAutoPayMonth: null },
         })
       }
-      await db.recurringTransaction.updateMany({
-        where: { userId: session.userId, name: tx.description, type: tx.type, lastAutoMonth: yearMonth },
-        data:  { lastAutoMonth: null },
-      })
     }
 
     await db.transaction.deleteMany({ where: { id, userId: session.userId } })

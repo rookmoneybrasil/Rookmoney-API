@@ -48,7 +48,6 @@ export default withAuth(async (req, res, session) => {
     upcomingPeopleReceivable,
     // Used to classify month income transactions as fixed/recurring vs avulso (name-matching)
     recurringIncomeSources,
-    recurringTransactionItems,
     budgets,                   // Fix 3: needed for overBudgetCount
     currentMonthPersonEntries, // for recurring duplicate detection (description-match)
   ], projResult] = await Promise.all([
@@ -157,7 +156,6 @@ export default withAuth(async (req, res, session) => {
 
     // Used to classify month income transactions as fixed/recurring vs avulso (name-matching)
     db.incomeSource.findMany({ where: { userId: uid, isRecurring: true }, select: { id: true, name: true, amount: true } }),
-    db.recurringTransaction.findMany({ where: { userId: uid, isActive: true, frequency: 'MONTHLY' }, select: { id: true, name: true, amount: true, type: true } }),
 
     // Fix 3: budgets for overBudgetCount — merged into main Promise.all
     db.budget.findMany({ where: { userId: uid, month: yearMonth }, select: { categoryId: true, amount: true } }),
@@ -183,7 +181,6 @@ export default withAuth(async (req, res, session) => {
   // Transaction has no FK back to its originating template, so name-matching is the best signal.
   const recurringIncomeNames = new Set([
     ...(recurringIncomeSources as { name: string }[]).map(s => s.name),
-    ...(recurringTransactionItems as { name: string; type: string }[]).filter(t => t.type === 'INCOME').map(t => t.name),
   ])
   const monthIncomeTransactions = (monthIncomeTx as { id: string; description: string | null }[]).map(tx => ({
     ...tx,

@@ -263,23 +263,6 @@ export type EnumAccountTypeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumAccountTypeFilter<$PrismaModel>
 }
 
-export type EnumRecurringFreqFilter<$PrismaModel = never> = {
-  equals?: $Enums.RecurringFreq | Prisma.EnumRecurringFreqFieldRefInput<$PrismaModel>
-  in?: $Enums.RecurringFreq[] | Prisma.ListEnumRecurringFreqFieldRefInput<$PrismaModel>
-  notIn?: $Enums.RecurringFreq[] | Prisma.ListEnumRecurringFreqFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumRecurringFreqFilter<$PrismaModel> | $Enums.RecurringFreq
-}
-
-export type EnumRecurringFreqWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.RecurringFreq | Prisma.EnumRecurringFreqFieldRefInput<$PrismaModel>
-  in?: $Enums.RecurringFreq[] | Prisma.ListEnumRecurringFreqFieldRefInput<$PrismaModel>
-  notIn?: $Enums.RecurringFreq[] | Prisma.ListEnumRecurringFreqFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumRecurringFreqWithAggregatesFilter<$PrismaModel> | $Enums.RecurringFreq
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumRecurringFreqFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumRecurringFreqFilter<$PrismaModel>
-}
-
 export type EnumIncomeSourceTypeFilter<$PrismaModel = never> = {
   equals?: $Enums.IncomeSourceType | Prisma.EnumIncomeSourceTypeFieldRefInput<$PrismaModel>
   in?: $Enums.IncomeSourceType[] | Prisma.ListEnumIncomeSourceTypeFieldRefInput<$PrismaModel>
@@ -625,23 +608,6 @@ export type NestedEnumAccountTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAccountTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAccountTypeFilter<$PrismaModel>
-}
-
-export type NestedEnumRecurringFreqFilter<$PrismaModel = never> = {
-  equals?: $Enums.RecurringFreq | Prisma.EnumRecurringFreqFieldRefInput<$PrismaModel>
-  in?: $Enums.RecurringFreq[] | Prisma.ListEnumRecurringFreqFieldRefInput<$PrismaModel>
-  notIn?: $Enums.RecurringFreq[] | Prisma.ListEnumRecurringFreqFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumRecurringFreqFilter<$PrismaModel> | $Enums.RecurringFreq
-}
-
-export type NestedEnumRecurringFreqWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.RecurringFreq | Prisma.EnumRecurringFreqFieldRefInput<$PrismaModel>
-  in?: $Enums.RecurringFreq[] | Prisma.ListEnumRecurringFreqFieldRefInput<$PrismaModel>
-  notIn?: $Enums.RecurringFreq[] | Prisma.ListEnumRecurringFreqFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumRecurringFreqWithAggregatesFilter<$PrismaModel> | $Enums.RecurringFreq
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumRecurringFreqFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumRecurringFreqFilter<$PrismaModel>
 }
 
 export type NestedEnumIncomeSourceTypeFilter<$PrismaModel = never> = {
