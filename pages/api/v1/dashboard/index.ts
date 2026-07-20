@@ -4,6 +4,7 @@ import { ok } from '@/lib/respond'
 import { startOfMonth, endOfMonth, subMonths, addDays, subDays, format } from 'date-fns'
 import { getProjection, type ProjectionItem } from '@/lib/projection'
 import { autoProcessMonth } from '@/lib/auto-process'
+import { computeAccountBalances } from '@/lib/account-balances'
 
 // Data migrations are centralized in api/src/lib/data-migrations.ts
 // O auto-process vive em api/src/lib/auto-process.ts — o get_summary do Rookinho
@@ -300,8 +301,12 @@ export default withAuth(async (req, res, session) => {
     insight = `Você está no dia ${dayOfMonth} de ${daysInMonth}. Continue monitorando seus gastos!`
   }
 
+  const accounts = await computeAccountBalances(uid)
+
   return ok(res, {
     userName:              user?.name ?? '',
+    accounts,
+    accountsTotal:         accounts.filter(a => !a.archived).reduce((s, a) => s + a.balance, 0),
     monthBalance:          totalIncome - totalExpense,
     monthIncome:           totalIncome,
     monthExpense:          totalExpense,
