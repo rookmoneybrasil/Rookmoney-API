@@ -1,5 +1,6 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
+import { validateAccountId } from '@/lib/account-balances'
 import { ok, created, badRequest } from '@/lib/respond'
 
 export default withAuth(async (req, res, session) => {
@@ -14,14 +15,14 @@ export default withAuth(async (req, res, session) => {
     const personId = req.query.personId as string | undefined
     const items = await db.personEntryRecurring.findMany({
       where:   { userId: uid, ...(personId ? { personId } : {}) },
-      include: { person: { select: { id: true, name: true, color: true } }, category: { select: { id: true, name: true, icon: true, color: true } } },
+      include: { person: { select: { id: true, name: true, color: true } }, category: { select: { id: true, name: true, icon: true, color: true } }, account: { select: { id: true, name: true, icon: true, color: true } } },
       orderBy: { createdAt: 'desc' },
     })
     return ok(res, items)
   }
 
   if (req.method === 'POST') {
-    const { personId, type, description, amount, dayOfMonth = 1, firstDate, notes, categoryId } = req.body
+    const { personId, type, description, amount, dayOfMonth = 1, firstDate, notes, categoryId, accountId } = req.body
     if (!personId || !type || !description || !amount) return badRequest(res, 'Campos obrigatórios faltando.')
     if (!['THEY_OWE_ME', 'I_OWE_THEM'].includes(type)) return badRequest(res, 'Tipo inválido.')
     const amountNum = parseFloat(amount)
@@ -33,6 +34,8 @@ export default withAuth(async (req, res, session) => {
     // Verify person belongs to user
     const person = await db.person.findFirst({ where: { id: personId, userId: uid } })
     if (!person) return badRequest(res, 'Pessoa não encontrada.')
+
+    const accId = (await validateAccountId(uid, accountId)) ?? null
 
     const now        = new Date()
     const yearMonth  = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
@@ -63,11 +66,12 @@ export default withAuth(async (req, res, session) => {
         dayOfMonth: parsedDay,
         notes:      notes || null,
         categoryId: categoryId || null,
+        accountId:  accId,
         startMonth,
         // Mark this month as processed if we're creating the first entry now
         lastMonth:  shouldCreateFirst ? yearMonth : null,
       },
-      include: { person: { select: { id: true, name: true, color: true } }, category: { select: { id: true, name: true, icon: true, color: true } } },
+      include: { person: { select: { id: true, name: true, color: true } }, category: { select: { id: true, name: true, icon: true, color: true } }, account: { select: { id: true, name: true, icon: true, color: true } } },
     })
 
     // Create the first PersonEntry immediately if firstDate is today or already passed.
@@ -87,6 +91,7 @@ export default withAuth(async (req, res, session) => {
           amount:      amountNum,
           date:        firstDateObj,
           categoryId:  categoryId || null,
+          accountId:   accId,
           notes:       notes || null,
           recurringEntryId: item.id,
           recurringMonth:   yearMonth,

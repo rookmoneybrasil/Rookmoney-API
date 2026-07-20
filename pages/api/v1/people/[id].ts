@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { ok, noContent, created, notFound } from '@/lib/respond'
 import { checkAchievements } from '@/lib/achievement-checker'
 import { processRecurringPersonEntries } from '@/lib/process-recurring-people'
+import { validateAccountId } from '@/lib/account-balances'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -15,7 +16,7 @@ export default withAuth(async (req, res, session) => {
 
     const person = await db.person.findFirst({
       where:   { id, userId: session.userId },
-      include: { entries: { include: { category: { select: { id: true, name: true, icon: true, color: true } } }, orderBy: { date: 'desc' } } },
+      include: { entries: { include: { category: { select: { id: true, name: true, icon: true, color: true } }, account: { select: { id: true, name: true, icon: true, color: true } } }, orderBy: { date: 'desc' } } },
     })
     if (!person) return notFound(res)
     return ok(res, {
@@ -25,7 +26,8 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'POST' && req.query.action === 'entry') {
-    const { type, description, amount, date, notes, categoryId, installments = 1, alreadyPaid = 0 } = req.body
+    const { type, description, amount, date, notes, categoryId, installments = 1, alreadyPaid = 0, accountId } = req.body
+    const accId = (await validateAccountId(session.userId, accountId)) ?? null
     const numInstallments = parseInt(installments, 10) || 1
     const numAlreadyPaid  = Math.max(0, Math.min(parseInt(alreadyPaid, 10) || 0, numInstallments - 1))
     const [_y, _m, _d]   = (date as string).split('-').map(Number)
@@ -35,8 +37,8 @@ export default withAuth(async (req, res, session) => {
 
     if (numInstallments <= 1) {
       const entry = await db.personEntry.create({
-        data: { type, description, amount: amountNum, date: baseDate, notes: notes ?? null, categoryId: categoryId ?? null, personId: id, userId: session.userId },
-        include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+        data: { type, description, amount: amountNum, date: baseDate, notes: notes ?? null, categoryId: categoryId ?? null, accountId: accId, personId: id, userId: session.userId },
+        include: { category: { select: { id: true, name: true, icon: true, color: true } }, account: { select: { id: true, name: true, icon: true, color: true } } },
       })
       checkAchievements(db, session.userId, 'create-person-entry').catch(() => {})
       return created(res, entry)
@@ -59,12 +61,13 @@ export default withAuth(async (req, res, session) => {
             date:   d,
             notes:  notes ?? null,
             categoryId: categoryId ?? null,
+            accountId: accId,
             personId: id, userId: session.userId,
             installmentTotal:   numInstallments,
             installmentCurrent: current,
             installmentGroupId: groupId,
           },
-          include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+          include: { category: { select: { id: true, name: true, icon: true, color: true } }, account: { select: { id: true, name: true, icon: true, color: true } } },
         })
       })
     )

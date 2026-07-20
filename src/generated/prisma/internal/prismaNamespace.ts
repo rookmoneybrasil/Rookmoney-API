@@ -2801,7 +2801,8 @@ export const PersonEntryRecurringScalarFieldEnum = {
   updatedAt: 'updatedAt',
   personId: 'personId',
   userId: 'userId',
-  categoryId: 'categoryId'
+  categoryId: 'categoryId',
+  accountId: 'accountId'
 } as const
 
 export type PersonEntryRecurringScalarFieldEnum = (typeof PersonEntryRecurringScalarFieldEnum)[keyof typeof PersonEntryRecurringScalarFieldEnum]
@@ -2826,7 +2827,8 @@ export const PersonEntryScalarFieldEnum = {
   updatedAt: 'updatedAt',
   personId: 'personId',
   userId: 'userId',
-  categoryId: 'categoryId'
+  categoryId: 'categoryId',
+  accountId: 'accountId'
 } as const
 
 export type PersonEntryScalarFieldEnum = (typeof PersonEntryScalarFieldEnum)[keyof typeof PersonEntryScalarFieldEnum]

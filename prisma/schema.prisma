@@ -163,6 +163,8 @@ model Account {
   bills          Bill[]
   incomeSources  IncomeSource[]
   recurringBills RecurringBill[]
+  personEntries          PersonEntry[]
+  personEntriesRecurring PersonEntryRecurring[]
 
   @@index([userId])
 }
@@ -395,6 +397,8 @@ model PersonEntryRecurring {
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   categoryId String?
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  accountId  String?
+  account    Account?  @relation(fields: [accountId], references: [id], onDelete: SetNull)
   entries    PersonEntry[]
 
   @@index([userId])
@@ -425,12 +429,15 @@ model PersonEntry {
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   categoryId String?
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  accountId  String?
+  account    Account?  @relation(fields: [accountId], references: [id], onDelete: SetNull)
   recurringEntry PersonEntryRecurring? @relation(fields: [recurringEntryId], references: [id], onDelete: SetNull)
 
   @@index([personId])
   @@index([userId])
   @@index([installmentGroupId])
   @@index([recurringEntryId])
+  @@index([accountId])
   @@unique([recurringEntryId, recurringMonth])
 }
 

@@ -57,7 +57,7 @@ export async function processRecurringPersonEntries(uid: string): Promise<void> 
 // creating or adopting as needed — no day-of-month gate.
 async function ensureMonthEntry(
   uid: string,
-  t: { id: string; personId: string; type: 'THEY_OWE_ME' | 'I_OWE_THEM'; description: string; amount: Prisma.Decimal; dayOfMonth: number; notes: string | null; categoryId: string | null },
+  t: { id: string; personId: string; type: 'THEY_OWE_ME' | 'I_OWE_THEM'; description: string; amount: Prisma.Decimal; dayOfMonth: number; notes: string | null; categoryId: string | null; accountId: string | null },
   y: number,
   m: number,
 ) {
@@ -117,6 +117,7 @@ async function ensureMonthEntry(
         date:             entryDate,
         notes:            t.notes,
         categoryId:       t.categoryId,
+        accountId:        t.accountId,   // herda a carteira do template
         recurringEntryId: t.id,
         recurringMonth,
       },
@@ -175,7 +176,10 @@ export async function settlePersonEntry(uid: string, entryId: string) {
       date:        new Date(),
       userId:      uid,
       categoryId,
-      accountId:   await resolveDefaultAccountId(uid),
+      // Carteira da propria entrada primeiro (pagar/receber de alguem sai de /
+      // entra em algum lugar), so caindo na padrao quando nenhuma foi escolhida
+      // — mesma regra de bill.accountId no pagamento de conta.
+      accountId:   entry.accountId ?? await resolveDefaultAccountId(uid),
     },
   })
 

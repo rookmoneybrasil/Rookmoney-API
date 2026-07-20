@@ -1,5 +1,6 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
+import { validateAccountId } from '@/lib/account-balances'
 import { ok, noContent, notFound } from '@/lib/respond'
 import { resolveFallbackCategoryId } from '@/lib/category-fallback'
 
@@ -12,7 +13,8 @@ export default withAuth(async (req, res, session) => {
 
   // PATCH — update any fields or pause/resume
   if (req.method === 'PATCH') {
-    const { isActive, description, amount, dayOfMonth, categoryId, notes } = req.body
+    const { isActive, description, amount, dayOfMonth, categoryId, notes, accountId } = req.body
+    const accId = await validateAccountId(uid, accountId)
     const updated = await db.personEntryRecurring.update({
       where: { id },
       data: {
@@ -22,10 +24,12 @@ export default withAuth(async (req, res, session) => {
         ...(dayOfMonth  !== undefined && { dayOfMonth:  Math.min(Math.max(parseInt(dayOfMonth, 10) || 1, 1), 31) }),
         ...(categoryId  !== undefined && { categoryId:  categoryId || null }),
         ...(notes       !== undefined && { notes:       notes || null }),
+        ...(accId       !== undefined && { accountId:   accId }),
       },
       include: {
         person:   { select: { id: true, name: true, color: true } },
         category: { select: { id: true, name: true, icon: true, color: true } },
+        account: { select: { id: true, name: true, icon: true, color: true } },
       },
     })
 
@@ -61,7 +65,7 @@ export default withAuth(async (req, res, session) => {
       await db.personEntry.deleteMany({
         where: { recurringEntryId: id, userId: uid, isSettled: false, date: { gte: monthStart, lte: monthEnd } },
       })
-    } else if (categoryId !== undefined || description !== undefined || amount !== undefined || notes !== undefined) {
+    } else if (categoryId !== undefined || description !== undefined || amount !== undefined || notes !== undefined || accId !== undefined) {
       // Keep this month's already-generated UNSETTLED entry in sync with the
       // template. ensureMonthEntry (process-recurring-people.ts) only creates/
       // adopts an entry — it never re-syncs an existing one — so without this a
@@ -79,6 +83,7 @@ export default withAuth(async (req, res, session) => {
           ...(description !== undefined && { description }),
           ...(amount      !== undefined && { amount:      parseFloat(amount) }),
           ...(notes       !== undefined && { notes:       notes || null }),
+          ...(accId       !== undefined && { accountId:   accId }),
         },
       })
     }

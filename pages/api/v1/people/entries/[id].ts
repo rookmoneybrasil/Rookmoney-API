@@ -1,5 +1,6 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
+import { validateAccountId } from '@/lib/account-balances'
 import { ok, noContent, notFound } from '@/lib/respond'
 import { settlePersonEntry } from '@/lib/process-recurring-people'
 
@@ -41,7 +42,8 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'PATCH' || req.method === 'PUT') {
-    const { type, description, amount, date, categoryId, notes, applyToGroup } = req.body
+    const { type, description, amount, date, categoryId, notes, applyToGroup, accountId } = req.body
+    const accId = await validateAccountId(session.userId, accountId)
 
     const data: Record<string, unknown> = {}
     if (type        !== undefined) data.type        = type
@@ -54,6 +56,7 @@ export default withAuth(async (req, res, session) => {
     }
     if (categoryId  !== undefined) data.categoryId  = categoryId || null
     if (notes       !== undefined) data.notes       = notes || null
+    if (accId       !== undefined) data.accountId   = accId
 
     if (applyToGroup && entry.installmentGroupId) {
       // Update description/type/category/amount for ALL pending installments
@@ -62,6 +65,7 @@ export default withAuth(async (req, res, session) => {
       if (description !== undefined) groupData.description = description
       if (categoryId  !== undefined) groupData.categoryId  = categoryId || null
       if (amount      !== undefined) groupData.amount      = parseFloat(amount)
+      if (accId       !== undefined) groupData.accountId   = accId
       await db.personEntry.updateMany({
         where: { installmentGroupId: entry.installmentGroupId, userId: session.userId, isSettled: false },
         data:  groupData,
@@ -82,6 +86,18 @@ export default withAuth(async (req, res, session) => {
     }
 
     const updated = await db.personEntry.update({ where: { id }, data })
+
+    // Se a entrada JA foi acertada, trocar a carteira tem que mover a
+    // Transaction gerada junto — senao a carteira nova fica com a divida e a
+    // antiga continua com o dinheiro (os dois saldos errados). Mesmo
+    // comportamento de bills/[id].ts ao editar uma conta paga.
+    if (accId !== undefined && entry.settledTransactionId) {
+      await db.transaction.updateMany({
+        where: { id: entry.settledTransactionId, userId: session.userId },
+        data:  { accountId: accId },
+      })
+    }
+
     return ok(res, updated)
   }
 
