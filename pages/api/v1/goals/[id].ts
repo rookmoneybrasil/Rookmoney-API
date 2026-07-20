@@ -5,6 +5,7 @@ import { parseISO } from 'date-fns'
 import { checkAchievements } from '@/lib/achievement-checker'
 import { sendGoalCompletedEmail } from '@/lib/email'
 import { resolveFallbackCategoryId } from '@/lib/category-fallback'
+import { resolveDefaultAccountId } from '@/lib/account-balances'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -36,7 +37,7 @@ export default withAuth(async (req, res, session) => {
     const [updatedGoal, , contrib] = await db.$transaction([
       db.goal.update({ where: { id }, data: { currentAmount: { increment: amountNum } } }),
       db.transaction.create({
-        data: { amount: amountNum, type: 'EXPENSE', description: `Aporte — ${goal.name}`, date: new Date(), userId: session.userId, categoryId: cat.id },
+        data: { amount: amountNum, type: 'EXPENSE', description: `Aporte — ${goal.name}`, date: new Date(), userId: session.userId, categoryId: cat.id, accountId: await resolveDefaultAccountId(session.userId) },
       }),
       db.goalContribution.create({ data: { goalId: id, amount: amountNum, note: note ?? null } }),
     ])

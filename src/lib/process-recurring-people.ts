@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { Prisma } from '@/generated/prisma/client'
 import { resolveFallbackCategoryId } from '@/lib/category-fallback'
+import { resolveDefaultAccountId } from '@/lib/account-balances'
 
 // Generates this month's PersonEntry for every active PersonEntryRecurring
 // template that hasn't been processed yet, mirroring processRecurringBills —
@@ -174,6 +175,7 @@ export async function settlePersonEntry(uid: string, entryId: string) {
       date:        new Date(),
       userId:      uid,
       categoryId,
+      accountId:   await resolveDefaultAccountId(uid),
     },
   })
 

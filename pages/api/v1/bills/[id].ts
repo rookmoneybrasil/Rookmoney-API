@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { ok, noContent, notFound, badRequest } from '@/lib/respond'
 import { checkAchievements } from '@/lib/achievement-checker'
 import { resolveFallbackCategoryId } from '@/lib/category-fallback'
+import { resolveDefaultAccountId } from '@/lib/account-balances'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -41,6 +42,7 @@ export default withAuth(async (req, res, session) => {
           date:        new Date(),
           userId:      session.userId,
           categoryId,
+          accountId:   await resolveDefaultAccountId(session.userId),
         },
       })
       const updated = await db.bill.update({ where: { id }, data: { paidTransactionId: tx.id } })

@@ -1,5 +1,23 @@
 import { db } from '@/lib/db'
 
+// The account a generated Transaction lands in when none was explicitly chosen
+// (pay a bill, receive income, settle a person debt, goal contribution, recurring,
+// import…). SINGLE SOURCE — every Transaction.create must set accountId, otherwise
+// the movement is invisible to account balances. Self-healing: if the user somehow
+// has no account yet (brand-new user before the backfill migration ran), it creates
+// the default "Carteira" so a payment never fails.
+export async function resolveDefaultAccountId(userId: string): Promise<string> {
+  const def = await db.account.findFirst({ where: { userId, isDefault: true }, select: { id: true } })
+  if (def) return def.id
+  const any = await db.account.findFirst({ where: { userId }, orderBy: { createdAt: 'asc' }, select: { id: true } })
+  if (any) return any.id
+  const created = await db.account.create({
+    data: { userId, name: 'Carteira', type: 'CASH', icon: '👛', color: '#22C55E', isDefault: true },
+    select: { id: true },
+  })
+  return created.id
+}
+
 export interface AccountWithBalance {
   id:             string
   name:           string

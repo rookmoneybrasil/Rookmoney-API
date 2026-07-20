@@ -61,7 +61,10 @@ export default withAuth(async (req, res, session) => {
 
     db.transaction.findMany({
       where:   { userId: uid }, orderBy: { date: 'desc' }, take: 7,
-      include: { category: { select: { name: true, icon: true, color: true } } },
+      include: {
+        category: { select: { name: true, icon: true, color: true } },
+        account:  { select: { name: true, icon: true, color: true } },
+      },
     }),
 
     db.goal.findMany({ where: { userId: uid, isCompleted: false }, take: 3, orderBy: { createdAt: 'desc' } }),

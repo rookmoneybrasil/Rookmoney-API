@@ -2,6 +2,7 @@ import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, badRequest, planRequired } from '@/lib/respond'
 import { getLimits } from '@/lib/plans'
+import { resolveDefaultAccountId } from '@/lib/account-balances'
 import { parseISO, isValid, format } from 'date-fns'
 
 type ImportRow = { date: string; description: string; amount: number; type: string; categoryId: string }
@@ -59,7 +60,8 @@ export default withAuth(async (req, res, session) => {
     return badRequest(res, 'Nenhuma transação nova encontrada. Possíveis motivos: formato inválido, tipo não reconhecido, ou transações já existentes.')
   }
 
-  await db.transaction.createMany({ data: validated })
+  const defaultAccountId = await resolveDefaultAccountId(session.userId)
+  await db.transaction.createMany({ data: validated.map(v => ({ ...v, accountId: defaultAccountId })) })
 
   return ok(res, { success: validated.length, skipped: rows.length - validated.length })
 })

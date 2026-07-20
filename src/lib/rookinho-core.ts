@@ -6,6 +6,7 @@ import { autoProcessMonth } from './auto-process'
 import { computePersonBalances } from './person-balances'
 import { processRecurringBills } from './process-recurring-bills'
 import { resolveFallbackCategoryId } from './category-fallback'
+import { resolveDefaultAccountId } from './account-balances'
 import { parseISO, format, startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import { randomUUID } from 'crypto'
 import { ptBR } from 'date-fns/locale'
@@ -468,6 +469,7 @@ export async function settlePersonEntryById(userId: string, entryId: string): Pr
       amount: entry.amount, type: txType,
       description: personName ? `${entry.description} (${personName})` : entry.description,
       date: new Date(), userId, categoryId,
+      accountId: await resolveDefaultAccountId(userId),
     },
   })
   await db.personEntry.update({
@@ -508,7 +510,7 @@ export async function payBillById(userId: string, billId: string): Promise<strin
   if (!categoryId) return 'Erro: nenhuma categoria disponivel pra registrar a despesa.'
 
   const tx = await db.transaction.create({
-    data: { amount: bill.amount, type: 'EXPENSE', description: bill.name, date: new Date(), userId, categoryId },
+    data: { amount: bill.amount, type: 'EXPENSE', description: bill.name, date: new Date(), userId, categoryId, accountId: await resolveDefaultAccountId(userId) },
   })
   await db.bill.update({
     where: { id: bill.id },
@@ -750,7 +752,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       const { amount, type, description, date, categoryName } = input as { amount: number; type: string; description: string; date: string; categoryName?: string }
       const categoryId = await findCategory(userId, categoryName)
       if (!categoryId) return 'Erro: nenhuma categoria disponível.'
-      await db.transaction.create({ data: { amount: Math.abs(amount), type: type as 'INCOME' | 'EXPENSE', description: description ?? '', date: parseDateUTC(date), userId, categoryId } })
+      await db.transaction.create({ data: { amount: Math.abs(amount), type: type as 'INCOME' | 'EXPENSE', description: description ?? '', date: parseDateUTC(date), userId, categoryId, accountId: await resolveDefaultAccountId(userId) } })
       checkAchievements(db, userId, 'create-transaction').catch(() => {})
       return `Transação "${description}" de ${money(Math.abs(amount))} registrada com sucesso.`
     }
@@ -830,7 +832,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       // descricao pra estornar) nao acham nada. Igual ao POST /goals/:id?action=contribute.
       await db.$transaction([
         db.goal.update({ where: { id: goal.id }, data: { currentAmount: newAmount, isCompleted, completedAt: isCompleted ? new Date() : null } }),
-        db.transaction.create({ data: { amount: amt, type: 'EXPENSE', description: `Aporte — ${goal.name}`, date: new Date(), userId, categoryId: cat.id } }),
+        db.transaction.create({ data: { amount: amt, type: 'EXPENSE', description: `Aporte — ${goal.name}`, date: new Date(), userId, categoryId: cat.id, accountId: await resolveDefaultAccountId(userId) } }),
         db.goalContribution.create({ data: { goalId: goal.id, amount: amt } }),
       ])
       checkAchievements(db, userId, 'contribute-goal').catch(() => {})

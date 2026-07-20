@@ -1,6 +1,7 @@
 import { db } from './db'
 import { processRecurringBills } from './process-recurring-bills'
 import { processRecurringPersonEntries } from './process-recurring-people'
+import { resolveDefaultAccountId } from './account-balances'
 
 /**
  * Auto-processamento do mes — FONTE UNICA DA VERDADE.
@@ -40,7 +41,7 @@ export async function processAutoIncome(uid: string): Promise<void> {
     // Nao auto-paga se a startDate ainda e futura
     if (src.startDate && src.startDate > now) continue
     await db.$transaction([
-      db.transaction.create({ data: { amount: src.amount, type: 'INCOME', description: src.name, date: new Date(now.getFullYear(), now.getMonth(), day), userId: uid, categoryId: src.categoryId } }),
+      db.transaction.create({ data: { amount: src.amount, type: 'INCOME', description: src.name, date: new Date(now.getFullYear(), now.getMonth(), day), userId: uid, categoryId: src.categoryId, accountId: await resolveDefaultAccountId(uid) } }),
       db.incomeSource.update({ where: { id: src.id }, data: { lastAutoPayMonth: yearMonth } }),
     ])
   }
@@ -58,7 +59,7 @@ export async function processAutoRecurring(uid: string): Promise<void> {
     const day = item.dayOfMonth ?? 1
     if (today < day) continue
     await db.$transaction([
-      db.transaction.create({ data: { amount: item.amount, type: item.type, description: item.name, date: new Date(now.getFullYear(), now.getMonth(), day), userId: uid, categoryId: item.categoryId } }),
+      db.transaction.create({ data: { amount: item.amount, type: item.type, description: item.name, date: new Date(now.getFullYear(), now.getMonth(), day), userId: uid, categoryId: item.categoryId, accountId: await resolveDefaultAccountId(uid) } }),
       db.recurringTransaction.update({ where: { id: item.id }, data: { lastAutoMonth: yearMonth } }),
     ])
   }

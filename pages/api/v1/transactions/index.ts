@@ -4,6 +4,12 @@ import { ok, created, badRequest, planLimit } from '@/lib/respond'
 import { parseISO } from 'date-fns'
 import { getLimits } from '@/lib/plans'
 import { checkAchievements } from '@/lib/achievement-checker'
+import { resolveDefaultAccountId } from '@/lib/account-balances'
+
+const TX_INCLUDE = {
+  category: { select: { id: true, name: true, icon: true, color: true } },
+  account:  { select: { id: true, name: true, icon: true, color: true } },
+} as const
 
 export default withAuth(async (req, res, session) => {
   // ── GET /api/v1/transactions ──────────────────────────────────────────────
@@ -26,7 +32,7 @@ export default withAuth(async (req, res, session) => {
       db.transaction.findMany({
         where, skip, take,
         orderBy: { date: 'desc' },
-        include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+        include: TX_INCLUDE,
       }),
       db.transaction.count({ where }),
     ])
@@ -36,11 +42,16 @@ export default withAuth(async (req, res, session) => {
 
   // ── POST /api/v1/transactions ─────────────────────────────────────────────
   if (req.method === 'POST') {
-    const { amount, type, description, date, categoryId } = req.body
+    const { amount, type, description, date, categoryId, accountId } = req.body
     if (!amount || !type || !date || !categoryId) return badRequest(res, 'Campos obrigatórios faltando.')
     if (!['INCOME', 'EXPENSE'].includes(type)) return badRequest(res, 'Tipo inválido.')
     const parsedAmount = parseFloat(amount)
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
+
+    // Chosen account (validated to belong to the user) or the default one.
+    const accId = accountId
+      ? (await db.account.findFirst({ where: { id: accountId, userId: session.userId }, select: { id: true } }))?.id ?? await resolveDefaultAccountId(session.userId)
+      : await resolveDefaultAccountId(session.userId)
 
     const limits = getLimits(session.plan ?? 'FREE')
     if (limits.transactionsPerMonth !== null) {
@@ -52,8 +63,8 @@ export default withAuth(async (req, res, session) => {
         const count = await prisma.transaction.count({ where: { userId: session.userId, date: { gte: start, lte: end } } })
         if (count >= limits.transactionsPerMonth!) return null
         return prisma.transaction.create({
-          data: { amount: parsedAmount, type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId },
-          include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+          data: { amount: parsedAmount, type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId, accountId: accId },
+          include: TX_INCLUDE,
         })
       })
       if (!created_tx) return planLimit(res, `Limite de ${limits.transactionsPerMonth} transações por mês atingido. Faça upgrade para o plano PRO.`)
@@ -62,8 +73,8 @@ export default withAuth(async (req, res, session) => {
     }
 
     const tx = await db.transaction.create({
-      data: { amount: parsedAmount, type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId },
-      include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+      data: { amount: parsedAmount, type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId, accountId: accId },
+      include: TX_INCLUDE,
     })
     checkAchievements(db, session.userId, 'create-transaction').catch(() => {})
     return created(res, tx)

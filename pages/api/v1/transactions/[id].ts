@@ -14,7 +14,13 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'PUT' || req.method === 'PATCH') {
-    const { amount, type, description, date, categoryId } = req.body
+    const { amount, type, description, date, categoryId, accountId } = req.body
+    // Only accept an account that belongs to the user.
+    let accId: string | undefined
+    if (accountId !== undefined) {
+      const acc = await db.account.findFirst({ where: { id: accountId, userId: session.userId }, select: { id: true } })
+      accId = acc?.id
+    }
     const updated = await db.transaction.update({
       where: { id },
       data: {
@@ -23,8 +29,12 @@ export default withAuth(async (req, res, session) => {
         ...(description !== undefined && { description }),
         ...(date        !== undefined && { date: parseISO(date) }),
         ...(categoryId  !== undefined && { categoryId }),
+        ...(accId       !== undefined && { accountId: accId }),
       },
-      include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+      include: {
+        category: { select: { id: true, name: true, icon: true, color: true } },
+        account:  { select: { id: true, name: true, icon: true, color: true } },
+      },
     })
     return ok(res, updated)
   }

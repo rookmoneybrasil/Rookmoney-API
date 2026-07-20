@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '@/lib/db'
+import { resolveDefaultAccountId } from '@/lib/account-balances'
 import { sendWhatsApp, downloadTwilioMedia, validateTwilioSignature } from '@/lib/twilio'
 import { parseReceipt } from '@/lib/receipt-parser'
 
@@ -72,7 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ? categories.find(c => c.id === receipt.categoryId)
       : categories.find(c => c.name.toLowerCase().includes('outros')) ?? categories[0]
 
-    await db.transaction.create({ data: { amount: receipt.amount, type: receipt.type, description: receipt.description, date: new Date(receipt.date + 'T12:00:00'), userId: user.id, categoryId: category?.id ?? categories[0]?.id } })
+    await db.transaction.create({ data: { amount: receipt.amount, type: receipt.type, description: receipt.description, date: new Date(receipt.date + 'T12:00:00'), userId: user.id, categoryId: category?.id ?? categories[0]?.id, accountId: await resolveDefaultAccountId(user.id) } })
 
     const typeEmoji = receipt.type === 'EXPENSE' ? '💸' : '💰'
     await sendWhatsApp(phone, `${typeEmoji} *${receipt.type === 'EXPENSE' ? 'Despesa' : 'Receita'} registrada!*\n\n💵 ${fmt(receipt.amount)}\n📌 ${receipt.description}\n🏷️ ${category?.icon ?? ''} ${category?.name ?? ''}\n\n_Acesse o app para editar._`)
