@@ -20,30 +20,35 @@ export default withAuth(async (req, res, session) => {
     if (!name || !name.trim()) return badRequest(res, 'Nome é obrigatório.')
     const accType = TYPES.includes(type as typeof TYPES[number]) ? type : 'CASH'
 
-    // Plan limit — counts only ACTIVE (non-archived) accounts.
+    // Um NaN aqui envenenaria o saldo pra sempre: o total e' uma soma, e
+    // qualquer NaN no meio torna o saldo total inteiro NaN ("R$ NaN" na tela).
+    const initial = initialBalance != null ? Number(initialBalance) : 0
+    if (!Number.isFinite(initial)) return badRequest(res, 'Saldo inicial inválido.')
+
+    // Plan limit — counts only ACTIVE (non-archived) accounts. O count E o create
+    // precisam estar DENTRO da mesma transacao: com o create fora, dois requests
+    // concorrentes contam 1 os dois, ambos passam e o FREE termina com 3 contas.
     const limits = getLimits(session.plan ?? 'FREE')
-    if (limits.accounts !== null) {
-      const allowed = await db.$transaction(async (tx) => {
+    const account = await db.$transaction(async (tx) => {
+      if (limits.accounts !== null) {
         const count = await tx.account.count({ where: { userId: session.userId, archived: false } })
-        return count < limits.accounts!
+        if (count >= limits.accounts) return null
+      }
+      // First account a user creates becomes the default.
+      const hasDefault = await tx.account.findFirst({ where: { userId: session.userId, isDefault: true }, select: { id: true } })
+      return tx.account.create({
+        data: {
+          userId:         session.userId,
+          name:           name.trim(),
+          type:           accType as typeof TYPES[number],
+          icon:           icon || '💳',
+          color:          color || '#3B82F6',
+          initialBalance: initial,
+          isDefault:      !hasDefault,
+        },
       })
-      if (!allowed) return planLimit(res, `Limite de ${limits.accounts} contas atingido. Faça upgrade para o plano PRO.`)
-    }
-
-    // First account a user creates becomes the default.
-    const hasDefault = await db.account.findFirst({ where: { userId: session.userId, isDefault: true }, select: { id: true } })
-
-    const account = await db.account.create({
-      data: {
-        userId:         session.userId,
-        name:           name.trim(),
-        type:           accType as typeof TYPES[number],
-        icon:           icon || '💳',
-        color:          color || '#3B82F6',
-        initialBalance: initialBalance != null ? Number(initialBalance) : 0,
-        isDefault:      !hasDefault,
-      },
     })
+    if (!account) return planLimit(res, `Limite de ${limits.accounts} contas atingido. Faça upgrade para o plano PRO.`)
     return created(res, account)
   }
 

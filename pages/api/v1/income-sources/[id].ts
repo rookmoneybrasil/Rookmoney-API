@@ -53,10 +53,14 @@ export default withAuth(async (req, res, session) => {
       },
     })
 
-    // If amount or name changed and it already auto-generated a transaction this month, update it
+    // If amount, name OR account changed and it already auto-generated a
+    // transaction this month, update it. O accountId TEM que entrar aqui: sem
+    // ele, trocar a carteira da renda deixava a receita ja gerada na carteira
+    // ANTIGA (os dois saldos errados), enquanto a Conta equivalente
+    // (bills/[id].ts) ja movia a Transaction junto.
     const now = new Date()
     const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-    if (src.lastAutoPayMonth === yearMonth && src.isRecurring && (amount !== undefined || name !== undefined)) {
+    if (src.lastAutoPayMonth === yearMonth && src.isRecurring && (amount !== undefined || name !== undefined || accId !== undefined)) {
       const mS = startOfMonth(now)
       const mE = endOfMonth(now)
       await db.transaction.updateMany({
@@ -70,6 +74,7 @@ export default withAuth(async (req, res, session) => {
           ...(amount !== undefined && { amount: parseFloat(amount) }),
           ...(name   !== undefined && { description: name }),
           ...(categoryId !== undefined && categoryId && { categoryId }),
+          ...(accId  !== undefined && { accountId: accId }),
         },
       })
     }
