@@ -91,7 +91,15 @@ async function ensureMonthEntry(
     try {
       return await db.personEntry.update({
         where: { id: orphan.id },
-        data:  { recurringEntryId: t.id, recurringMonth },
+        data:  {
+          recurringEntryId: t.id,
+          recurringMonth,
+          // Herda a carteira do template so quando a entrada adotada ainda nao
+          // tem uma E nao foi quitada. Nao mexer numa JA quitada e' deliberado:
+          // a Transaction dela ja existe e nao seria movida junto aqui, o que
+          // deixaria entrada e transacao em carteiras diferentes.
+          ...(!orphan.isSettled && !orphan.accountId && t.accountId ? { accountId: t.accountId } : {}),
+        },
       })
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {

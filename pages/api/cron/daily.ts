@@ -35,6 +35,7 @@ async function migrateOldRecurring(userId: string) {
           description: first.description, amount: first.amount,
           dayOfMonth: Math.min(new Date(first.date).getDate(), 31),
           notes: first.notes, categoryId: first.categoryId,
+          accountId: first.accountId,   // carrega a carteira da entrada de origem
           lastMonth: format(now, 'yyyy-MM'),
         },
       })

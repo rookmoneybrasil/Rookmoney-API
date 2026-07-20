@@ -52,6 +52,7 @@ export default withAuth(async (req, res, session) => {
           dayOfMonth,
           notes:       first.notes,
           categoryId:  first.categoryId,
+          accountId:   first.accountId,   // carrega a carteira da entrada de origem
           lastMonth:   format(now, 'yyyy-MM'), // already processed this month
         },
       })

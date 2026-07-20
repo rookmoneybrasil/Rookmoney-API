@@ -469,7 +469,10 @@ export async function settlePersonEntryById(userId: string, entryId: string): Pr
       amount: entry.amount, type: txType,
       description: personName ? `${entry.description} (${personName})` : entry.description,
       date: new Date(), userId, categoryId,
-      accountId: await resolveDefaultAccountId(userId),
+      // Carteira da propria entrada primeiro — igual ao settlePersonEntry do
+      // process-recurring-people.ts. Sem isso, quitar pelo Rookinho/WhatsApp
+      // ignorava a carteira escolhida e jogava tudo na padrao.
+      accountId: entry.accountId ?? await resolveDefaultAccountId(userId),
     },
   })
   await db.personEntry.update({
