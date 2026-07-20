@@ -38,7 +38,7 @@ export async function processRecurringBills(uid: string): Promise<void> {
 // creating or adopting as needed, no day-of-month gate.
 async function ensureMonthBill(
   uid: string,
-  t: { id: string; name: string; amount: Prisma.Decimal; dayOfMonth: number; notes: string | null; categoryId: string | null },
+  t: { id: string; name: string; amount: Prisma.Decimal; dayOfMonth: number; notes: string | null; categoryId: string | null; accountId: string | null },
   y: number,
   m: number,
 ) {
@@ -67,6 +67,7 @@ async function ensureMonthBill(
         isRecurring:     false,
         userId:          uid,
         categoryId:      t.categoryId ?? null,
+        accountId:       t.accountId ?? null,
         notes:           t.notes ?? null,
         recurringBillId: t.id,
         recurringMonth,

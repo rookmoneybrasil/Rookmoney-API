@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { ok, created, badRequest } from '@/lib/respond'
 import { format, addMonths } from 'date-fns'
 import { checkAchievements } from '@/lib/achievement-checker'
+import { validateAccountId } from '@/lib/account-balances'
 import { Prisma } from '@/generated/prisma/client'
 
 // Generate bill instances from a template for the current month
@@ -59,15 +60,19 @@ export default withAuth(async (req, res, session) => {
     const templates = await db.recurringBill.findMany({
       where:   { userId: uid },
       orderBy: { name: 'asc' },
-      include: { category: { select: { id: true, name: true, icon: true, color: true } } },
+      include: {
+        category: { select: { id: true, name: true, icon: true, color: true } },
+        account:  { select: { id: true, name: true, icon: true, color: true } },
+      },
     })
     return ok(res, templates)
   }
 
   // ── POST — create template (optionally generate this month) ────────
   if (req.method === 'POST') {
-    const { name, amount, dayOfMonth, categoryId, notes, generateNow, firstDate } = req.body
+    const { name, amount, dayOfMonth, categoryId, notes, generateNow, firstDate, accountId } = req.body
     if (!name || !amount || !dayOfMonth) return badRequest(res, 'Nome, valor e dia do mês são obrigatórios.')
+    const accId = (await validateAccountId(uid, accountId)) ?? null
     const parsedAmount = parseFloat(amount)
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) return badRequest(res, 'Valor deve ser um número positivo.')
     const rawDay = parseInt(dayOfMonth)
@@ -96,6 +101,7 @@ export default withAuth(async (req, res, session) => {
         dayOfMonth: day,
         userId:     uid,
         categoryId: categoryId ?? null,
+        accountId:  accId,
         notes:      notes ?? null,
         startMonth,
       },

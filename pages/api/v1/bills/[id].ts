@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { ok, noContent, notFound, badRequest } from '@/lib/respond'
 import { checkAchievements } from '@/lib/achievement-checker'
 import { resolveFallbackCategoryId } from '@/lib/category-fallback'
-import { resolveDefaultAccountId } from '@/lib/account-balances'
+import { resolveDefaultAccountId, validateAccountId } from '@/lib/account-balances'
 
 export default withAuth(async (req, res, session) => {
   const id = req.query.id as string
@@ -42,7 +42,7 @@ export default withAuth(async (req, res, session) => {
           date:        new Date(),
           userId:      session.userId,
           categoryId,
-          accountId:   await resolveDefaultAccountId(session.userId),
+          accountId:   bill.accountId ?? await resolveDefaultAccountId(session.userId),
         },
       })
       const updated = await db.bill.update({ where: { id }, data: { paidTransactionId: tx.id } })
@@ -78,7 +78,8 @@ export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') return ok(res, bill)
 
   if (req.method === 'PUT' || req.method === 'PATCH') {
-    const { name, amount, dueDate, isRecurring, categoryId, notes } = req.body
+    const { name, amount, dueDate, isRecurring, categoryId, notes, accountId } = req.body
+    const accId = await validateAccountId(session.userId, accountId)
     const updated = await db.bill.update({
       where: { id },
       data: {
@@ -90,9 +91,19 @@ export default withAuth(async (req, res, session) => {
         })()),
         ...(isRecurring !== undefined && { isRecurring }),
         ...(categoryId  !== undefined && { categoryId: categoryId || null }),
+        ...(accId       !== undefined && { accountId: accId }),
         ...(notes       !== undefined && { notes: notes || null }),
       },
     })
+
+    // If the account changed and this bill was already paid, move its
+    // Transaction to the new account too (keeps the balance consistent).
+    if (accId !== undefined && bill.paidTransactionId) {
+      await db.transaction.updateMany({
+        where: { id: bill.paidTransactionId, userId: session.userId },
+        data:  { accountId: accId },
+      })
+    }
 
     // If this bill was already paid, re-file its generated Transaction to the
     // new category too (only the category — value/description stay as the

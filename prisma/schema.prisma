@@ -158,7 +158,10 @@ model Account {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  transactions Transaction[]
+  transactions   Transaction[]
+  bills          Bill[]
+  incomeSources  IncomeSource[]
+  recurringBills RecurringBill[]
 
   @@index([userId])
 }
@@ -271,8 +274,11 @@ model IncomeSource {
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   categoryId String?
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  accountId  String?
+  account    Account?  @relation(fields: [accountId], references: [id], onDelete: SetNull)
 
   @@index([userId])
+  @@index([accountId])
 }
 
 enum IncomeSourceType {
@@ -307,12 +313,15 @@ model Bill {
   categoryId      String?
   category        Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   recurringBill   RecurringBill? @relation(fields: [recurringBillId], references: [id], onDelete: SetNull)
+  accountId       String?
+  account         Account?       @relation(fields: [accountId], references: [id], onDelete: SetNull)
 
   @@unique([recurringBillId, recurringMonth])
   @@index([userId])
   @@index([userId, dueDate])
   @@index([installmentGroupId])
   @@index([recurringBillId])
+  @@index([accountId])
 }
 
 // ─── RecurringBill ───────────────────────────────────────────────────
@@ -333,9 +342,12 @@ model RecurringBill {
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   categoryId String?
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  accountId  String?
+  account    Account?  @relation(fields: [accountId], references: [id], onDelete: SetNull)
   bills      Bill[]
 
   @@index([userId])
+  @@index([accountId])
 }
 
 // ─── Person ─────────────────────────────────────────────────────────

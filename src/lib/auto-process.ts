@@ -41,7 +41,7 @@ export async function processAutoIncome(uid: string): Promise<void> {
     // Nao auto-paga se a startDate ainda e futura
     if (src.startDate && src.startDate > now) continue
     await db.$transaction([
-      db.transaction.create({ data: { amount: src.amount, type: 'INCOME', description: src.name, date: new Date(now.getFullYear(), now.getMonth(), day), userId: uid, categoryId: src.categoryId, accountId: await resolveDefaultAccountId(uid) } }),
+      db.transaction.create({ data: { amount: src.amount, type: 'INCOME', description: src.name, date: new Date(now.getFullYear(), now.getMonth(), day), userId: uid, categoryId: src.categoryId, accountId: src.accountId ?? await resolveDefaultAccountId(uid) } }),
       db.incomeSource.update({ where: { id: src.id }, data: { lastAutoPayMonth: yearMonth } }),
     ])
   }

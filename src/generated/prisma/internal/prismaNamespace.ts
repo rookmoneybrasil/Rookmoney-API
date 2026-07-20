@@ -2722,7 +2722,8 @@ export const IncomeSourceScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId',
-  categoryId: 'categoryId'
+  categoryId: 'categoryId',
+  accountId: 'accountId'
 } as const
 
 export type IncomeSourceScalarFieldEnum = (typeof IncomeSourceScalarFieldEnum)[keyof typeof IncomeSourceScalarFieldEnum]
@@ -2746,7 +2747,8 @@ export const BillScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId',
-  categoryId: 'categoryId'
+  categoryId: 'categoryId',
+  accountId: 'accountId'
 } as const
 
 export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
@@ -2764,7 +2766,8 @@ export const RecurringBillScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId',
-  categoryId: 'categoryId'
+  categoryId: 'categoryId',
+  accountId: 'accountId'
 } as const
 
 export type RecurringBillScalarFieldEnum = (typeof RecurringBillScalarFieldEnum)[keyof typeof RecurringBillScalarFieldEnum]

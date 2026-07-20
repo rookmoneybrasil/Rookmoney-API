@@ -2,6 +2,7 @@ import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, notFound, badRequest } from '@/lib/respond'
 import { resolveFallbackCategoryId } from '@/lib/category-fallback'
+import { validateAccountId } from '@/lib/account-balances'
 
 export default withAuth(async (req, res, session) => {
   const id       = req.query.id as string
@@ -17,11 +18,12 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'PATCH') {
-    const { name, amount, dayOfMonth, categoryId, notes, isActive } = req.body
+    const { name, amount, dayOfMonth, categoryId, notes, isActive, accountId } = req.body
     if (dayOfMonth !== undefined) {
       const day = parseInt(dayOfMonth)
       if (isNaN(day) || day < 1 || day > 31) return badRequest(res, 'Dia do mês deve ser entre 1 e 31.')
     }
+    const accId = await validateAccountId(session.userId, accountId)
     const updated = await db.recurringBill.update({
       where: { id },
       data: {
@@ -29,6 +31,7 @@ export default withAuth(async (req, res, session) => {
         ...(amount     !== undefined && { amount: parseFloat(amount) }),
         ...(dayOfMonth !== undefined && { dayOfMonth: parseInt(dayOfMonth) }),
         ...(categoryId !== undefined && { categoryId: categoryId || null }),
+        ...(accId      !== undefined && { accountId: accId }),
         ...(notes      !== undefined && { notes: notes || null }),
         ...(isActive   !== undefined && { isActive: Boolean(isActive) }),
       },
@@ -71,7 +74,7 @@ export default withAuth(async (req, res, session) => {
       await db.bill.deleteMany({
         where: { recurringBillId: id, userId: session.userId, isPaid: false, dueDate: { gte: monthStart, lte: monthEnd } },
       })
-    } else if (categoryId !== undefined || name !== undefined || amount !== undefined || notes !== undefined) {
+    } else if (categoryId !== undefined || name !== undefined || amount !== undefined || notes !== undefined || accId !== undefined) {
       // Keep this month's already-generated UNPAID bill in sync with the template.
       // ensureMonthBill (process-recurring-bills.ts) only creates/adopts a bill —
       // it never re-syncs an existing one — so without this a category (or value)
@@ -87,6 +90,7 @@ export default withAuth(async (req, res, session) => {
           ...(categoryId !== undefined && { categoryId: categoryId || null }),
           ...(name       !== undefined && { name }),
           ...(amount     !== undefined && { amount: parseFloat(amount) }),
+          ...(accId      !== undefined && { accountId: accId }),
           ...(notes      !== undefined && { notes: notes || null }),
         },
       })

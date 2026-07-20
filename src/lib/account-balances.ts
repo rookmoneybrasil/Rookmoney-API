@@ -18,6 +18,16 @@ export async function resolveDefaultAccountId(userId: string): Promise<string> {
   return created.id
 }
 
+// Validates an accountId sent from a form: undefined = field not present (don't
+// touch), null/'' = clear it, otherwise return the id only if the account really
+// belongs to the user (prevents pointing a record at someone else's account).
+export async function validateAccountId(userId: string, accountId?: string | null): Promise<string | null | undefined> {
+  if (accountId === undefined) return undefined
+  if (accountId === null || accountId === '') return null
+  const acc = await db.account.findFirst({ where: { id: accountId, userId }, select: { id: true } })
+  return acc?.id ?? null
+}
+
 export interface AccountWithBalance {
   id:             string
   name:           string

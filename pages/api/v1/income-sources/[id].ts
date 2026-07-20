@@ -1,6 +1,7 @@
 import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, noContent, notFound } from '@/lib/respond'
+import { validateAccountId } from '@/lib/account-balances'
 import { startOfMonth, endOfMonth } from 'date-fns'
 
 export default withAuth(async (req, res, session) => {
@@ -34,7 +35,8 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'PUT' || req.method === 'PATCH') {
-    const { name, type, amount, isRecurring, dayOfMonth, startDate, notes, categoryId, lastAutoPayMonth } = req.body
+    const { name, type, amount, isRecurring, dayOfMonth, startDate, notes, categoryId, lastAutoPayMonth, accountId } = req.body
+    const accId = await validateAccountId(session.userId, accountId)
     const updated = await db.incomeSource.update({
       where: { id },
       data: {
@@ -46,6 +48,7 @@ export default withAuth(async (req, res, session) => {
         ...(startDate        !== undefined && { startDate: startDate ? new Date(startDate) : null }),
         ...(notes            !== undefined && { notes }),
         ...(categoryId       !== undefined && { categoryId }),
+        ...(accId            !== undefined && { accountId: accId }),
         ...(lastAutoPayMonth !== undefined && { lastAutoPayMonth: lastAutoPayMonth || null }),
       },
     })

@@ -34,10 +34,26 @@ export default withAuth(async (req, res, session) => {
 
   if (req.method === 'DELETE') {
     // Keep at least one account — deleting the last would leave payments with
-    // nowhere to land. Its Transactions keep their history (accountId → null via
-    // the FK's onDelete: SetNull), so no data is lost, just the account link.
+    // nowhere to land.
     const count = await db.account.count({ where: { userId: session.userId } })
     if (count <= 1) return badRequest(res, 'Você precisa ter pelo menos uma conta.')
+
+    // Reassign this account's transactions to another account (the default, or
+    // the oldest other one) BEFORE deleting — otherwise the FK's onDelete:
+    // SetNull would orphan them and the total balance would silently drop by
+    // this account's balance. The movements really happened; they just move
+    // homes.
+    const fallback = await db.account.findFirst({
+      where:   { userId: session.userId, id: { not: id } },
+      orderBy: [{ isDefault: 'desc' }, { createdAt: 'asc' }],
+      select:  { id: true },
+    })
+    if (fallback) {
+      await db.transaction.updateMany({
+        where: { accountId: id, userId: session.userId },
+        data:  { accountId: fallback.id },
+      })
+    }
 
     await db.account.delete({ where: { id } })
 
