@@ -21,7 +21,7 @@ export default withAuth(async (req, res, session) => {
 
   const [allTxs, incomeSrcList] = await Promise.all([
     db.transaction.findMany({
-      where:   { userId: uid, date: { gte: rangeStart, lte: rangeEnd } },
+      where:   { userId: uid, date: { gte: rangeStart, lte: rangeEnd }, ignored: false },
       include: { category: { select: { id: true, name: true, icon: true, color: true } } },
       orderBy: { date: 'asc' },
     }),

@@ -14,7 +14,7 @@ export default withAuth(async (req, res, session) => {
   }
 
   if (req.method === 'PUT' || req.method === 'PATCH') {
-    const { amount, type, description, date, categoryId, accountId } = req.body
+    const { amount, type, description, date, categoryId, accountId, ignored } = req.body
     // Only accept an account that belongs to the user.
     let accId: string | undefined
     if (accountId !== undefined) {
@@ -30,6 +30,7 @@ export default withAuth(async (req, res, session) => {
         ...(date        !== undefined && { date: parseISO(date) }),
         ...(categoryId  !== undefined && { categoryId }),
         ...(accId       !== undefined && { accountId: accId }),
+        ...(ignored     !== undefined && { ignored: !!ignored }),
       },
       include: {
         category: { select: { id: true, name: true, icon: true, color: true } },

@@ -532,8 +532,8 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       // mostrava o salario.
       await autoProcessMonth(userId)
       const [income, expense, goals, bills, budgets, categories] = await Promise.all([
-        db.transaction.aggregate({ where: { userId, type: 'INCOME', date: { gte: monthStart, lte: monthEnd } }, _sum: { amount: true } }),
-        db.transaction.aggregate({ where: { userId, type: 'EXPENSE', date: { gte: monthStart, lte: monthEnd } }, _sum: { amount: true } }),
+        db.transaction.aggregate({ where: { userId, type: 'INCOME', date: { gte: monthStart, lte: monthEnd }, ignored: false }, _sum: { amount: true } }),
+        db.transaction.aggregate({ where: { userId, type: 'EXPENSE', date: { gte: monthStart, lte: monthEnd }, ignored: false }, _sum: { amount: true } }),
         db.goal.findMany({ where: { userId, isCompleted: false }, select: { name: true, currentAmount: true, targetAmount: true, deadline: true }, take: 5 }),
         db.bill.findMany({ where: { userId, isPaid: false }, select: { name: true, amount: true, dueDate: true }, take: 10, orderBy: { dueDate: 'asc' } }),
         db.budget.findMany({ where: { userId, month: format(now, 'yyyy-MM') }, select: { amount: true, category: { select: { name: true } } } }),
@@ -579,14 +579,14 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
         computePersonBalances(userId),
         db.$queryRawUnsafe<{ month: string; type: string; total: number }[]>(
           `SELECT to_char(date, 'YYYY-MM') as month, type, SUM(amount)::float as total
-           FROM "Transaction" WHERE "userId" = $1 AND date >= $2
+           FROM "Transaction" WHERE "userId" = $1 AND date >= $2 AND ignored = false
            GROUP BY month, type ORDER BY month`,
           userId, threeMonthsAgo
         ).catch(() => []),
         db.$queryRawUnsafe<{ name: string; total: number }[]>(
           `SELECT c.name, SUM(t.amount)::float as total
            FROM "Transaction" t JOIN "Category" c ON t."categoryId" = c.id
-           WHERE t."userId" = $1 AND t.type = 'EXPENSE' AND t.date >= $2 AND t.date <= $3
+           WHERE t."userId" = $1 AND t.type = 'EXPENSE' AND t.date >= $2 AND t.date <= $3 AND t.ignored = false
            GROUP BY c.name ORDER BY total DESC`,
           userId, monthStart, monthEnd
         ).catch(() => []),
@@ -700,7 +700,7 @@ export async function executeTool(name: string, input: Record<string, unknown>, 
       const spentByCategory = await Promise.all(
         budgets.map(async b => {
           const spent = await db.transaction.aggregate({
-            where: { userId, type: 'EXPENSE', categoryId: b.category.id, date: { gte: monthStart, lte: monthEnd } },
+            where: { userId, type: 'EXPENSE', categoryId: b.category.id, date: { gte: monthStart, lte: monthEnd }, ignored: false },
             _sum: { amount: true },
           })
           return { category: `${b.category.icon} ${b.category.name}`, planned: money(b.amount), spent: money(spent._sum.amount), remaining: money(Number(b.amount) - Number(spent._sum.amount ?? 0)), overBudget: Number(spent._sum.amount ?? 0) > Number(b.amount) }

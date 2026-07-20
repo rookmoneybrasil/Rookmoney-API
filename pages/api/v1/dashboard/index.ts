@@ -55,10 +55,10 @@ export default withAuth(async (req, res, session) => {
     Promise.all([
     db.user.findUnique({ where: { id: uid }, select: { name: true } }),
 
-    db.transaction.aggregate({ where: { userId: uid, type: 'INCOME',  date: { gte: mS, lte: mE } }, _sum: { amount: true } }),
-    db.transaction.aggregate({ where: { userId: uid, type: 'EXPENSE', date: { gte: mS, lte: mE } }, _sum: { amount: true } }),
-    db.transaction.aggregate({ where: { userId: uid, type: 'INCOME',  date: { gte: pmS, lte: pmE } }, _sum: { amount: true } }),
-    db.transaction.aggregate({ where: { userId: uid, type: 'EXPENSE', date: { gte: pmS, lte: pmE } }, _sum: { amount: true } }),
+    db.transaction.aggregate({ where: { userId: uid, type: 'INCOME',  date: { gte: mS, lte: mE }, ignored: false }, _sum: { amount: true } }),
+    db.transaction.aggregate({ where: { userId: uid, type: 'EXPENSE', date: { gte: mS, lte: mE }, ignored: false }, _sum: { amount: true } }),
+    db.transaction.aggregate({ where: { userId: uid, type: 'INCOME',  date: { gte: pmS, lte: pmE }, ignored: false }, _sum: { amount: true } }),
+    db.transaction.aggregate({ where: { userId: uid, type: 'EXPENSE', date: { gte: pmS, lte: pmE }, ignored: false }, _sum: { amount: true } }),
 
     db.transaction.findMany({
       where:   { userId: uid }, orderBy: { date: 'desc' }, take: 7,
@@ -115,13 +115,13 @@ export default withAuth(async (req, res, session) => {
     // Fix 3: categoryTx used for donut AND overBudgetCount (no separate query needed)
     // Cannot mix include + select in Prisma — use include only, fields accessed via type cast
     db.transaction.findMany({
-      where:   { userId: uid, type: 'EXPENSE', date: { gte: mS, lte: mE } },
+      where:   { userId: uid, type: 'EXPENSE', date: { gte: mS, lte: mE }, ignored: false },
       include: { category: { select: { name: true, icon: true, color: true } } },
     }),
 
     // Monthly history for sparklines (last 6 months)
     db.transaction.findMany({
-      where:  { userId: uid, date: { gte: startOfMonth(subMonths(now, 5)), lte: mE } },
+      where:  { userId: uid, date: { gte: startOfMonth(subMonths(now, 5)), lte: mE }, ignored: false },
       select: { type: true, amount: true, date: true },
     }),
 

@@ -42,7 +42,7 @@ export default withAuth(async (req, res, session) => {
 
   // ── POST /api/v1/transactions ─────────────────────────────────────────────
   if (req.method === 'POST') {
-    const { amount, type, description, date, categoryId, accountId } = req.body
+    const { amount, type, description, date, categoryId, accountId, ignored } = req.body
     if (!amount || !type || !date || !categoryId) return badRequest(res, 'Campos obrigatórios faltando.')
     if (!['INCOME', 'EXPENSE'].includes(type)) return badRequest(res, 'Tipo inválido.')
     const parsedAmount = parseFloat(amount)
@@ -63,7 +63,7 @@ export default withAuth(async (req, res, session) => {
         const count = await prisma.transaction.count({ where: { userId: session.userId, date: { gte: start, lte: end } } })
         if (count >= limits.transactionsPerMonth!) return null
         return prisma.transaction.create({
-          data: { amount: parsedAmount, type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId, accountId: accId },
+          data: { amount: parsedAmount, type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId, accountId: accId, ignored: !!ignored },
           include: TX_INCLUDE,
         })
       })
@@ -73,7 +73,7 @@ export default withAuth(async (req, res, session) => {
     }
 
     const tx = await db.transaction.create({
-      data: { amount: parsedAmount, type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId, accountId: accId },
+      data: { amount: parsedAmount, type, description: description ?? '', date: parseISO(date), userId: session.userId, categoryId, accountId: accId, ignored: !!ignored },
       include: TX_INCLUDE,
     })
     checkAchievements(db, session.userId, 'create-transaction').catch(() => {})

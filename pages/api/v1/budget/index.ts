@@ -22,7 +22,7 @@ export default withAuth(async (req, res, session) => {
     const start = new Date(y, m - 1, 1)
     const end   = new Date(y, m, 0, 23, 59, 59, 999)
     const spentTxs = await db.transaction.findMany({
-      where:  { userId: session.userId, type: 'EXPENSE', date: { gte: start, lte: end }, categoryId: { in: budgets.map(b => b.categoryId) } },
+      where:  { userId: session.userId, type: 'EXPENSE', date: { gte: start, lte: end }, ignored: false, categoryId: { in: budgets.map(b => b.categoryId) } },
       select: { categoryId: true, amount: true },
     })
     const spentMap = new Map<string, number>()

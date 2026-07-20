@@ -120,6 +120,7 @@ model Transaction {
   type        TransactionType
   description String?
   date        DateTime
+  ignored     Boolean         @default(false)  // "ignorar" — fora do saldo/relatórios, mas visível na lista
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 

@@ -2620,6 +2620,7 @@ export const TransactionScalarFieldEnum = {
   type: 'type',
   description: 'description',
   date: 'date',
+  ignored: 'ignored',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId',

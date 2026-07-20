@@ -54,7 +54,7 @@ export async function computeAccountBalances(userId: string): Promise<AccountWit
 
   const grouped = await db.transaction.groupBy({
     by:    ['accountId', 'type'],
-    where: { userId, accountId: { not: null } },
+    where: { userId, accountId: { not: null }, ignored: false },
     _sum:  { amount: true },
   })
 
