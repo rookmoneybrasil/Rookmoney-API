@@ -7,8 +7,13 @@ import { db } from '@/lib/db'
 // has no account yet (brand-new user before the backfill migration ran), it creates
 // the default "Carteira" so a payment never fails.
 export async function resolveDefaultAccountId(userId: string): Promise<string> {
-  const def = await db.account.findFirst({ where: { userId, isDefault: true }, select: { id: true } })
+  // Precisa preferir conta ATIVA: os totais (tela Carteiras e dashboard) somam
+  // so `!archived`, entao um lancamento que caisse numa conta arquivada sumiria
+  // do saldo total. Arquivada e' o ultimo recurso, nunca a primeira escolha.
+  const def = await db.account.findFirst({ where: { userId, isDefault: true, archived: false }, select: { id: true } })
   if (def) return def.id
+  const active = await db.account.findFirst({ where: { userId, archived: false }, orderBy: { createdAt: 'asc' }, select: { id: true } })
+  if (active) return active.id
   const any = await db.account.findFirst({ where: { userId }, orderBy: { createdAt: 'asc' }, select: { id: true } })
   if (any) return any.id
   const created = await db.account.create({
@@ -26,6 +31,13 @@ export async function validateAccountId(userId: string, accountId?: string | nul
   if (accountId === null || accountId === '') return null
   const acc = await db.account.findFirst({ where: { id: accountId, userId }, select: { id: true } })
   return acc?.id ?? null
+}
+
+// Total mostrado como "Saldo total" — soma so das contas ATIVAS (arquivada nao
+// entra). Fonte unica: a tela de Carteiras e o card do dashboard consomem esta,
+// nunca re-derivam (duas copias identicas hoje viram divergentes amanha).
+export function sumActiveBalances(accounts: AccountWithBalance[]): number {
+  return accounts.filter(a => !a.archived).reduce((s, a) => s + a.balance, 0)
 }
 
 export interface AccountWithBalance {

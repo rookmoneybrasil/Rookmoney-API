@@ -510,7 +510,10 @@ export async function payBillById(userId: string, billId: string): Promise<strin
   if (!categoryId) return 'Erro: nenhuma categoria disponivel pra registrar a despesa.'
 
   const tx = await db.transaction.create({
-    data: { amount: bill.amount, type: 'EXPENSE', description: bill.name, date: new Date(), userId, categoryId, accountId: await resolveDefaultAccountId(userId) },
+    // bill.accountId PRIMEIRO — igual ao POST /bills/:id?action=pay. Sem isso,
+    // pagar pelo Rookinho/WhatsApp jogava a despesa na carteira padrao mesmo
+    // quando a conta tinha carteira propria escolhida (ex: "luz sai do Nubank").
+    data: { amount: bill.amount, type: 'EXPENSE', description: bill.name, date: new Date(), userId, categoryId, accountId: bill.accountId ?? await resolveDefaultAccountId(userId) },
   })
   await db.bill.update({
     where: { id: bill.id },

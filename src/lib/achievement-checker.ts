@@ -397,11 +397,11 @@ async function checkMonthSurplus(db: PrismaClient, userId: string, consecutiveMo
 
     const [incomeAgg, expenseAgg] = await Promise.all([
       db.transaction.aggregate({
-        where: { userId, type: 'INCOME', date: { gte: monthStart, lte: monthEnd } },
+        where: { userId, type: 'INCOME', date: { gte: monthStart, lte: monthEnd }, ignored: false },
         _sum: { amount: true },
       }),
       db.transaction.aggregate({
-        where: { userId, type: 'EXPENSE', date: { gte: monthStart, lte: monthEnd } },
+        where: { userId, type: 'EXPENSE', date: { gte: monthStart, lte: monthEnd }, ignored: false },
         _sum: { amount: true },
       }),
     ])
@@ -420,11 +420,11 @@ async function checkSpendingRatio(db: PrismaClient, userId: string, maxRatio: nu
 
   const [incomeAgg, expenseAgg] = await Promise.all([
     db.transaction.aggregate({
-      where: { userId, type: 'INCOME', date: { gte: monthStart, lte: monthEnd } },
+      where: { userId, type: 'INCOME', date: { gte: monthStart, lte: monthEnd }, ignored: false },
       _sum: { amount: true },
     }),
     db.transaction.aggregate({
-      where: { userId, type: 'EXPENSE', date: { gte: monthStart, lte: monthEnd } },
+      where: { userId, type: 'EXPENSE', date: { gte: monthStart, lte: monthEnd }, ignored: false },
       _sum: { amount: true },
     }),
   ])

@@ -571,8 +571,8 @@ async function formatResumo(userId: string): Promise<string> {
   const now = new Date()
   const mS = startOfMonth(now), mE = endOfMonth(now)
   const [income, expense] = await Promise.all([
-    db.transaction.aggregate({ where: { userId, type: 'INCOME', date: { gte: mS, lte: mE } }, _sum: { amount: true } }),
-    db.transaction.aggregate({ where: { userId, type: 'EXPENSE', date: { gte: mS, lte: mE } }, _sum: { amount: true } }),
+    db.transaction.aggregate({ where: { userId, type: 'INCOME', date: { gte: mS, lte: mE }, ignored: false }, _sum: { amount: true } }),
+    db.transaction.aggregate({ where: { userId, type: 'EXPENSE', date: { gte: mS, lte: mE }, ignored: false }, _sum: { amount: true } }),
   ])
   const ti = Number(income._sum.amount ?? 0)
   const te = Number(expense._sum.amount ?? 0)

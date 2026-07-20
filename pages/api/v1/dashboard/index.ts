@@ -4,7 +4,7 @@ import { ok } from '@/lib/respond'
 import { startOfMonth, endOfMonth, subMonths, addDays, subDays, format } from 'date-fns'
 import { getProjection, type ProjectionItem } from '@/lib/projection'
 import { autoProcessMonth } from '@/lib/auto-process'
-import { computeAccountBalances } from '@/lib/account-balances'
+import { computeAccountBalances, sumActiveBalances } from '@/lib/account-balances'
 
 // Data migrations are centralized in api/src/lib/data-migrations.ts
 // O auto-process vive em api/src/lib/auto-process.ts — o get_summary do Rookinho
@@ -98,9 +98,10 @@ export default withAuth(async (req, res, session) => {
 
     db.transaction.findMany({ where: { userId: uid, type: 'INCOME', date: { gte: mS, lte: mE } }, select: { description: true } }),
 
-    // All INCOME transactions this month (not just the global "recent 7") — Receitas do mês modal
+    // All INCOME transactions this month (not just the global "recent 7") — Receitas do mês modal.
+    // Precisa do MESMO ignored:false do KPI acima, senao o modal soma mais que o card.
     db.transaction.findMany({
-      where:   { userId: uid, type: 'INCOME', date: { gte: mS, lte: mE } },
+      where:   { userId: uid, type: 'INCOME', date: { gte: mS, lte: mE }, ignored: false },
       orderBy: { date: 'desc' },
       include: { category: { select: { name: true, icon: true, color: true } } },
     }),
@@ -306,7 +307,7 @@ export default withAuth(async (req, res, session) => {
   return ok(res, {
     userName:              user?.name ?? '',
     accounts,
-    accountsTotal:         accounts.filter(a => !a.archived).reduce((s, a) => s + a.balance, 0),
+    accountsTotal:         sumActiveBalances(accounts),
     monthBalance:          totalIncome - totalExpense,
     monthIncome:           totalIncome,
     monthExpense:          totalExpense,

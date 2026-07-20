@@ -2,14 +2,14 @@ import { withAuth } from '@/lib/middleware'
 import { db } from '@/lib/db'
 import { ok, created, badRequest, planLimit } from '@/lib/respond'
 import { getLimits } from '@/lib/plans'
-import { computeAccountBalances } from '@/lib/account-balances'
+import { computeAccountBalances, sumActiveBalances } from '@/lib/account-balances'
 
 const TYPES = ['CASH', 'CHECKING', 'SAVINGS', 'CREDIT_CARD'] as const
 
 export default withAuth(async (req, res, session) => {
   if (req.method === 'GET') {
     const accounts = await computeAccountBalances(session.userId)
-    const total = accounts.filter(a => !a.archived).reduce((s, a) => s + a.balance, 0)
+    const total = sumActiveBalances(accounts)
     return ok(res, { accounts, total })
   }
 

@@ -83,8 +83,9 @@ export async function getProjection(uid: string, months: number): Promise<Projec
     }),
     db.transaction.findMany({
       where: {
-        userId: uid,
-        date:   { gte: curMS, lte: endOfMonth(addMonths(now, months - 1)) },
+        userId:  uid,
+        date:    { gte: curMS, lte: endOfMonth(addMonths(now, months - 1)) },
+        ignored: false,
       },
       include: { category: { select: { name: true, icon: true } } },
       orderBy: { date: 'asc' },

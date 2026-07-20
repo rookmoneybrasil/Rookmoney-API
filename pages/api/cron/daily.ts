@@ -399,7 +399,7 @@ async function sendNotifications(): Promise<number> {
       const yStart = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate())
       const yEnd   = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 23, 59, 59)
       const yesterdaySpent = await db.transaction.aggregate({
-        where: { userId: user.id, type: 'EXPENSE', date: { gte: yStart, lte: yEnd } },
+        where: { userId: user.id, type: 'EXPENSE', date: { gte: yStart, lte: yEnd }, ignored: false },
         _sum: { amount: true }, _count: true,
       })
       const spent = Number(yesterdaySpent._sum.amount ?? 0)
@@ -500,8 +500,8 @@ async function sendNotifications(): Promise<number> {
         const pS = startOfMonth(prevMonth)
         const pE = endOfMonth(prevMonth)
         const [income, expense] = await Promise.all([
-          db.transaction.aggregate({ where: { userId: user.id, type: 'INCOME',  date: { gte: pS, lte: pE } }, _sum: { amount: true } }),
-          db.transaction.aggregate({ where: { userId: user.id, type: 'EXPENSE', date: { gte: pS, lte: pE } }, _sum: { amount: true } }),
+          db.transaction.aggregate({ where: { userId: user.id, type: 'INCOME',  date: { gte: pS, lte: pE }, ignored: false }, _sum: { amount: true } }),
+          db.transaction.aggregate({ where: { userId: user.id, type: 'EXPENSE', date: { gte: pS, lte: pE }, ignored: false }, _sum: { amount: true } }),
         ])
         const totalIncome  = Number(income._sum.amount  ?? 0)
         const totalExpense = Number(expense._sum.amount ?? 0)
