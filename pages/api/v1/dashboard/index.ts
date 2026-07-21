@@ -276,12 +276,10 @@ export default withAuth(async (req, res, session) => {
     projectedBalance: m.cumulativeBalance,
     incomeItems: {
       sources:   toBreakdown(m.incomeItems, 'income', '💰'),
-      recurring: toBreakdown(m.incomeItems, 'recurring', '↻'),
       people:    toBreakdown(m.incomeItems, 'person', '👤'),
     },
     expenseItems: {
       bills:     toBreakdown(m.expenseItems, 'bill', '📄'),
-      recurring: toBreakdown(m.expenseItems, 'recurring', '↻'),
       people:    toBreakdown(m.expenseItems, 'person', '👤'),
     },
   }))
