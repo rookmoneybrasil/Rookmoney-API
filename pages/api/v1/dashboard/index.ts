@@ -259,7 +259,15 @@ export default withAuth(async (req, res, session) => {
     items.filter(it => it.type === type).map(it => ({ id: it.id, label: it.label, amount: it.amount, icon }))
 
   const projected = projResult.slice(1).map(m => ({
-    month:            m.monthStart.toISOString(),
+    // UTC NOON, nao meia-noite. `startOfMonth` da uma data local 00:00; o
+    // .toISOString() dela vira "2026-08-01T00:00:00.000Z" e os clientes fazem
+    // format(new Date(month)) — que formata em hora LOCAL. No Brasil (UTC-3)
+    // esse instante e 31/07 21:00, entao o card de AGOSTO aparecia rotulado
+    // "jul. 26" (e assim todo mes da projecao, sempre um mes atras). Meio-dia
+    // UTC e a mesma convencao que o resto do app usa pra datas justamente por
+    // isso. Reportado por usuario em 20/07/2026 ("coloquei parcelas a partir de
+    // agosto, pq esta contando como julho?!").
+    month:            new Date(Date.UTC(m.monthStart.getFullYear(), m.monthStart.getMonth(), 1, 12, 0, 0)).toISOString(),
     projectedIncome:  m.totalIncome,
     projectedExpense: m.totalExpense,
     projectedBalance: m.cumulativeBalance,
