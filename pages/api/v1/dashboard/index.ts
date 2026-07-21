@@ -255,8 +255,11 @@ export default withAuth(async (req, res, session) => {
   // this widget consistent with /income, /bills and /people, including installments,
   // recurrences and PersonEntryRecurring for each respective month.
 
+  // `overdue` precisa sobreviver ao mapeamento: sem ele, uma conta vencida de
+  // meses atras aparece no mes corrente do card sem nenhuma indicacao do porque
+  // (a pagina /projection sempre marcou com ⚠️, o card do dashboard nao).
   const toBreakdown = (items: ProjectionItem[], type: string, icon: string) =>
-    items.filter(it => it.type === type).map(it => ({ id: it.id, label: it.label, amount: it.amount, icon }))
+    items.filter(it => it.type === type).map(it => ({ id: it.id, label: it.label, amount: it.amount, icon, overdue: it.overdue ?? false }))
 
   const projected = projResult.slice(1).map(m => ({
     // UTC NOON, nao meia-noite. `startOfMonth` da uma data local 00:00; o
